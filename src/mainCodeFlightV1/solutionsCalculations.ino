@@ -12,15 +12,15 @@ bool checkVerticalDistance(float eps){
 }
 
 
-
 float calculateDistance(){
   double dis = pow(positionX-desiredPositionX,2) + pow(positionY-desiredPositionY,2)+pow(positionZ-desiredPositionZ,2);
   return(pow(dis,0.5));
 }
 
 bool offsetFound = false;
+
 float getHover(){
-  float ESCINCREASER =5.0;
+  float ESCINCREASER =4.0;
   if(offsetFound || positionZ>= verticalTol){
     offsetFound = true;
     return(ESCOFFSET);

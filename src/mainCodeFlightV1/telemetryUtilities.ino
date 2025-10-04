@@ -21,6 +21,7 @@ void sendTelem(){
  // Serial.print("\n$LNDAS");
   output = "," + String(AngleX,1) +  "," +String(AngleY,1) +  "," +String(AngleZ,1);
   HC12.print(output);
+  
  // Serial.print(output);
   output = "," +String(positionX) + ","+String(desiredPositionZ) + ","+String(positionZ) + ",48.864716,2.349014," +String(percentageMotor);
  // output += ",-1,-1,-1,";

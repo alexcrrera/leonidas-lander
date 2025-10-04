@@ -1,0 +1,278 @@
+
+
+int getAndIncrementCounter() {
+  int counter = EEPROM.read(counterAddress); // Read counter from EEPROM
+  counter++;                                // Increment counter
+  EEPROM.update(counterAddress, counter);   // Write updated counter to EEPROM
+  return counter;
+}
+
+
+
+
+void toogleSD(){
+  
+   if (!SD.begin(chipSelect)) {
+    Serial.println("SD card initialization failed!");
+    HC12.println("FAIL SD CARD!!!");
+  
+  }
+
+    int fileCounter = getAndIncrementCounter();
+
+  char fileName[13]; // e.g., "log001.csv\0"
+    snprintf(fileName, sizeof(fileName), "log%03d.csv", fileCounter);
+
+  dataFile = SD.open(fileName, FILE_WRITE);
+
+    //dataFile.println("");
+  dataFile.flush(); // Ensure header is saved
+
+}
+
+
+
+void endLogging() {
+  // Call this function before stopping the program
+  if (dataFile) {
+    dataFile.close(); // Properly close the file when done
+  }
+}
+
+
+
+
+
+unsigned long timeSD = 0;
+
+void handleSD(){
+   // in Hz
+   if(sdWrite==-1){
+  endLogging();
+   }
+  if(sdWrite == 2){
+      sdWrite=1;
+      toogleSD();
+  }
+
+
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+void ledMainCtrl(int a) {
+  switch (a) {
+    case 0:  // Off
+      digitalWrite(LEDLR, LOW);
+      digitalWrite(LEDLG, LOW);
+      digitalWrite(LEDLB, LOW);
+      break;
+
+    case 1:  // Red
+      digitalWrite(LEDLR, HIGH);
+      digitalWrite(LEDLG, LOW);
+      digitalWrite(LEDLB, LOW);
+      break;
+
+    case 2:  // Green
+      digitalWrite(LEDLR, LOW);
+      digitalWrite(LEDLG, HIGH);
+      digitalWrite(LEDLB, LOW);
+      break;
+
+    case 3:  // Blue
+      digitalWrite(LEDLR, LOW);
+      digitalWrite(LEDLG, LOW);
+      digitalWrite(LEDLB, HIGH);
+      break;
+  }
+}
+
+
+
+void checkI2c() { // counts how many devices are connected
+  while (!Serial)
+    ;
+
+  Wire.begin();
+
+  Serial.println(F("Scanning I2C bus..."));
+  int deviceCount = 0;
+  for (uint8_t address = 1; address < 127; ++address) {
+    Wire.beginTransmission(address);
+    byte error = Wire.endTransmission();
+    if (error == 0) {
+      Serial.print("Device found at address 0x");
+      if (address < 16) Serial.print("0");
+      Serial.println(address, HEX);
+      deviceCount++;
+    } else if (error == 4) {
+      Serial.print("Unknown error at address 0x");
+      if (address < 16) Serial.print("0");
+      Serial.println(address, HEX);
+    }
+  }
+  Serial.print("Total number of devices found: ");
+  Serial.println(deviceCount);
+  delay(2000);
+
+
+  if (deviceCount != I2CDEVICES) {
+    Serial.println(F("I2C ERROR!"));
+    while (1) {
+      delay(100);
+      ledMainCtrl(0);
+
+      delay(200);
+      ledMainCtrl(1);
+    }
+  }
+}
+
+
+
+unsigned long timePrint = 0;
+
+void handlePrint(){ // gets LiDAR data at appropriate rate , raises flag if NACK
+  const int PRINTFREQUENCY = PLTRATE; // in Hz
+  if((micros()-timePrint)*1.0>=1000.0*1000/PRINTFREQUENCY){
+    //Serial.println("LETS");
+    timePrint = micros();
+    getPrint(); 
+  }
+}
+
+void printSingle(String header, float d1){
+
+  String res = header + ": ";
+ 
+  if(sdWrite==1){
+      dataFile.print(String(d1)+",");
+      dataFile.flush();
+  }
+
+  if(PLOTMODE){
+    res = "";
+  }
+  Serial.print(res +String(d1)+",");
+}
+
+
+void printGroup(String header, float d1, float d2, float d3){
+
+  String res = header + ": ";
+
+  if(PLOTMODE){
+    res = "";
+  }
+  Serial.print(res  + String(d1) + "," + String(d2) + ","+ String(d3)+",");
+
+   if(sdWrite==1){
+  dataFile.print(String(d1) + "," + String(d2) + ","+ String(d3)+",");
+  dataFile.flush();
+   }
+}
+
+void printGroup4(String header, float d1, float d2, float d3,float d4){
+
+  String res = header + ": ";
+
+  if(PLOTMODE){
+    res = "";
+  }
+  Serial.print(res  + String(d1) + "," + String(d2) + ","+ String(d3)+ ","+ String(d3)+",");
+ if(sdWrite==1){
+   dataFile.print(String(d1) + "," + String(d2) + ","+ String(d3)+ ","+ String(d3)+",");
+     dataFile.flush();
+ }
+}
+
+void getPrint() {
+  if(sdWrite){
+    dataFile.print("\n");
+     dataFile.flush();
+  }
+     float timeNowSD = millis()/1000.0;
+  Serial.print("\n");
+ printSingle("Time",timeNowSD);
+  //printBlender();
+  //printGroup("Desired Position",desiredPositionX,desiredPositionY,desiredPositionZ);
+  printSingle("Desired Altitude",desiredPositionZ);
+  printSingle("Altitude",positionZ);
+ 
+ // printGroup("Position",positionX,positionY,positionZ);
+ 
+  printSingle("Motor", percentageMotor/100);
+   printSingle("Time S", timeTestTakeOff/1000.0);
+  
+  //printSingle("Mi",Mi);
+
+
+ //printGroup("LiDAR Readings", lidarReadings[0],lidarReadings[1],lidarReadings[2]);
+  //printWarnings();
+  //printSingle("AngleX",AngleX);
+ 
+  //printSingle("Desired AngleX", desiredAngleX);
+  //printSingle("Current AngleX", AngleX);
+   printGroup("Current Angles",AngleX,AngleY,AngleZ);
+ //printGroup("Desired Angles",desiredAngleX,desiredAngleY,desiredAngleZ);
+
+ //printGroup("PID",finalOutputX1pid,finalOutputY1pid,finalOutputX2pid);
+   //printGroup("GAINS",pGainAngleX,iGainAngleX,dGainAngleX);
+   // printGroup("INTEGRAL",integralAngleX,integralAngleY,integralAngleZ);
+ //   printSingle("Motor PWM",motorInputPWM);
+ //// printSingle("Motor Arm?",MOTORARMED);
+    //printSingle("Take Off?",takeOff);
+    
+    //printSingle("Motor On",MOTORON);
+    //printSingle("max TVCANGLEZ",maxAngleZTVC);
+    //printSingle("max TVCANGLEZ",maxAngleZTVC);
+  // printSingle("MAX ABORT ANGLE", abortAngle);
+ // printGroup4("PID OUTPUT",finalOutputX1pid,finalOutputY1pid,finalOutputX2pid,finalOutputY2pid);
+   // printSingle("Roll offsets",  rollOffset);
+  
+}
+
+
+void printBlender(){
+  //Serial.print("\n");
+  ki++;
+
+  if(ki>90){
+    ki = 0;
+  }
+  //printGroup(-Zangle,-Yangle,-Xangle);
+  //printGroup(0,0,lidarReadings[1]);
+  Serial.print("0,0,");
+  Serial.print(lidarReadings[1],3);
+  Serial.print(",0,0,0;");
+}
+
+
+void printWarnings(){
+
+  if(FLAGMOTOR){
+    Serial.print("WARNING, MOTOR NOT ARMED!");
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+

@@ -31,8 +31,8 @@ void loop() {
   //}
   spoolMotorCheck();
  // CLKCOUNTER++;
- stepFunction();
-handleVectornav();
+  stepFunction();
+  handleVectornav();
   handleLidar();
   handleTelemetry();
   handleTelem();

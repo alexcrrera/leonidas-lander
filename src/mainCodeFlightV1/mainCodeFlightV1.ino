@@ -1,7 +1,7 @@
 
-//================================LEONIDAS 01/08/2025================================================
+//================================LEONIDAS 05/10/2025================================================
 /*
- *   FIRST FLIGHT TEST - LEONIDAS - basic only vertical control removed SD stuff
+ *   FIRST FLIGHT TEST - LEONIDAS - basic only vertical control 
  */
 
 

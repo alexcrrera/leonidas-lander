@@ -69,25 +69,17 @@ void sendTelem(){
         output += ",LANDING NOW";
       }
       else{
-
         if(spoolMotor){
           output += ",SPOOLING UP";
         }
          output += ",STANDBY";
       }
-
     }
-    
   }
-    
-
   HC12.print(output);
    //Serial.print(output);
    HC12.print("*");
   // Serial.print("*");
-
-  
-
   
 }
 
@@ -126,12 +118,7 @@ void handleTelem() { // returns read output int.
     }  
   } 
 
-
-
-
   }
-
-
 
 
 }
@@ -153,25 +140,22 @@ bool takeOff = false;
 */
 int checkHeaderTelem(){
 
-      int TelemIdentity = -1;
-      if (incomingDataTelemString.indexOf("RANGLES") != -1) {  // parameters
-     Serial.println("CONFIGU");   
-
-     resetIntegralAngle();
-        TelemIdentity = 1;      
-      }
+  int TelemIdentity = -1;
+  if (incomingDataTelemString.indexOf("RANGLES") != -1) {  // parameters
+    Serial.println("CONFIGU");   
+    resetIntegralAngle();
+    TelemIdentity = 1;      
+  }
       
-      if (incomingDataTelemString.indexOf("RPOS") != -1) { // reset position
-        TelemIdentity = 2;
-      Serial.println("RESET POSITION");
-      }
+  if (incomingDataTelemString.indexOf("RPOS") != -1) { // reset position
+  TelemIdentity = 2;
+  Serial.println("RESET POSITION");
+  }
     
-      if (incomingDataTelemString.indexOf("PID") != -1) {
-        TelemIdentity = 3;
-        // LAND NOW!
-          
+  if (incomingDataTelemString.indexOf("PID") != -1) {
+    TelemIdentity = 3;
       }
-          if (incomingDataTelemString.indexOf("ABORTANGLE") != -1) {
+  if (incomingDataTelemString.indexOf("ABORTANGLE") != -1) {
         TelemIdentity = 4;
         // LAND NOW!
           
@@ -198,15 +182,15 @@ int checkHeaderTelem(){
            resetIntegralAngle();
       }
      if (incomingDataTelemString.indexOf("DZ") != -1) {
-           TelemIdentity = 9;
+          TelemIdentity = 9;
           resetIntegralAngle();
-      }
+          }
 
-           if (incomingDataTelemString.indexOf("PIDX") != -1) {
-           TelemIdentity = 10;
+      if (incomingDataTelemString.indexOf("PIDX") != -1) {
+          TelemIdentity = 10;
           resetIntegralAngle();
       }
-                 if (incomingDataTelemString.indexOf("PIDY") != -1) {
+      if (incomingDataTelemString.indexOf("PIDY") != -1) {
            TelemIdentity = 11;
           resetIntegralAngle();
       }
@@ -300,7 +284,7 @@ int checkHeaderTelem(){
           
       }
 
-            if (incomingDataTelemString.indexOf("SETHOME") != -1) {
+      if (incomingDataTelemString.indexOf("SETHOME") != -1) {
  //calculateOffsets(1);
 //calculateOffsets(3);
 //calculateOffsets(4);
@@ -372,12 +356,7 @@ float inter = 0.0;
     case 2:
       //ommaParser.parseLine(incomingDataTelem,headerTelem,Xangle,Yangle,Zangle);
       offsetTool = 4;
-
-
-       case 3:
-      //
-     
-      //offsetTool = 4;
+    case 3:
 
       break;
            case 4:
@@ -439,7 +418,6 @@ float inter = 0.0;
 
              maxAngleXYTVC = (tvcMaxAngle -maxAngleXYTVC -  maxAngleZTVC < 0.0) ?  maxAngleXYTVC : inter;
 
- 
          break;            
         
         case 17:

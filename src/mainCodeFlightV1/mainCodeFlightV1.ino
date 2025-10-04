@@ -77,6 +77,10 @@ float vectornavAngleX = 0; float vectornavAngleY = 0; float vectornavAngleZ = 0;
 /////////////////////////////////////// POSITION ///////////////////////////////////////////
 float positionXOffset = 0; float positionYOffset = 0; float positionZOffset = 0;
 
+float errorPreviousPositionX = 0.0; float errorPreviousPositionY = 0.0;
+
+
+
 float distanceEpsilon = 0.085;
 float positionX = 0; float positionY = 0; float positionZ = 0;
 float desiredPositionX = 0.0; float desiredPositionY = 0.0; float desiredPositionZ = 0.0;

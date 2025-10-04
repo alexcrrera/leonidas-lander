@@ -9,11 +9,10 @@
 #include <Wire.h>
 #include <textparser.h> 
 #include <string.h>
-
 #include <Servo.h>
 #include <LIDARLite.h>
 #include <String.h>
-#include <SPI.h>       // Include SPI library (needed for SD card)
+#include <SPI.h>       
 
 //unsigned long timeSD =0;
 
@@ -23,8 +22,6 @@ const int counterAddress = 0;
 
 
 
-
-//#include <PWMServo.h>
 /////////////////////////////////////////////LIBTOOLS/////////////////////////////////////////
 #define LIDARLite_ADDR 0x62
 #define I2CDEVICES 2
@@ -45,8 +42,6 @@ unsigned int CLKCOUNTER = 0;
 unsigned long timeClck = 0;
 
 ///////////////////////////// RTK ///////////////////////////
-
-
 
 bool flightMode = false;
 bool landingNow = false;

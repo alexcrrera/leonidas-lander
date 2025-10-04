@@ -61,14 +61,11 @@ void pidAngles(){
   errorPreviousAngleX = errorAngleX; errorPreviousAngleY = errorAngleY; errorPreviousAngleZ = errorAngleZ;
 
   outputAngleXpid = Xp + integralAngleX + Xd;
-   outputAngleYpid = Yp + integralAngleY + Yd; 
-  
-
+  outputAngleYpid = Yp + integralAngleY + Yd; 
   outputAngleZpid = Zp +integralAngleZ + Zd+rollOffset;
 
   outputAngleXpid = wrapper(outputAngleXpid,maxAngleXYTVC);
   outputAngleYpid = wrapper(outputAngleYpid,maxAngleXYTVC);
-
   outputAngleZpid = wrapper(outputAngleZpid,maxAngleZTVC);
 
     //outputAngleZpid = (fabs(outputAngleZpid) > maxAngleZTVC) ? signeValeur(outputAngleZpid) * maxAngleZTVC : outputAngleZpid;
@@ -91,20 +88,41 @@ void pidAngles(){
   finalOutputX2pid = wrapper(-finalOutputX2pid,tvcMaxAngle*1.0);
   finalOutputY1pid = wrapper(-finalOutputY1pid,tvcMaxAngle*1.0);
   finalOutputY2pid = wrapper(-finalOutputY2pid,tvcMaxAngle*1.0);
- dtAngles = micros();
+  dtAngles = micros();
  
 }
 
+unsigned long dtPos = 0;
 void pidPosition(){
- /* errorPositionX = desiredPositionX - positionX;
+
+  float dtPos = (millis() - dtPos)/1000.0;
+
+
+  float pGainXY = 1.0; float iGainXY = 0.02; float dGainXY = 0.5;
+
+
+  errorPositionX = desiredPositionX - positionX;
   errorPositionY = desiredPositionY - positionY;
-   float pGainXY = 1; float iGainXY = 0.02; float dGainXY = 0.5;
+  
+  
+  float pXpos = pGainXY*errorPositionX;
+  iXpos += iGainXY*errorPositionX;
+  float dXpos = (errorPositionX - errorPreviousPositionX)/dtPosPID;
+  
+  float pYpos = pGainXY*errorPositionY;
+  iYpos += iGainXY*errorPositionY;
+  float dYpos = (errorPositionY - errorPreviousPositionY)/dtPosPID;
 
-   float pX = pGainXY*errorPositionX;
-    integralX += iGainXY*errorPositionX*dtPosition;
-    float dX = 
+  
+  iXpos =constrain(iXpos,-maxAngleXYTVC,maxAngleXYTVC);
+  iYpos =constrain(iYpos,-maxAngleXYTVC,maxAngleXYTVC);
+  
+  desiredAngleX = wrapper(pXpos + iXpos + dXpos,maxAngleXYTVC);
+  desiredAngleY = wrapper(pYpos + iYpos + dYpos,maxAngleXYTVC);
 
-*/
+  dtPos = millis();
+
+
 }
 
 void pidMotor(){
@@ -137,8 +155,6 @@ void pidMotor(){
   Mp = pGainMotor*errorM;
   integralMotor += iGainMotor * dtMotorPID * errorM;
   Md = dGainMotor * ((errorM - errorPreviousM) / dtMotorPID); 
-
-
 
 
   integralMotor =constrain(integralMotor,ESCOFFSET-MOTORMIN,MOTORMAX-ESCOFFSET);

@@ -4,7 +4,7 @@
 
 
 
-
+float emp = 0.0;
 
 float lidarAlphaEWA = 0.21; 
 
@@ -14,13 +14,8 @@ unsigned long timeLiDAR = 0;
 
 
 
-
-
-
 void handleLidar(){ // gets LiDAR data at appropriate rate , raises flag if NACK
    const int LIDARFREQUENCY = 10;
-
- 
   if((millis()-timeLiDAR)*1.0>=1000.0/LIDARFREQUENCY){
     timeLiDAR = millis();
     getLidar();
@@ -33,7 +28,7 @@ void handleLidar(){ // gets LiDAR data at appropriate rate , raises flag if NACK
 int isLidarAvailable() {
 
  Wire.beginTransmission(LIDARLite_ADDR);
-  Wire.write(0x00); // Register to read distance
+ Wire.write(0x00); // Register to read distance
   // Check for NACK or other error
   return((Wire.endTransmission() != 0)? -1 : 1);
   
@@ -82,9 +77,9 @@ void getLidar() {
     //Serial.println("LMAOOO");
 
     return;
-}
+  }
  
-  float distanceNow = (float)myLidarLite.distance()/100.0; // en m
+  float distanceNow = (float)myLidarLite.distance(false)/100.0; // en m
   //Serial.print(distanceNow);
   lidarReadings[0] = distanceNow-lidarReadings[3];// -lidarReadings[4]; // raw value minus offset
   lidarReadings[1] = EWA(lidarReadings[1], lidarReadings[0],lidarAlphaEWA);

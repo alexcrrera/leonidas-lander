@@ -41,10 +41,10 @@ void sendTelem(){
   }
 
   if(sdWrite==1 || sdWrite ==2){
-    output += ",RECORDING";
+    output += ",NO SD REC";
   }
   else{
-    output += ",STOPPED";
+    output += ",NO SD";
   }
     output += "," + String(ESCOFFSET,2);
    HC12.print(output);

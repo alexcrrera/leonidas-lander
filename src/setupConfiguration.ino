@@ -2,7 +2,7 @@
 
 void initSystem() {
   //initLidar();
-   pinMode(motorCtrlPin, INPUT);
+  pinMode(motorCtrlPin, INPUT);
   initServos();
   initVectornav();
   initTelem();

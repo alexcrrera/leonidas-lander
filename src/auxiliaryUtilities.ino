@@ -1,63 +1,5 @@
 
 
-int getAndIncrementCounter() {
-  int counter = EEPROM.read(counterAddress); // Read counter from EEPROM
-  counter++;                                // Increment counter
-  EEPROM.update(counterAddress, counter);   // Write updated counter to EEPROM
-  return counter;
-}
-
-
-
-
-void toogleSD(){
-  
-   if (!SD.begin(chipSelect)) {
-    Serial.println("SD card initialization failed!");
-    HC12.println("FAIL SD CARD!!!");
-  
-  }
-
-    int fileCounter = getAndIncrementCounter();
-
-  char fileName[13]; // e.g., "log001.csv\0"
-    snprintf(fileName, sizeof(fileName), "log%03d.csv", fileCounter);
-
-  dataFile = SD.open(fileName, FILE_WRITE);
-
-    //dataFile.println("");
-  dataFile.flush(); // Ensure header is saved
-
-}
-
-
-
-void endLogging() {
-  // Call this function before stopping the program
-  if (dataFile) {
-    dataFile.close(); // Properly close the file when done
-  }
-}
-
-
-
-
-
-unsigned long timeSD = 0;
-
-void handleSD(){
-   // in Hz
-   if(sdWrite==-1){
-  endLogging();
-   }
-  if(sdWrite == 2){
-      sdWrite=1;
-      toogleSD();
-  }
-
-
-  
-}
 
 
 
@@ -155,10 +97,7 @@ void printSingle(String header, float d1){
 
   String res = header + ": ";
  
-  if(sdWrite==1){
-      dataFile.print(String(d1)+",");
-      dataFile.flush();
-  }
+
 
   if(PLOTMODE){
     res = "";
@@ -176,10 +115,7 @@ void printGroup(String header, float d1, float d2, float d3){
   }
   Serial.print(res  + String(d1) + "," + String(d2) + ","+ String(d3)+",");
 
-   if(sdWrite==1){
-  dataFile.print(String(d1) + "," + String(d2) + ","+ String(d3)+",");
-  dataFile.flush();
-   }
+
 }
 
 void printGroup4(String header, float d1, float d2, float d3,float d4){
@@ -190,17 +126,12 @@ void printGroup4(String header, float d1, float d2, float d3,float d4){
     res = "";
   }
   Serial.print(res  + String(d1) + "," + String(d2) + ","+ String(d3)+ ","+ String(d3)+",");
- if(sdWrite==1){
-   dataFile.print(String(d1) + "," + String(d2) + ","+ String(d3)+ ","+ String(d3)+",");
-     dataFile.flush();
- }
+ 
 }
 
 void getPrint() {
-  if(sdWrite){
-    dataFile.print("\n");
-     dataFile.flush();
-  }
+
+  
      float timeNowSD = millis()/1000.0;
   Serial.print("\n");
  printSingle("Time",timeNowSD);

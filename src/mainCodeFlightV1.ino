@@ -1,7 +1,7 @@
 
-//================================LEONIDAS 26/04/2025================================================
+//================================LEONIDAS 01/08/2025================================================
 /*
- *   FIRST FLIGHT TEST - LEONIDAS - basic only vertical control
+ *   FIRST FLIGHT TEST - LEONIDAS - basic only vertical control removed SD stuff
  */
 
 
@@ -11,11 +11,9 @@
 #include <string.h>
 
 #include <Servo.h>
-#include <SD.h>
 #include <LIDARLite.h>
 #include <String.h>
 #include <SPI.h>       // Include SPI library (needed for SD card)
-#include <EEPROM.h>
 
 //unsigned long timeSD =0;
 
@@ -35,7 +33,7 @@ TextParser commaParser(",");  // Delimiter is a comma followed by a space.
 LIDARLite myLidarLite;
 
 #define HC12 Serial5 //1
-#define Vectornav Serial8
+#define Vectornav Serial2
 #define RTK Serial3
 #define radioRTK Serial4
 //#define 
@@ -172,8 +170,8 @@ double dt = 0.0;
 
 ////////////////////////////////////////////SD CARD/////////////////////////////////////////
 float SDFREQUENCY = 10.0;
-const int chipSelect = BUILTIN_SDCARD; // Built-in SD card reader
-File dataFile;
+//const int chipSelect = BUILTIN_SDCARD; // Built-in SD card reader
+//File dataFile;
 int sdWrite = -1; // not recording
 
 ////////////////////////////////////////////====================SETUP BEGIN====================/////////////////////////////////////////

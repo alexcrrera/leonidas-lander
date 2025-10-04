@@ -92,26 +92,31 @@ void pidAngles(){
  
 }
 
-unsigned long dtPos = 0;
+unsigned long dtPosPID = 0;
+
+float iXpos = 0.0;
+float iYpos = 0.0;
+
+
 void pidPosition(){
 
-  float dtPos = (millis() - dtPos)/1000.0;
+   dtPosPID = (micros() - dtPosPID)/(1000.0*1000);
 
 
   float pGainXY = 1.0; float iGainXY = 0.02; float dGainXY = 0.5;
 
 
-  errorPositionX = desiredPositionX - positionX;
-  errorPositionY = desiredPositionY - positionY;
+  float errorPositionX = desiredPositionX - positionX;
+  float errorPositionY = desiredPositionY - positionY;
   
   
   float pXpos = pGainXY*errorPositionX;
   iXpos += iGainXY*errorPositionX;
-  float dXpos = (errorPositionX - errorPreviousPositionX)/dtPosPID;
+  float dXpos = dGainXY*(errorPositionX - errorPreviousPositionX)/dtPosPID;
   
   float pYpos = pGainXY*errorPositionY;
   iYpos += iGainXY*errorPositionY;
-  float dYpos = (errorPositionY - errorPreviousPositionY)/dtPosPID;
+  float dYpos = dGainXY*(errorPositionY - errorPreviousPositionY)/dtPosPID;
 
   
   iXpos =constrain(iXpos,-maxAngleXYTVC,maxAngleXYTVC);
@@ -120,8 +125,9 @@ void pidPosition(){
   desiredAngleX = wrapper(pXpos + iXpos + dXpos,maxAngleXYTVC);
   desiredAngleY = wrapper(pYpos + iYpos + dYpos,maxAngleXYTVC);
 
-  dtPos = millis();
-
+  dtPosPID = micros();
+  errorPreviousPositionY = errorPositionY;
+  errorPreviousPositionX = errorPositionX;
 
 }
 
@@ -192,6 +198,7 @@ void handleServoPID(){ // gets SERVOS data at appropriate rate , raises flag if 
   const int SERVOSFREQUENCY = 100; // in Hz
   if((millis()-timeSERVOS)*1.0>=1000.0/SERVOSFREQUENCY){
     timeSERVOS = millis();
+    pidPosition();
     pidAngles();
  
   }

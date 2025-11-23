@@ -133,17 +133,19 @@ void getPrint() {
 
   
      float timeNowSD = millis()/1000.0;
-  Serial.print("\n");
- printSingle("Time",timeNowSD);
+///////////////////////////////////////////////////////////  Serial.print("\n");
+ ///////////////////////////////////////////////printSingle("Time",timeNowSD);
   //printBlender();
   //printGroup("Desired Position",desiredPositionX,desiredPositionY,desiredPositionZ);
-  printSingle("Desired Altitude",desiredPositionZ);
-  printSingle("Altitude",positionZ);
+  //printSingle("Desired Altitude",desiredPositionZ);
+  //printSingle("Altitude",positionZ);
  
  // printGroup("Position",positionX,positionY,positionZ);
  
-  printSingle("Motor", percentageMotor/100);
-   printSingle("Time S", timeTestTakeOff/1000.0);
+// //////////////////////////////////////////// printSingle("Motor", percentageMotor/100);
+  /////////////////////// printSingle("Time S", timeTestTakeOff/1000.0);
+ ////////////////////////////////////////////printGroup("x,y,z",posN,posE,posD);
+ ////////////////////////////////// printSingle("RTK status",rtkStatus*1.0);
   
   //printSingle("Mi",Mi);
 
@@ -154,7 +156,7 @@ void getPrint() {
  
   //printSingle("Desired AngleX", desiredAngleX);
   //printSingle("Current AngleX", AngleX);
-   printGroup("Current Angles",AngleX,AngleY,AngleZ);
+ ///////////////////////////////////////////// printGroup("Current Angles",AngleX,AngleY,AngleZ);
  //printGroup("Desired Angles",desiredAngleX,desiredAngleY,desiredAngleZ);
 
  //printGroup("PID",finalOutputX1pid,finalOutputY1pid,finalOutputX2pid);

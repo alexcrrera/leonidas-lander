@@ -19,7 +19,7 @@ void setup() {
 
 void loop() {
 
-  if(!buzzerOn&& 1 == 2){
+  if(!buzzerOn){
     noTone(mainBuzzer);
 
   }
@@ -31,9 +31,9 @@ void loop() {
   //}
   spoolMotorCheck();
  // CLKCOUNTER++;
-  stepFunction();
+ stepFunction();
   handleVectornav();
-  handleLidar();
+ // handleLidar();
   handleTelemetry();
   handleTelem();
  // updateData();
@@ -49,6 +49,7 @@ void loop() {
 
   testHelper();
   checkMaxAngle();
+  handleRTK();
  // handleSD();
  /* handleReceiver();
  

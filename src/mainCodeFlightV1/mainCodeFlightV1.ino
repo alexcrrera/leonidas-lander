@@ -1,27 +1,34 @@
 
-//================================LEONIDAS 05/10/2025================================================
+//================================LEONIDAS 09/10/2025================================================
 /*
- *   FIRST FLIGHT TEST - LEONIDAS - basic only vertical control 
+ *   FIRST FLIGHT TEST - LEONIDAS - basic only vertical control removed SD stuff
  */
 
+#define SERIAL_RX_BUFFER_SIZE_3 256
 
 /////////////////////////////////////////////LIBRARIES/////////////////////////////////////////
 #include <Wire.h>
 #include <textparser.h> 
 #include <string.h>
+
 #include <Servo.h>
 #include <LIDARLite.h>
 #include <String.h>
-#include <SPI.h>       
-
+#include <SPI.h>       // Include SPI library (needed for SD card)
+#include <Wire.h>
+#include <SparkFun_u-blox_GNSS_Arduino_Library.h>
 //unsigned long timeSD =0;
 
+bool START_SYSTEM = false;
 
 
 const int counterAddress = 0;
 
 
 
+SFE_UBLOX_GNSS gnss;
+
+//#include <PWMServo.h>
 /////////////////////////////////////////////LIBTOOLS/////////////////////////////////////////
 #define LIDARLite_ADDR 0x62
 #define I2CDEVICES 2
@@ -30,18 +37,20 @@ TextParser commaParser(",");  // Delimiter is a comma followed by a space.
 LIDARLite myLidarLite;
 
 #define HC12 Serial5 //1
-#define Vectornav Serial2
-#define RTK Serial3
-#define radioRTK Serial4
+#define Vectornav Serial8
+
 //#define 
  int TELEMETRYFREQUENCY = 10;
 
 
+int rtkStatus = 0;
 const float FREQUENCYCHECK = 0.1;
 unsigned int CLKCOUNTER = 0;
 unsigned long timeClck = 0;
 
 ///////////////////////////// RTK ///////////////////////////
+
+
 
 bool flightMode = false;
 bool landingNow = false;
@@ -70,16 +79,22 @@ const int LEDLR = 26; const int LEDLG = 25;  const int LEDLB = 24;
 const int servoX1 = 2; const int servoX2 = 3; const int servoY1 = 4; const int servoY2 = 5;
 const int motorCtrlPin = 16;
 
+/////////////////////////////////////// POSITION PID //////////////////////////////////////////
+float integralX = 0.0;
+float integralY = 0.0;
+unsigned long dtPosition = 0;
+
+
+float errorPositionPreviousX = 0.0;
+float errorPositionPreviousY = 0.0;
+
+
 /////////////////////////////////////// ANGLES //////////////////////////////////////////
 float angleOffsetX = 0; float angleOffsetY = 0; float angleOffsetZ = 0;
 float vectornavAngleX = 0; float vectornavAngleY = 0; float vectornavAngleZ = 0;
 
 /////////////////////////////////////// POSITION ///////////////////////////////////////////
 float positionXOffset = 0; float positionYOffset = 0; float positionZOffset = 0;
-
-float errorPreviousPositionX = 0.0; float errorPreviousPositionY = 0.0;
-
-
 
 float distanceEpsilon = 0.085;
 float positionX = 0; float positionY = 0; float positionZ = 0;
@@ -108,8 +123,8 @@ float lidarReadings[4] = {0.0,0.0,0.0,0.0};// first value, av val, normalised, o
 
 /////////////////////////////////////// GPS RTK  ///////////////////////////////////////////
 float velN= 0.0; float velE= 0.0; float velD= 0.0;
-float posN= 0.0; float posE= 0.0; float posD= -1.21;
-/////////////////////////////////////// PID ///////////////////////////////////////////
+float posN= 0.0; float posE= 0.0; float posD= 0.0;
+/////////////////////////////////////// PID //////////////////////////////////////////
 
 float MpGain = 0.2; float MiGain = 0.2; float MdGain = 0.03;
 float integralAngleX = 0; float integralAngleY = 0; float integralAngleZ = 0; float integralMotor = 0; // Integ error for pid motor
@@ -181,7 +196,7 @@ float MOTORMIN =50;
 int motorTestLaunch = 0;
 unsigned long timeServo = 0;
   float verticalTol= 0.05;
-float ESCOFFSET = MOTORMIN;
+float ESCOFFSET = 70;
 
 int PLTRATE = 25;
 Servo ESC;
@@ -210,10 +225,7 @@ const int SYNCHMESSAGELENGHT = 2; // 2 CHARS for header is standard
 const int SIZEOFLENGTH = 3; // 3 chars for hex
 byte messageData[BUFFERMESSAGESIZE]; // stores bytes of the body
  
-float px = 0;
-float py = 0;
-float pz = 0;
-float tome = 0.0;
+
 
 #define RXD2 16
 #define TXD2 17

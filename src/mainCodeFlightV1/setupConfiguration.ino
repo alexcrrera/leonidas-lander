@@ -1,24 +1,44 @@
 
 
 void initSystem() {
-  //initLidar();
+ // delay(1000);
+  
   pinMode(motorCtrlPin, INPUT);
-  initServos();
-  initVectornav();
-  initTelem();
-  initRTK();
-  pinMode(switchMain, INPUT);
-  pinMode(mainBuzzer, OUTPUT);
-  pinMode(LEDLR, OUTPUT);
+    pinMode(LEDLR, OUTPUT);
   pinMode(LEDLG, OUTPUT);
   pinMode(LEDLB, OUTPUT);
-  
-  delay(1000);
+   pinMode(switchMain, INPUT);
+  pinMode(mainBuzzer, OUTPUT);
+  initTelem();
+  sendMessage("[OK] TELEM INIT");
+ // delay(1000);
+  sendMessage("TESTING SERVOS");
+
+  initServos();
+  sendMessage("[OK] SERVOS");
+  initVectornav();
+  sendMessage("[OK] IMU READY");
+ // delay(500);
+  sendMessage("CHECKING RTK");
+  initRTK();
+  sendMessage("INIT LiDAR");
+  initLidar();
+
+  sendMessage("STARTUP COMPLETE");
+  sendMessage("WAITING FOR SIGNAL");
+ // delay(1000);
 }
 
 void initLidar(){
   myLidarLite.begin(0, true);  
   myLidarLite.configure(0);  
+  int dist = myLidarLite.distance(true);
+  if (!(dist<=0 and dist<=100)) {
+    sendMessage("[OK] LiDAR CHECK");
+  }
+  else{
+      sendMessage("[X] LiDAR ERROR");
+  }
 }
 
 
@@ -50,30 +70,28 @@ void initVectornav() {
 }
 
 
-void initRTK(){
-  RTK.begin(57600);
-}
+
 
 
 void servoVaneCheck(){
-  analogWrite(servoX1,servoCalculator(90.0));
-  analogWrite(servoX2,servoCalculator(90.0));
-  analogWrite(servoY1,servoCalculator(90.0));
-  analogWrite(servoY2,servoCalculator(90.0));
+  analogWrite(servoX1,servoCalculator(90.0+MissSX1));
+  analogWrite(servoX2,servoCalculator(90.0+MissSX2));
+  analogWrite(servoY1,servoCalculator(90.0+MissSY1));
+  analogWrite(servoY2,servoCalculator(90.0+MissSY2));
 
   Serial.println("START SWEEP");
 
   for(int i = 0; i < 3; i++){
+    analogWrite(servoX1,servoCalculator(90.0+MissSX1+tvcMaxAngle));
+    analogWrite(servoX2,servoCalculator(90.0+MissSX2-tvcMaxAngle));
+    analogWrite(servoY1,servoCalculator(90.0+MissSY1+tvcMaxAngle));
+    analogWrite(servoY2,servoCalculator(90.0+MissSY2-tvcMaxAngle));
 
-    analogWrite(servoX1,servoCalculator(90+tvcMaxAngle));
-    analogWrite(servoX2,servoCalculator(90-tvcMaxAngle));
-    analogWrite(servoY1,servoCalculator(90+tvcMaxAngle));
-    analogWrite(servoY2,servoCalculator(90-tvcMaxAngle));
     delay(400);
-    analogWrite(servoX1,servoCalculator(90-tvcMaxAngle));
-    analogWrite(servoX2,servoCalculator(90+tvcMaxAngle));
-    analogWrite(servoY1,servoCalculator(90-tvcMaxAngle));
-    analogWrite(servoY2,servoCalculator(90+tvcMaxAngle));
+    analogWrite(servoX1,servoCalculator(90.0+MissSX1-tvcMaxAngle));
+    analogWrite(servoX2,servoCalculator(90.0+MissSX2+tvcMaxAngle));
+    analogWrite(servoY1,servoCalculator(90.0+MissSY1-tvcMaxAngle));
+    analogWrite(servoY2,servoCalculator(90.0+MissSY2+tvcMaxAngle));
     delay(400);
 
   }

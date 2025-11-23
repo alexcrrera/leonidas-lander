@@ -12,13 +12,13 @@ bool checkVerticalDistance(float eps){
 }
 
 
+
 float calculateDistance(){
   double dis = pow(positionX-desiredPositionX,2) + pow(positionY-desiredPositionY,2)+pow(positionZ-desiredPositionZ,2);
   return(pow(dis,0.5));
 }
 
 bool offsetFound = false;
-
 float getHover(){
   float ESCINCREASER =4.0;
   if(offsetFound || positionZ>= verticalTol){
@@ -37,7 +37,7 @@ float getHover(){
 void handleFlightMode(){
     if(takeOff){ // Requires restart to take off
        ESCOFFSET = getHover();
-      rampLand();
+      rampLandOrTakeOff();
   }
  
   if(takeOffCommand){
@@ -75,7 +75,7 @@ void handleFlightMode(){
       
     takeOff = false;
     }
-    rampLand();
+    rampLandOrTakeOff();
     
   }
 
@@ -95,7 +95,7 @@ void handleFlightMode(){
 
 float rampTime = LANDINGSPEED/TAKEOFFALTITUDE; // in sec
 
-void rampLand(){
+void rampLandOrTakeOff(){
   if(landingNow){
     tone(mainBuzzer, 500);
   desiredPositionX = 0.0; desiredPositionY = 0.0; 

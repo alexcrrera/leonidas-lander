@@ -66,21 +66,22 @@ bool isBluebird = false;
 int servoCalculator(float val){
 
   int range = 0;
-     float highTimeServo = 0.0;
+  float highTimeServo = 0.0;
+
   if(isBluebird){
     range = 60;
-       highTimeServo = map(round(val*10),(90-range)*10,(90+range)*10,900,2100)/1000.0;
+    highTimeServo = map(round(val*10),(90-range)*10,(90+range)*10,900,2100)/1000.0;
   }
   else{
-      range = 50;
-      
-     highTimeServo = map(round(val*10),(90-range)*10,(90+range)*10,1000,2000)/1000.0;
+    range = 50;
+    highTimeServo = map(round(val*10),(90-range)*10,(90+range)*10,1000,2000)/1000.0;
   
   }
 
  
   float dutyCycleServo = highTimeServo/periodServo;
   int phi = round(dutyCycleServo*pow(2,resBit));
+  
   return(phi);
 }
 

@@ -61,11 +61,14 @@ void pidAngles(){
   errorPreviousAngleX = errorAngleX; errorPreviousAngleY = errorAngleY; errorPreviousAngleZ = errorAngleZ;
 
   outputAngleXpid = Xp + integralAngleX + Xd;
-  outputAngleYpid = Yp + integralAngleY + Yd; 
+   outputAngleYpid = Yp + integralAngleY + Yd; 
+  
+
   outputAngleZpid = Zp +integralAngleZ + Zd+rollOffset;
 
   outputAngleXpid = wrapper(outputAngleXpid,maxAngleXYTVC);
   outputAngleYpid = wrapper(outputAngleYpid,maxAngleXYTVC);
+
   outputAngleZpid = wrapper(outputAngleZpid,maxAngleZTVC);
 
     //outputAngleZpid = (fabs(outputAngleZpid) > maxAngleZTVC) ? signeValeur(outputAngleZpid) * maxAngleZTVC : outputAngleZpid;
@@ -88,47 +91,44 @@ void pidAngles(){
   finalOutputX2pid = wrapper(-finalOutputX2pid,tvcMaxAngle*1.0);
   finalOutputY1pid = wrapper(-finalOutputY1pid,tvcMaxAngle*1.0);
   finalOutputY2pid = wrapper(-finalOutputY2pid,tvcMaxAngle*1.0);
-  dtAngles = micros();
+ dtAngles = micros();
  
 }
-
-unsigned long dtPosPID = 0;
-
-float iXpos = 0.0;
-float iYpos = 0.0;
 
 
 void pidPosition(){
 
-   dtPosPID = (micros() - dtPosPID)/(1000.0*1000);
-
-
-  float pGainXY = 1.0; float iGainXY = 0.02; float dGainXY = 0.5;
-
-
+  
+  float dt = (micros() - dtPosition)/1000000.0;
+  if(dtPosition == 0){
+    Serial.println("ERROR DT!"); // smth went really wrong here
+    return;
+  }
   float errorPositionX = desiredPositionX - positionX;
   float errorPositionY = desiredPositionY - positionY;
-  
-  
-  float pXpos = pGainXY*errorPositionX;
-  iXpos += iGainXY*errorPositionX;
-  float dXpos = dGainXY*(errorPositionX - errorPreviousPositionX)/dtPosPID;
-  
-  float pYpos = pGainXY*errorPositionY;
-  iYpos += iGainXY*errorPositionY;
-  float dYpos = dGainXY*(errorPositionY - errorPreviousPositionY)/dtPosPID;
 
-  
-  iXpos =constrain(iXpos,-maxAngleXYTVC,maxAngleXYTVC);
-  iYpos =constrain(iYpos,-maxAngleXYTVC,maxAngleXYTVC);
-  
-  desiredAngleX = wrapper(pXpos + iXpos + dXpos,maxAngleXYTVC);
-  desiredAngleY = wrapper(pYpos + iYpos + dYpos,maxAngleXYTVC);
+   float pGainXY = 15; float iGainXY = 0.075; float dGainXY = 10.0;
 
-  dtPosPID = micros();
-  errorPreviousPositionY = errorPositionY;
-  errorPreviousPositionX = errorPositionX;
+   float pX = pGainXY*errorPositionX;
+    integralX += iGainXY*errorPositionX*dt;
+    float dX = dGainXY*(errorPositionX-errorPositionPreviousX)/dt;
 
+
+  float pY = pGainXY*errorPositionY;
+  integralY += iGainXY*errorPositionY*dt;
+  float dY = dGainXY*(errorPositionY-errorPositionPreviousY)/dt;
+
+  errorPositionPreviousX = errorPositionX;
+  errorPositionPreviousY = errorPositionY;
+
+ float outputX = pX + integralX + dX; 
+  outputX = wrapper(outputX,maxAngleXYTVC*1.0);
+  float outputY= pY + integralY + dY; 
+  outputY = wrapper(outputY,maxAngleXYTVC*1.0);
+
+
+  desiredAngleX = outputX;
+  desiredAngleY = outputY;
 }
 
 void pidMotor(){
@@ -161,6 +161,8 @@ void pidMotor(){
   Mp = pGainMotor*errorM;
   integralMotor += iGainMotor * dtMotorPID * errorM;
   Md = dGainMotor * ((errorM - errorPreviousM) / dtMotorPID); 
+
+
 
 
   integralMotor =constrain(integralMotor,ESCOFFSET-MOTORMIN,MOTORMAX-ESCOFFSET);
@@ -198,12 +200,12 @@ void handleServoPID(){ // gets SERVOS data at appropriate rate , raises flag if 
   const int SERVOSFREQUENCY = 100; // in Hz
   if((millis()-timeSERVOS)*1.0>=1000.0/SERVOSFREQUENCY){
     timeSERVOS = millis();
-    pidPosition();
     pidAngles();
  
   }
 
 }
+
 
 
 

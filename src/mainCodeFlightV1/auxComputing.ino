@@ -53,12 +53,6 @@ int signeValeur(float val){
 
 
 
-unsigned long timeStep = 0;
-int timeCursor = 0;
-
-float stepData[] = {0.0,5.0,0.0,-5.0,-2,3};
-int stepSim = sizeof(stepData)/sizeof(stepData[0]); // 3 sec
-float timeStepper = 2.0; // sec
 
 
 float timeFlightCheck = 1;
@@ -77,15 +71,6 @@ void spoolMotorCheck(){
   }
 }
 
-
-void stepFunction(){
-  if((millis()-timeStep)/1000.0 >= timeStepper){
-    timeStep = millis();
-    timeCursor++;
-    timeCursor = (abs(timeCursor) > (stepSim -1)) ? 0 : timeCursor;
-    
-  }
-}
 
 
 

@@ -20,14 +20,14 @@ void sendTelem(){
 
   String output = "";
 
-  HC12.print("\n$LNDAS");
+  TELEM.print("\n$LNDAS");
  // Serial.print("\n$LNDAS");
   output = "," + String(AngleX,1) +  "," +String(AngleY,1) +  "," +String(AngleZ,1);
-  HC12.print(output);
+  TELEM.print(output);
  // Serial.print(output);
   output = "," +String(positionX) + ","+String(desiredPositionZ) + ","+String(positionZ) + ",48.864716,2.349014," +String(percentageMotor);
  // output += ",-1,-1,-1,";
-   HC12.print(output);
+   TELEM.print(output);
   // Serial.print(output);
    output = "";
     if(buzzerOn){
@@ -50,7 +50,7 @@ void sendTelem(){
     output += ",NO SD";
   }
     output += "," + String(ESCOFFSET,2);
-   HC12.print(output);
+   TELEM.print(output);
 
    output = "";
   
@@ -84,9 +84,9 @@ void sendTelem(){
   }
     
 
-  HC12.print(output);
+  TELEM.print(output);
    //Serial.print(output);
-   HC12.print("*");
+   TELEM.print("*");
   // Serial.print("*");
 
   
@@ -95,8 +95,8 @@ void sendTelem(){
 }
 
 void handleTelem() { // returns read output int.
-  if (HC12.available() > 0) {
-    char incomingChar = HC12.read(); 
+  if (TELEM.available() > 0) {
+    char incomingChar = TELEM.read(); 
    //Serial.print(incomingChar);
     if (incomingChar == '\n') {
       incomingDataTelem[dataIndexTelem] = '\0';
@@ -147,19 +147,12 @@ void checkOverflowTelem(){
     }
 }
 
-/*
 
-bool flightMode = false;
-bool landingNow = false;
-bool takeOff = false;
-
-
-*/
 
 void sendMessage(String message){
-    HC12.print("\n");
-    HC12.print(message);
-    HC12.print("*");
+    TELEM.print("\n");
+    TELEM.print(message);
+    TELEM.print("*");
 }
 
 
@@ -464,14 +457,11 @@ float inter = 0.0;
  
          break;            
         
-        case 17:
-             commaParser.parseLine(incomingDataTelem,headerTelem,timeStepper);
-         break;
 
       case 69:
          commaParser.parseLine(incomingDataTelem,headerTelem,PLTRATE);
       if(PLTRATE==0){
-        HC12.println("TELEM OFF");
+        TELEM.println("TELEM OFF");
       }
   }
 

@@ -58,7 +58,7 @@ void initServos() {
 }
 
 void initTelem(){
-  HC12.begin(57600); // 57600
+  TELEM.begin(57600); // 57600
 }
 
 void initVectornav() {

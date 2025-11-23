@@ -1,4 +1,29 @@
+void handleInternalLED(){
+    static uint32_t lastEventTime = 0;
+    static bool isBeeping = false;
 
+    uint32_t now = millis();
+
+    if (!isBeeping) {
+        // Wait for the 2s period
+        if (now - lastEventTime >= 3000) {
+            // Start beep
+            isBeeping = true;
+            lastEventTime = now;
+            analogWrite(internal_LED_BUZZER, 21); // Max amplitude
+            ledMainCtrl(3);
+        }
+    } 
+    else {
+        // Stop after 100 ms
+        if (now - lastEventTime >= 100) {
+            isBeeping = false;
+            lastEventTime = now; // Reset timer for next 2s cycle
+            analogWrite(internal_LED_BUZZER, 0); // Off
+            ledMainCtrl(0);
+        }
+    }
+}
 
 
 

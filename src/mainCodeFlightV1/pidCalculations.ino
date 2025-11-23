@@ -143,19 +143,7 @@ void pidMotor(){
 
   float Mp = 0, Md = 0;
   errorM = desiredPositionZ - positionZ;
-  if(buzzerOn && 1==2){
 
-  int offsetFreq = 1000;
-  int freq = round((errorM)*1000) + offsetFreq;
-
-  tone(mainBuzzer, freq);
-
-   tone(mainBuzzer, offsetFreq,0.2);
-  }
-  else{
-    noTone(mainBuzzer);
-
-  }
   float dtMotorPID = (micros() - dtMotor)/1000000.0;
   //Serial.print("\nTime: " + String(dtMotorPID));
   Mp = pGainMotor*errorM;

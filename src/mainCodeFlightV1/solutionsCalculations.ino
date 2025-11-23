@@ -97,14 +97,14 @@ float rampTime = LANDINGSPEED/TAKEOFFALTITUDE; // in sec
 
 void rampLandOrTakeOff(){
   if(landingNow){
-    tone(mainBuzzer, 500);
+  
   desiredPositionX = 0.0; desiredPositionY = 0.0; 
   desiredPositionZ = TAKEOFFALTITUDE - LANDINGSPEED*rampLandingTime/1000.0 ;
   desiredPositionZ = constrain(desiredPositionZ,0,TAKEOFFALTITUDE);
   return;
   }
   if(takeOff){
-    tone(mainBuzzer, 1000);
+   
      desiredPositionX = 0.0; desiredPositionY = 0.0; 
     desiredPositionZ =  LANDINGSPEED*rampLandingTime/1000.0 ;
    desiredPositionZ = constrain(desiredPositionZ,0,TAKEOFFALTITUDE);
@@ -117,7 +117,7 @@ void rampLandOrTakeOff(){
 
 void setDesiredParameters(){
     if(flightMode){
-       noTone(mainBuzzer);
+       
       getCoordinates();
     }
   

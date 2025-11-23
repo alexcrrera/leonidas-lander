@@ -8,7 +8,7 @@ void initSystem() {
   pinMode(LEDLG, OUTPUT);
   pinMode(LEDLB, OUTPUT);
    pinMode(switchMain, INPUT);
-  pinMode(mainBuzzer, OUTPUT);
+  pinMode(internal_LED_BUZZER, OUTPUT);
   initTelem();
   sendMessage("[OK] TELEM INIT");
  // delay(1000);

@@ -19,10 +19,6 @@ void setup() {
 
 void loop() {
 
-  if(!buzzerOn){
-    noTone(mainBuzzer);
-
-  }
 //`&if((micros()-timeClck)*1.0>=1000.0*1000/FREQUENCYCHECK){
   //   timeClck = micros();
     //Serial.print("\nFreq: ");
@@ -31,7 +27,7 @@ void loop() {
   //}
   spoolMotorCheck();
  // CLKCOUNTER++;
- stepFunction();
+
   handleVectornav();
  // handleLidar();
   handleTelemetry();

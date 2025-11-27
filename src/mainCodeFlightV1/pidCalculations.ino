@@ -1,33 +1,9 @@
-    void readPWM(){
 
- unsigned long pulseHigh = pulseIn(motorCtrlPin, HIGH);
-  unsigned long pulseLow = pulseIn(motorCtrlPin, LOW);
-  
-  // Calculate the period and duty cycle
-  unsigned long period = pulseHigh + pulseLow;
-  float dutyCycle = (pulseHigh / (float)period) * 100.0;
-
-  motorInputPWM = dutyCycle;
-  //float mapped = map(pulseHigh,minPulse,maxPulse,0.0,100.0);
-  // Print the measured values
-  /*Serial.print("%: ");
-  Serial.print(mapped);
-  Serial.print("Pulse HIGH duration: ");
-  Serial.print(pulseHigh);
-  //Serial.print(" us, Pulse LOW duration: ");
-  //Serial.print(pulseLow);
-  //Serial.print(" us, Duty Cycle: ");
-  //Serial.print(dutyCycle);
-  Serial.println(" %");
-
-  // Delay a bit before the next reading
-*/
-
-}
 
 void pidAngles(){
-  //readPWM();
 
+  static unsigned long dtAngles = 1;
+  
   float dtAnglesPID = (micros() - dtAngles)/1000000.0;
   if(dtAnglesPID == 0){
     Serial.println("ERROR DT!"); // smth went really wrong here
@@ -37,9 +13,9 @@ void pidAngles(){
   float Xp = 0.0, Xd = 0.0, Yp = 0.0,  Yd = 0.0, Zp = 0.0, Zd = 0.0; 
 
   // coder changement angles
-  errorAngleX = AngleX - desiredAngleX;
-  errorAngleY = AngleY - desiredAngleY;
-  errorAngleZ = AngleZ - desiredAngleZ;
+  float errorAngleX = AngleX - desiredAngleX;
+  float errorAngleY = AngleY - desiredAngleY;
+  float errorAngleZ = AngleZ - desiredAngleZ;
 
   Xp = pGainAngleX * errorAngleX;
   integralAngleX += iGainAngleX * dtAnglesPID * errorAngleX;
@@ -97,11 +73,12 @@ void pidAngles(){
 
 
 void pidPosition(){
-
-  
+  static float errorPositionPreviousX = 0.0;
+  static float errorPositionPreviousY = 0.0;
+  static unsigned long dtPosition = 0;
   float dt = (micros() - dtPosition)/1000000.0;
   if(dtPosition == 0){
-    Serial.println("ERROR DT!"); // smth went really wrong here
+    
     return;
   }
   float errorPositionX = desiredPositionX - positionX;
@@ -142,7 +119,9 @@ void pidMotor(){
   float pGainMotor = 11; float iGainMotor = 1.5; float dGainMotor = 7.0;
 
   float Mp = 0, Md = 0;
-  errorM = desiredPositionZ - positionZ;
+  float errorM = desiredPositionZ - positionZ;
+
+  static unsigned long dtMotor = 1;
 
   float dtMotorPID = (micros() - dtMotor)/1000000.0;
   //Serial.print("\nTime: " + String(dtMotorPID));
@@ -156,9 +135,9 @@ void pidMotor(){
   integralMotor =constrain(integralMotor,ESCOFFSET-MOTORMIN,MOTORMAX-ESCOFFSET);
   
  
-  outputMpid = Mp + integralMotor + Md+ ESCOFFSET;
+
   
-  finalOutputMpid = outputMpid;
+  finalOutputMpid = Mp + integralMotor + Md+ ESCOFFSET;
     
   percentageMotor = constrain(finalOutputMpid,MOTORMIN,MOTORMAX);
 

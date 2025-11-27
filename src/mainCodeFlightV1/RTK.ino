@@ -1,51 +1,68 @@
-#include <Wire.h>
-#include <SparkFun_u-blox_GNSS_Arduino_Library.h>
-
-SFE_UBLOX_GNSS gnss;   // Library object
-
-void setup() {
-  Serial.begin(115200);
-
-  Wire1.begin();                // Use Wire1 (Teensy secondary I2C)
-  Wire1.setClock(400000);
-
-  // Connect to the GNSS on Wire1
-  if (gnss.begin(Wire1) == false) {
-    Serial.println("GNSS not detected.");
-    while (1);
-  }
-
-  Serial.println("GNSS connected ✔");
-
-  // -------------------------------
-  // Configure UART1 (PORTID = 1)
-  // -------------------------------
-  // UBX input only  → Bit0 = UBX
-  // UBX output only → Bit0 = UBX
-  // Baud = 57600
-
-  bool success = gnss.setPortMode(
-      COM_PORT_UART1,
-      COM_TYPE_UBX,      // input protocols
-      COM_TYPE_UBX       // output protocols
-  );
-
-  if (!success) {
-    Serial.println("Failed to set PortMode ❌");
-  } else {
-    Serial.println("PortMode set ✔");
-  }
-
-  success = gnss.setUART1Baudrate(57600);
-  if (!success) {
-    Serial.println("Failed to set UART1 baud ❌");
-  } else {
-    Serial.println("UART1 = 57600 ✔");
-  }
-
-  Serial.println("Configuration finished.");
+void initRTK(){
+  RTK.begin(57600);
+  myGNSS.begin(RTK, 1100, true);
+    myGNSS.assumeAutoRELPOSNED(true, true);
 }
 
-void loop() {
-  // Put anything you want here
+void initTelemRTK(){
+  TELEMRTK.begin(57600);
+}
+
+
+void convertRTK(){
+  // converts NED into XYZ
+  float heading = radians(AngleZ);
+
+  positionX_RTK = cos(heading)*(posN-RTK_N_Offset) + sin(heading)*(posE-RTK_E_Offset);
+  positionY_RTK = sin(heading)*(posN-RTK_N_Offset) - cos(heading)*(posE-RTK_E_Offset);
+  positionZ_RTK = ((posD-RTK_D_Offset))*-1.0;
+}
+
+
+void handleRTK(){
+  if (myGNSS.getRELPOSNED())   // returns true once a full RELPOSNED message is parsed
+  {
+    posN  = myGNSS.getRelPosN();
+    posE = myGNSS.getRelPosE();
+    posD  = myGNSS.getRelPosD();
+
+   
+
+    // Optional: also display accuracies
+    accuracyN = myGNSS.getRelPosAccN();
+    accuracyE = myGNSS.getRelPosAccE();
+    accuracyD = myGNSS.getRelPosAccD();
+
+    averageRTK_accuracy = (accuracyN +accuracyE+accuracyD)/3.0;
+
+    convertRTK();
+
+    //Serial.print("Acc N/E/D: ");
+   // Serial.print(accuracyN); Serial.print(" / ");
+   // Serial.print(accuracyE); Serial.print(" / ");
+  //  Serial.println(accuracyD);
+  }
+  else
+  {
+    // small delay to avoid spamming loop
+   
+    // tiny heartbeat
+    static int counter = 0;
+    if (++counter > 1000000)
+    {
+      Serial.print(".");
+      counter = 0;
+    }
+  }
+}
+
+
+
+void handleTelemRTK(){
+  if( TELEMRTK.available()){
+    byte received = TELEMRTK.read();
+  
+    RTK.write(received); // forward RTKTELEM
+
+  }
 }

@@ -21,6 +21,10 @@ void initSystem() {
  // delay(500);
   sendMessage("CHECKING RTK");
   initRTK();
+
+  sendMessage("INIT RTK TELEM");
+  initTelemRTK();
+
   sendMessage("INIT LiDAR");
   initLidar();
 
@@ -42,6 +46,8 @@ void initLidar(){
 }
 
 
+
+
 void initServos() {
   ESC.attach(ESCPIN,ESCLOWPOINT,ESCHIGHPOINT);//,,ESCHIGHPOINT);
   pinMode(servoX1,OUTPUT); pinMode(servoX2,OUTPUT); pinMode(servoY1,OUTPUT); pinMode(servoY2,OUTPUT);
@@ -60,6 +66,8 @@ void initServos() {
 void initTelem(){
   TELEM.begin(57600); // 57600
 }
+
+
 
 void initVectornav() {
   Serial.println("CALIBRATING VECTORNAV");

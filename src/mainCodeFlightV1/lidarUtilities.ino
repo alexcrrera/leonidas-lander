@@ -41,8 +41,8 @@ int isLidarAvailable() {
 
 
 float lidarNormalised() {
-  float l = lidarReadings[1];
-  float radAlpha = radians(AngleZ);
+  float l = lidarReadings[1]; // average value (exponential)
+  float radAlpha = radians(AngleX);
   float radBeta = radians(AngleY);
 
   // Calculate tangent of alpha and beta
@@ -64,24 +64,25 @@ float lidarNormalised() {
 
   return x;
 
-  // Calculate x
 
-  //lidarReadings[2] = x;
-  // Print the result
 }
 
 void getLidar() {
     //LiDAR.reading(float(myLidarLite.distance() - 5));
     if(isLidarAvailable()==-1){
    //  LIDAROK = false; 
-    //Serial.println("LMAOOO");
 
+        errorMessage = "NO LiDAR DETECTED";
     return;
   }
  
   float distanceNow = (float)myLidarLite.distance(false)/100.0; // en m
   //Serial.print(distanceNow);
-  lidarReadings[0] = distanceNow-lidarReadings[3];// -lidarReadings[4]; // raw value minus offset
+  lidarReadings[0] = distanceNow-lidarReadings[3]; // raw value minus offset - offset is thez average value (not normalised)
   lidarReadings[1] = EWA(lidarReadings[1], lidarReadings[0],lidarAlphaEWA);
   lidarReadings[2] = lidarNormalised();
+  if(lidarReadings[2]>=20.0){
+    errorMessage = "LiDAR ERR RNG";
+  }
+  
 }

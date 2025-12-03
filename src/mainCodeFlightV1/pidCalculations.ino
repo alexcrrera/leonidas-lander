@@ -73,30 +73,39 @@ void pidAngles(){
 
 
 void pidPosition(){
-  static float errorPositionPreviousX = 0.0;
-  static float errorPositionPreviousY = 0.0;
+  static float errX_body_previous = 0.0;
+  static float errY_body_previous = 0.0;
   static unsigned long dtPosition = 0;
+  
   float dt = (micros() - dtPosition)/1000000.0;
   if(dtPosition == 0){
     
     return;
   }
-  float errorPositionX = desiredPositionX - positionX;
-  float errorPositionY = desiredPositionY - positionY;
+
+  float psi = radians(AngleZ);  // heading in ENU with yaw=0 meaning North
+
+  float errX_ENU = desiredPositionX - positionX;
+  float errY_ENU = desiredPositionY - positionY;
+
+
+  float errX_body =  cos(psi) * errX_ENU + sin(psi) * errY_ENU;
+  float errY_body = -sin(psi) * errX_ENU + cos(psi) * errY_ENU;
+
 
    float pGainXY = 15; float iGainXY = 0.075; float dGainXY = 10.0;
 
-   float pX = pGainXY*errorPositionX;
-    integralX += iGainXY*errorPositionX*dt;
-    float dX = dGainXY*(errorPositionX-errorPositionPreviousX)/dt;
+   float pX = pGainXY*errX_body;
+    integralX += iGainXY*errX_body*dt;
+    float dX = dGainXY*(errX_body-errX_body_previous)/dt;
 
 
-  float pY = pGainXY*errorPositionY;
-  integralY += iGainXY*errorPositionY*dt;
-  float dY = dGainXY*(errorPositionY-errorPositionPreviousY)/dt;
+  float pY = pGainXY*errY_body;
+  integralY += iGainXY*errY_body*dt;
+  float dY = dGainXY*(errY_body-errY_body_previous)/dt;
 
-  errorPositionPreviousX = errorPositionX;
-  errorPositionPreviousY = errorPositionY;
+  errX_body_previous = errX_body;
+  errY_body_previous = errY_body;
 
  float outputX = pX + integralX + dX; 
   outputX = wrapper(outputX,maxAngleXYTVC*1.0);
@@ -148,10 +157,9 @@ void pidMotor(){
 
 
 
-unsigned long timeMOTOR = 0;
-
 void handleMotorPID(){ // gets MOTOR data at appropriate rate , raises flag if NACK
   const int MOTORFREQUENCY = 50; // in Hz
+  static unsigned long timeMOTOR= 1;
   if((millis()-timeMOTOR)*1.0>=1000.0/MOTORFREQUENCY){
     timeMOTOR = millis();
     pidMotor();
@@ -161,12 +169,12 @@ void handleMotorPID(){ // gets MOTOR data at appropriate rate , raises flag if N
 
 
 
-unsigned long timeSERVOS = 0;
-
-void handleServoPID(){ // gets SERVOS data at appropriate rate , raises flag if NACK
+void handleOrientationPID(){ // gets SERVOS data at appropriate rate , raises flag if NACK
+  static unsigned long timeTrack= 1;
+  
   const int SERVOSFREQUENCY = 100; // in Hz
-  if((millis()-timeSERVOS)*1.0>=1000.0/SERVOSFREQUENCY){
-    timeSERVOS = millis();
+  if((millis()-timeTrack)*1.0>=1000.0/SERVOSFREQUENCY){
+    timeTrack = millis();
     pidAngles();
  
   }
@@ -176,6 +184,16 @@ void handleServoPID(){ // gets SERVOS data at appropriate rate , raises flag if 
 
 
 
+
+void handlePositionPID(){ // gets MOTOR data at appropriate rate , raises flag if NACK
+  const int POSITIONPIDFREQUENCY = 15; // in Hz
+  static unsigned long timeTrack= 1;
+  if((millis()-timeTrack)*1.0>=1000.0/POSITIONPIDFREQUENCY){
+    timeTrack = millis();
+    pidMotor();
+  }
+
+}
 
 
 

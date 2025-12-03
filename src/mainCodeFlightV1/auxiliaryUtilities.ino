@@ -157,8 +157,8 @@ void printGroup4(String header, float d1, float d2, float d3,float d4){
 void getPrint() {
 
   
-     float timeNowSD = millis()/1000.0;
-///////////////////////////////////////////////////////////  Serial.print("\n");
+     //float timeNowSD = millis()/1000.0;
+ //Serial.print("\n");
  ///////////////////////////////////////////////printSingle("Time",timeNowSD);
   //printBlender();
   //printGroup("Desired Position",desiredPositionX,desiredPositionY,desiredPositionZ);
@@ -187,7 +187,7 @@ void getPrint() {
  //printGroup("PID",finalOutputX1pid,finalOutputY1pid,finalOutputX2pid);
    //printGroup("GAINS",pGainAngleX,iGainAngleX,dGainAngleX);
    // printGroup("INTEGRAL",integralAngleX,integralAngleY,integralAngleZ);
- //   printSingle("Motor PWM",motorInputPWM);
+ 
  //// printSingle("Motor Arm?",MOTORARMED);
     //printSingle("Take Off?",takeOff);
     

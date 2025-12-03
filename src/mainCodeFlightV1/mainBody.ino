@@ -27,13 +27,18 @@ void loop() {
   //}
   spoolMotorCheck();
  // CLKCOUNTER++;
-
+  updateData();
+  handleMotorPID();
+  handlePositionPID();
+  handleOrientationPID();
   handleVectornav();
  // handleLidar();
   handleTelemetry();
-  handleTelem();
- // updateData();
   
+
+  handleTelemRTK();
+
+  //getLidar();
   handleFlightMode();
 
 
@@ -44,22 +49,15 @@ void loop() {
 
 
   testHelper();
-  checkMaxAngle();
+ //    checkMaxAngle();
+  handleRTK();
 
-
- // handleInternalLED();
-  //handleRTK();
  // handleSD();
- /* handleReceiver();
- 
-checkMaxAngle
-  handleMotor();
-  handleCalculations();
-  handlePID();
-  handleEDF();
-  
-  handleAuxiliary();
-*/
+
+
+
+
+
 
 }
 

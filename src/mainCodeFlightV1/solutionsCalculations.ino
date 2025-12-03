@@ -1,5 +1,5 @@
 
-elapsedMillis  rampLandingTime = 0;
+
 
 bool checkDistanceWaypoint(){
   return(calculateDistance()<=distanceEpsilon);
@@ -18,15 +18,20 @@ float calculateDistance(){
   return(pow(dis,0.5));
 }
 
+
+
+
 bool offsetFound = false;
 float getHover(){
-  float ESCINCREASER =4.0;
+
+  
   if(offsetFound || positionZ>= verticalTol){
     offsetFound = true;
     return(ESCOFFSET);
   }
 
   else{
+    float ESCINCREASER =4.0; // ESCINCREASER
 
     return(constrain(MOTORMIN+ESCINCREASER*rampLandingTime/1000.0,MOTORMIN,MOTORMAX));
   
@@ -34,12 +39,11 @@ float getHover(){
 }
 
 
+
+
+
+
 void handleFlightMode(){
-    if(takeOff){ // Requires restart to take off
-       ESCOFFSET = getHover();
-      rampLandOrTakeOff();
-  }
- 
   if(takeOffCommand){
     if(MOTORARMED){
       //calculateOffsets(1);
@@ -48,7 +52,7 @@ void handleFlightMode(){
       resetIntegralMotor();
       resetIntegralAngle();
       Serial.println("\n\nTAKE OFF;");
-       offsetFound = false;
+      offsetFound = false;
       ESCOFFSET = MOTORMIN;
       MOTORON = true;
       takeOff = true; 
@@ -58,12 +62,28 @@ void handleFlightMode(){
       rampLandingTime = 0;
         
       return;
-  }
-  else{
-    takeOffCommand = false;
-    return;
     }
+    else{
+      takeOffCommand = false;
+      return;
+      }
   }
+
+  if(takeOff){ // Requires restart to take off
+      ESCOFFSET = getHover();
+      rampLandOrTakeOff();
+  }
+
+
+
+  if(flightMode){
+    flightMode = true;
+    takeOff = false;
+  }
+  setDesiredParameters();
+  checkFlightModeComplete();
+
+
 
 
   if(landingNow){ // Requires restart to take off
@@ -78,19 +98,10 @@ void handleFlightMode(){
     rampLandOrTakeOff();
     
   }
-
-
-  if(flightMode){
-    flightMode = true;
-    takeOff = false;
-    setDesiredParameters();
-    flightProcedure();
-    return;
-  }
-  setDesiredParameters();
-  flightProcedure();
-
 }
+
+
+
 
 
 float rampTime = LANDINGSPEED/TAKEOFFALTITUDE; // in sec
@@ -124,7 +135,7 @@ void setDesiredParameters(){
 
 }
 
-void flightProcedure(){
+void checkFlightModeComplete(){
 
 
  

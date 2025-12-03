@@ -5,6 +5,7 @@ void forceLanding(){
   landingFlag = true;
    timeFlag = false;
       landingNow = true;
+      rampLandingTime = 0;
           Serial.println("\n LANDING NOW - TIMEOUT");
 }
 
@@ -55,7 +56,7 @@ int signeValeur(float val){
 
 
 
-float timeFlightCheck = 1;
+float timeFlightCheck = 1.0;
 void spoolMotorCheck(){
   if(spoolMotor){
     if(timerSpoolMotor/1000.0 >=timeFlightCheck){
@@ -70,6 +71,7 @@ void spoolMotorCheck(){
       
   }
 }
+
 
 
 
@@ -115,14 +117,20 @@ void calculateOffsets(int offsetTool){
     break;
 
     case 3: // reset lidar 
+
       lidarReadings[3] = lidarReadings[1];
+      lidarOffset = lidarReadings[3];
     
       break;
 
     case 4:
-      positionXOffset = positionX;
-      positionYOffset = positionY;
-      positionZOffset = lidarReadings[3];//positionZ; as long as we're not using rtk.-..
+
+      RTK_N_Offset = posN;
+      RTK_E_Offset = posE;
+      RTK_D_Offset = posD;
+
+      lidarReadings[3] = lidarReadings[1];
+      lidarOffset = lidarReadings[3];
 
 
     default:
@@ -131,6 +139,37 @@ void calculateOffsets(int offsetTool){
 
   }
 
+}
+
+
+
+
+
+float RTK_2_LiDAR_RATIO = 1.0;
+
+void updateData(){
+  if(vectornavAnglesUpdate){
+
+    vectornavAnglesUpdate = false; 
+
+    AngleX =  vectornavAngleX - angleOffsetX;
+    AngleY =  vectornavAngleY - angleOffsetY;
+    AngleZ =  vectornavAngleZ - angleOffsetZ;
+
+  }
+
+  if(RTK_ENABLED){
+  positionX = positionX_RTK;
+  positionY = positionY_RTK;
+  positionZ = RTK_2_LiDAR_RATIO*(positionZ_RTK) + (1.0-RTK_2_LiDAR_RATIO)*(lidarReadings[2]);//0.95 +random(-10,10)/100.0;
+
+  }
+  else{
+    positionX = desiredPositionX; // error equal to 0
+    positionY = desiredPositionY;
+    positionZ = lidarReadings[2];
+   // errorMessage = "2D POS. LOST";
+  }
 }
 
 

@@ -4,7 +4,7 @@ unsigned long timeServos = 0;
 void handleServos(){ // gets LiDAR data at appropriate rate , raises flag if NACK
   const int SERVOFREQUENCY = 50; // in Hz
   if((micros()-timeServos)*1.0>=1000.0*1000/SERVOFREQUENCY){
-    handleServoPID();
+    
     timeServos = micros();
     servoWrite();
   }
@@ -17,7 +17,7 @@ void handleEDF(){ // gets LiDAR data at appropriate rate , raises flag if NACK
   const int EDFFREQUENCY = 50; // in Hz
   if((micros()-timeEdf)*1.0>=1000.0*1000/EDFFREQUENCY){
     timeEdf = micros();
-    handleMotorPID();
+    
     handleThrustEDF();
   }
 }

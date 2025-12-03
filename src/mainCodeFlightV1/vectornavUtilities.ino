@@ -1,44 +1,4 @@
 
-
-
-void updateData(){
-  if(vectornavAnglesUpdate){
-    float dtV = (micros()-vnTime)/1000.0/1000.0;
-
-    vnTime = micros();
-
-    vectornavAnglesUpdate = false; 
-    desiredAngleX = 0.0;  //stepData[timeCursor];
-    AngleX =  vectornavAngleX - angleOffsetX;
-    AngleY =  vectornavAngleY - angleOffsetY;
-    AngleZ =  vectornavAngleZ - angleOffsetZ;
-
-
-
-    vnGyro[0] = (AngleX - vnOld[0])/dtV;
-    vnOld[0] = AngleX;
-
-    vnGyro[1] = (AngleY - vnOld[1])/dtV;
-    vnOld[1] = AngleY;
-
-    vnGyro[2] = (AngleZ - vnOld[2])/dtV;
-    vnOld[2] = AngleZ;
-
-  }
-  positionX = posN - positionXOffset;
-  positionY = posE - positionYOffset;
-  positionZ = lidarReadings[2]-positionZOffset;//0.95 +random(-10,10)/100.0;
-  //positionZ = posD - positionZOffset;
-
-}
-
-
-
-
-
-
-
-
 int dataIndexVectornav = 0;
 String incomingDataVectornavString = "";
 
@@ -123,7 +83,7 @@ void processVectornav(){
 
 
       vectornavAnglesUpdate = true;
-      updateData();
+
       break;
   }
 }

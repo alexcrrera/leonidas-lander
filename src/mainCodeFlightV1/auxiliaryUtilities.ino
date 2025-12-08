@@ -158,10 +158,10 @@ void getPrint() {
 
   
      //float timeNowSD = millis()/1000.0;
- //Serial.print("\n");
+ Serial.print("\n");
  ///////////////////////////////////////////////printSingle("Time",timeNowSD);
   //printBlender();
-  //printGroup("Desired Position",desiredPositionX,desiredPositionY,desiredPositionZ);
+  printGroup("Desired Position",desiredPositionX,desiredPositionY,desiredPositionZ);
   //printSingle("Desired Altitude",desiredPositionZ);
   //printSingle("Altitude",positionZ);
  
@@ -181,10 +181,10 @@ void getPrint() {
  
   //printSingle("Desired AngleX", desiredAngleX);
   //printSingle("Current AngleX", AngleX);
- ///////////////////////////////////////////// printGroup("Current Angles",AngleX,AngleY,AngleZ);
- //printGroup("Desired Angles",desiredAngleX,desiredAngleY,desiredAngleZ);
+ printGroup("Current Angles",AngleX,AngleY,AngleZ);
+ printGroup("Desired Angles",desiredAngleX,desiredAngleY,desiredAngleZ);
 
- //printGroup("PID",finalOutputX1pid,finalOutputY1pid,finalOutputX2pid);
+ printGroup("PID",finalOutputX1pid,finalOutputY1pid,finalOutputX2pid);
    //printGroup("GAINS",pGainAngleX,iGainAngleX,dGainAngleX);
    // printGroup("INTEGRAL",integralAngleX,integralAngleY,integralAngleZ);
  

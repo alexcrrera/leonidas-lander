@@ -25,7 +25,7 @@ void testHelper(){
 
 void resetIntegralAngle(){
   integralAngleX = 0.0;
-  integralAngleX = 0.0;
+  integralAngleY = 0.0;
   integralAngleZ = 0.0;
   integralX = 0.0;
   integralY = 0.0;
@@ -145,7 +145,7 @@ void calculateOffsets(int offsetTool){
 
 
 
-float RTK_2_LiDAR_RATIO = 1.0;
+float RTK_2_LiDAR_RATIO = 0.7;
 
 void updateData(){
   if(vectornavAnglesUpdate){

@@ -72,7 +72,7 @@ void initTelem(){
 void initVectornav() {
   Serial.println("CALIBRATING VECTORNAV");
   Vectornav.begin(115200);  // Initialize the SoftwareSerial port
-  delay(1000);
+  delay(200);
   Vectornav.println("$VNWRG,6,1*XX"); // write to 6 the name of the registry - wtf?
   Vectornav.print("$VNWRG,7,200*XX");  //
 }

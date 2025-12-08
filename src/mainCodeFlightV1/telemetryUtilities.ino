@@ -121,7 +121,7 @@ void sendTelem(){
   output += "*";
 
   //Serial.print(output);
-   Serial.print(output);
+ //  Serial.print(output);
    TELEM.print(output);
 
 
@@ -139,7 +139,6 @@ void readTelem() { // returns read output int.
       processTelem();
       dataIndexTelem = 0;
     }
-
     else {
       incomingDataTelem[dataIndexTelem] = incomingChar;
       incomingDataTelemString=+incomingDataTelem;
@@ -149,30 +148,21 @@ void readTelem() { // returns read output int.
   }
   else{
       if (Serial.available() > 0) {
-    char incomingChar = Serial.read(); 
-   //Serial.print(incomingChar);
-    if (incomingChar == '\n') {
-      incomingDataTelem[dataIndexTelem] = '\0';
-      processTelem();
-      dataIndexTelem = 0;
-    }
-
-    else {
-      incomingDataTelem[dataIndexTelem] = incomingChar;
-      incomingDataTelemString=+incomingDataTelem;
-      dataIndexTelem++;
-      checkOverflowTelem();      
-    }  
-  } 
-
-
-
-
+        char incomingChar = Serial.read(); 
+        //Serial.print(incomingChar);
+      if (incomingChar == '\n') {
+        incomingDataTelem[dataIndexTelem] = '\0';
+        processTelem();
+        dataIndexTelem = 0;
+      }
+      else {
+        incomingDataTelem[dataIndexTelem] = incomingChar;
+        incomingDataTelemString=+incomingDataTelem;
+        dataIndexTelem++;
+        checkOverflowTelem();      
+      }  
+    } 
   }
-
-
-
-
 }
 
 void checkOverflowTelem(){
@@ -180,23 +170,23 @@ void checkOverflowTelem(){
     Serial.println(F("RADIO OVERFLOW"));
     dataIndexTelem = 0;
     incomingDataTelemString = "";
-    }
+  }
 }
 
 
 
 void sendMessage(String message){
-    TELEM.print("\n");
-    TELEM.print(message);
-    TELEM.print("*");
+  // Send individual message via telem (no Serial Studio Formatting)
+  TELEM.print("\n");
+  TELEM.print(message);
+  TELEM.print("*");
 }
 
 
 
 int checkHeaderTelem(){
-
+  
     int TelemIdentity = -1;
-
     if(incomingDataTelemString.indexOf("GO") != -1) {  // parameters
       Serial.println("GO");   
       START_SYSTEM = true;
@@ -204,70 +194,59 @@ int checkHeaderTelem(){
       }
 
     if(incomingDataTelemString.indexOf("RANGLES") != -1) {  // parameters
-     Serial.println("CONFIGU");   
+      Serial.println("CONFIGU");   
 
-     resetIntegralAngle();
-        TelemIdentity = 1;      
-      }
+      resetIntegralAngle();
+      TelemIdentity = 1;      
+    }
       
-      if (incomingDataTelemString.indexOf("RPOS") != -1) { // reset position
-        TelemIdentity = 2;
+    if(incomingDataTelemString.indexOf("RPOS") != -1) { // reset position
+      TelemIdentity = 2;
       Serial.println("RESET POSITION");
-      }
+    }
     
-      if (incomingDataTelemString.indexOf("PID") != -1) {
-        TelemIdentity = 3; 
-      }
-          if (incomingDataTelemString.indexOf("ABORTANGLE") != -1) {
-        TelemIdentity = 4;
-      }
-        if (incomingDataTelemString.indexOf("MAXANGLETVC") != -1) {
-        TelemIdentity = 5;  
-      }
-
-     if (incomingDataTelemString.indexOf("RLIDAR") != -1) {
-           TelemIdentity = 6;
-      }
-
-
-
-      if (incomingDataTelemString.indexOf("TLM") != -1) {
-           TelemIdentity = 13;
-          
-      }
-
-
-
-  
-
-           if (incomingDataTelemString.indexOf("SDREC") != -1) {
-            sdWrite = 2;
-          
-      }
-           if (incomingDataTelemString.indexOf("SDSTOP") != -1) {
-            sdWrite = -1;
-          
-      }
-        if (incomingDataTelemString.indexOf("$VN300") != -1) {
-          // Allows to send commands directly to the VN300 sensor via telem.
-          Vectornav.println(incomingDataTelemString);
-       
-          
-      }
-      if (incomingDataTelemString.indexOf("TAO") != -1) {
-        // Take Off 
-        MOTORTEST = true;
-        spoolMotor = true;  // flag
-        timerSpoolMotor = 0; // reset time
-        Serial.println("\nTAKE OFF COMMAND SENT");
-      }
- 
-  
+    if(incomingDataTelemString.indexOf("PID") != -1) {
+      TelemIdentity = 3; 
+    }
     
+    if(incomingDataTelemString.indexOf("ABORTANGLE") != -1) {
+      TelemIdentity = 4;
+    }
+    
+    if(incomingDataTelemString.indexOf("MAXANGLETVC") != -1) {
+      TelemIdentity = 5;  
+    }
 
-      if (incomingDataTelemString.indexOf("PLT") != -1) {
-        PLOTMODE = !PLOTMODE;
-        TelemIdentity = 69;
+    if(incomingDataTelemString.indexOf("RLIDAR") != -1) {
+      TelemIdentity = 6;
+    }
+
+    if(incomingDataTelemString.indexOf("TLM") != -1) {
+      TelemIdentity = 13;
+    }
+
+    if(incomingDataTelemString.indexOf("SDREC") != -1) {
+      sdWrite = 2;    
+    }
+    
+    if(incomingDataTelemString.indexOf("SDSTOP") != -1) {
+      sdWrite = -1;
+    }
+    
+    if(incomingDataTelemString.indexOf("$VN300") != -1) {
+      Vectornav.println(incomingDataTelemString);  // Allows to send commands directly to the VN300 sensor via telem.
+    }
+
+    if(incomingDataTelemString.indexOf("TAO") != -1) {
+      MOTORTEST = true;
+      spoolMotor = true;  // flag
+      timerSpoolMotor = 0; // reset time
+      Serial.println("\nTAKE OFF COMMAND SENT");
+    }
+
+    if(incomingDataTelemString.indexOf("PLT") != -1) {
+      PLOTMODE = !PLOTMODE;
+      TelemIdentity = 69;
       }
       if (incomingDataTelemString.indexOf("LND") != -1) {
      

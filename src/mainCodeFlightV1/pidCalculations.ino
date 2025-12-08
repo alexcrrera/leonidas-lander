@@ -2,10 +2,10 @@
 
 void pidAngles(){
 
-  static unsigned long dtAngles = 1;
+  static unsigned long dtAngles = 0;
   
   float dtAnglesPID = (micros() - dtAngles)/1000000.0;
-  if(dtAnglesPID == 0){
+  if(fabs(dtAnglesPID) <= 0.000001){
     Serial.println("ERROR DT!"); // smth went really wrong here
     return;
   }
@@ -115,6 +115,8 @@ void pidPosition(){
 
   desiredAngleX = outputX;
   desiredAngleY = outputY;
+
+  dtPosition = micros();
 }
 
 void pidMotor(){
@@ -190,7 +192,7 @@ void handlePositionPID(){ // gets MOTOR data at appropriate rate , raises flag i
   static unsigned long timeTrack= 1;
   if((millis()-timeTrack)*1.0>=1000.0/POSITIONPIDFREQUENCY){
     timeTrack = millis();
-    pidMotor();
+    pidPosition();
   }
 
 }

@@ -1,23 +1,24 @@
 
-unsigned long timeServos = 0;
 
 void handleServos(){ // gets LiDAR data at appropriate rate , raises flag if NACK
-  const int SERVOFREQUENCY = 50; // in Hz
-  if((micros()-timeServos)*1.0>=1000.0*1000/SERVOFREQUENCY){
+  const int SERVOFREQUENCY = 40; // in Hz
+  
+  static unsigned long time = 0;
+  if((micros()-time)*1.0>=1000.0*1000/SERVOFREQUENCY){
     
-    timeServos = micros();
+    time = micros();
     servoWrite();
   }
 }    
 
 
-unsigned long timeEdf = 0;
 
 void handleEDF(){ // gets LiDAR data at appropriate rate , raises flag if NACK
-  const int EDFFREQUENCY = 50; // in Hz
+  const int EDFFREQUENCY = 25; // in Hz
+  static unsigned long timeEdf = 0;
+
   if((micros()-timeEdf)*1.0>=1000.0*1000/EDFFREQUENCY){
     timeEdf = micros();
-    
     handleThrustEDF();
   }
 }
@@ -36,16 +37,11 @@ void handleThrustEDF(){
   if(MOTORTEST && spoolMotor){
     percentageMotor = 21.0;
   }
-
-  
- 
-
   const int outFinal = round(map(percentageMotor,0.0,100.0,ESCLOWPOINT,ESCHIGHPOINT));
   ESC.writeMicroseconds(outFinal);
 }
 
 void servoWrite() {
-
   if(!SERVOTEST){
   analogWrite(servoX1,servoCalculator(finalOutputX1pid+90.0+MissSX1));
   analogWrite(servoX2,servoCalculator(finalOutputX2pid+90.0+MissSX2));
@@ -75,12 +71,10 @@ int servoCalculator(float val){
   else{
     range = 50;
     highTimeServo = map(round(val*10),(90-range)*10,(90+range)*10,1000,2000)/1000.0;
-  
   }
 
- 
   float dutyCycleServo = highTimeServo/periodServo;
-  int phi = round(dutyCycleServo*pow(2,resBit));
+  int phi = round(dutyCycleServo*pow(2,resBit)); // 12 bit
   
   return(phi);
 }

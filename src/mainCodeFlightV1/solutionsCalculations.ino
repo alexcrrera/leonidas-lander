@@ -103,7 +103,6 @@ void handleFlightMode(){
 
 
 
-
 float rampTime = LANDINGSPEED/TAKEOFFALTITUDE; // in sec
 
 void rampLandOrTakeOff(){

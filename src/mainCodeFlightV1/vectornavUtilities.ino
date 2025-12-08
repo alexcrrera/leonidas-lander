@@ -3,8 +3,6 @@ int dataIndexVectornav = 0;
 String incomingDataVectornavString = "";
 
 
-
-
 void handleVectornav() { // returns read output int.
   
   if (Vectornav.available() > 0) {
@@ -30,7 +28,7 @@ void handleVectornav() { // returns read output int.
 
 void checkOverflowVectornav(){
   if (dataIndexVectornav >= bufferSize - 1) {
-    Serial.println(F("overflowwww"));
+  //  Serial.println(F("overflowwww"));
     dataIndexVectornav = 0;
     incomingDataVectornavString = "";
     }
@@ -41,7 +39,7 @@ int checkHeaderVectornav(){
 
       int vectornavIdentity = -1;
       if (incomingDataVectornavString.indexOf("$VNYPR") != -1) {  
-        // Serial.println("VNYPR");        
+       //  Serial.println("LALALAVNYPR");        
         vectornavIdentity = 1;      
       }
       

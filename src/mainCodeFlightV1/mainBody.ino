@@ -18,29 +18,28 @@ void setup() {
 ////////////////////////////////////////////====================SETUP END & MAIN LOOP START====================/////////////////////////////////////////
 
 void loop() {
-
+  handleVectornav();
 //`&if((micros()-timeClck)*1.0>=1000.0*1000/FREQUENCYCHECK){
   //   timeClck = micros();
     //Serial.print("\nFreq: ");
    // Serial.print(CLKCOUNTER/FREQUENCYCHECK);
     //CLKCOUNTER = 0;
   //}
-  spoolMotorCheck();
+ spoolMotorCheck();
  // CLKCOUNTER++;
   updateData();
   handleMotorPID();
   handlePositionPID();
   handleOrientationPID();
-  handleVectornav();
+ 
  // handleLidar();
   handleTelemetry();
-  
+ 
 
   handleTelemRTK();
 
-  //getLidar();
+  handleLidar();
   handleFlightMode();
-
 
   handleEDF();
   handleServos();
@@ -53,9 +52,9 @@ void loop() {
   handleRTK();
 
  // handleSD();
+/*
 
-
-
+*/
 
 
 

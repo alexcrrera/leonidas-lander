@@ -70,30 +70,7 @@ void sendTelem(){
      output += "," + String(desiredPositionX,2) + ","  +  String(desiredPositionY,2)  + ","  +String(desiredPositionZ,3);
 
   // Index 18: flight mode
-    if(takeOff){
-  output += ",TAKING OFF";
-    }
-  else{
-    
-
-    if(flightMode){
-      output += ",FLIGHT MODE";
-    }
-    else{
-      if(landingNow){
-        output += ",LANDING NOW";
-      }
-      else{
-
-        if(spoolMotor){
-          output += ",SPOOLING UP";
-        }
-         output += ",STANDBY";
-      }
-
-    }
-    
-  }
+  output += "," + FLIG
   // Index 19: nº sat.
   output += "," +String(round(numSV),0);
 
@@ -116,6 +93,11 @@ void sendTelem(){
     // Index 26: error message 
    output +=","+ errorMessage;
 
+   // Index 27: command sent ack
+   output += "," + returnMessage;
+
+   output +=",12";
+
   
   // End of message
   output += "*";
@@ -123,12 +105,10 @@ void sendTelem(){
   //Serial.print(output);
  //  Serial.print(output);
    TELEM.print(output);
-
-
-  
-
   
 }
+
+
 
 void readTelem() { // returns read output int.
   if (TELEM.available() > 0) {
@@ -165,6 +145,7 @@ void readTelem() { // returns read output int.
   }
 }
 
+
 void checkOverflowTelem(){
   if (dataIndexTelem >= bufferSize - 1) {
     Serial.println(F("RADIO OVERFLOW"));
@@ -189,12 +170,14 @@ int checkHeaderTelem(){
     int TelemIdentity = -1;
     if(incomingDataTelemString.indexOf("GO") != -1) {  // parameters
       Serial.println("GO");   
+      
       START_SYSTEM = true;
       resetIntegralAngle();
       }
 
     if(incomingDataTelemString.indexOf("RANGLES") != -1) {  // parameters
       Serial.println("CONFIGU");   
+      returnMessage = "ANGLES RESET";
 
       resetIntegralAngle();
       TelemIdentity = 1;      
@@ -203,6 +186,7 @@ int checkHeaderTelem(){
     if(incomingDataTelemString.indexOf("RPOS") != -1) { // reset position
       TelemIdentity = 2;
       Serial.println("RESET POSITION");
+      returnMessage = "POSITION RESET";
     }
     
     if(incomingDataTelemString.indexOf("PID") != -1) {
@@ -218,6 +202,7 @@ int checkHeaderTelem(){
     }
 
     if(incomingDataTelemString.indexOf("RLIDAR") != -1) {
+      returnMessage = "LiDAR RESET";
       TelemIdentity = 6;
     }
 
@@ -238,6 +223,7 @@ int checkHeaderTelem(){
     }
 
     if(incomingDataTelemString.indexOf("TAO") != -1) {
+      returnMessage = "TAKE OFF CMD SENT";
       MOTORTEST = true;
       spoolMotor = true;  // flag
       timerSpoolMotor = 0; // reset time
@@ -249,6 +235,7 @@ int checkHeaderTelem(){
       TelemIdentity = 69;
       }
       if (incomingDataTelemString.indexOf("LND") != -1) {
+        returnMessage = "LND CMD SENT";
      
        
         forceLanding();
@@ -256,9 +243,11 @@ int checkHeaderTelem(){
         // LAND NOW!
       }
       if (incomingDataTelemString.indexOf("MARM") != -1) {
+        
         // Arm motor
         takeOff = false;
         MOTORARMED = true;
+        returnMessage = "MOTOR ARMED";
         Serial.println("MOTOR ARMED!");
           
       }
@@ -268,6 +257,7 @@ int checkHeaderTelem(){
 //calculateOffsets(3);
         calculateOffsets(4);
         Serial.println("SET HOME!");
+        returnMessage = "HOME SET";
      
             }
       
@@ -276,6 +266,7 @@ int checkHeaderTelem(){
         MOTORARMED = false;
         MOTORON = false;
         Serial.println("MOTOR OFF!");
+        returnMessage = "MOTOR OFF";
    
       }
 
@@ -285,12 +276,14 @@ int checkHeaderTelem(){
         // Disarm motor
         MOTORARMED = false;
         Serial.println("MOTOR UNARMED!");
+        returnMessage = "MOTOR UNARMED";
       }
 
        if (incomingDataTelemString.indexOf("MTEST") != -1) {
         // Test motor
         MOTORTEST = !MOTORTEST;
         Serial.println("MOTOR test!");
+        returnMessage = "MOTOR TESTED";
       }
 
 
@@ -298,6 +291,14 @@ int checkHeaderTelem(){
         
         SERVOTEST = !SERVOTEST;
         resetIntegralAngle();
+
+        if(SERVOTEST){
+            returnMessage = "SERVO TESTING";
+        }
+        else{
+           returnMessage = "SERVO TESTING OFF";
+        }
+        
         
         Serial.println("SERVO test!");
         // LAND NOW!
@@ -320,6 +321,7 @@ float inter = 0.0;
     
     case -1:
     Serial.print("ERROR MESSAGE TELEM");
+    returnMessage = "ERROR PARSING";
       return;
       break; // useless but meh
       

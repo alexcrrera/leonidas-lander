@@ -61,6 +61,7 @@ elapsedMillis timerFlight;
 elapsedMillis timerSpoolMotor;
 
 String errorMessage = "NO ERRORS";
+String returnMessage = "SUCCESS";
 
 ////////////////////////////////////// PIN DEFINITION ///////////////////////////////////////////////////////
 const int switchMain = 32;  // check PCB

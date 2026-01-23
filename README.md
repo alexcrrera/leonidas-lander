@@ -1,7 +1,7 @@
 
 # Leonidas – Autonomous Guidance, Navigation & Control Stack
 
-## Latest Test:
+## Latest Test - Altitude Hold Only - No GPS/2D Hold:
 
 https://drive.google.com/file/d/1w0kUfSoaq_kFeYcmaZeCMRkhNgNvOfrM/view?usp=sharing
 

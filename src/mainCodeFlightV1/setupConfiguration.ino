@@ -7,7 +7,6 @@ void initSystem() {
     pinMode(LEDLR, OUTPUT);
   pinMode(LEDLG, OUTPUT);
   pinMode(LEDLB, OUTPUT);
-   pinMode(switchMain, INPUT);
   pinMode(internal_LED_BUZZER, OUTPUT);
   initTelem();
   sendMessage("[OK] TELEM INIT");
@@ -52,10 +51,10 @@ void initServos() {
   ESC.attach(ESCPIN,ESCLOWPOINT,ESCHIGHPOINT);//,,ESCHIGHPOINT);
   pinMode(servoX1,OUTPUT); pinMode(servoX2,OUTPUT); pinMode(servoY1,OUTPUT); pinMode(servoY2,OUTPUT);
   analogWriteResolution(resBit);
-  analogWriteFrequency(servoX1,333);
-  analogWriteFrequency(servoX2,333);
-  analogWriteFrequency(servoY1,333);
-  analogWriteFrequency(servoY2,333);
+  analogWriteFrequency(servoX1,SERVOFREQUENCY);
+  analogWriteFrequency(servoX2,SERVOFREQUENCY);
+  analogWriteFrequency(servoY1,SERVOFREQUENCY);
+  analogWriteFrequency(servoY2,SERVOFREQUENCY);
 
   ESC.writeMicroseconds(round(ESCLOWPOINT*1.1));
   delay(1000);
@@ -74,7 +73,7 @@ void initVectornav() {
   Vectornav.begin(115200);  // Initialize the SoftwareSerial port
   delay(200);
   Vectornav.println("$VNWRG,6,1*XX"); // write to 6 the name of the registry - wtf?
-  Vectornav.print("$VNWRG,7,200*XX");  //
+  Vectornav.print("$VNWRG,7,300*XX");  //
 }
 
 
@@ -82,24 +81,24 @@ void initVectornav() {
 
 
 void servoVaneCheck(){
-  analogWrite(servoX1,servoCalculator(90.0+MissSX1));
-  analogWrite(servoX2,servoCalculator(90.0+MissSX2));
-  analogWrite(servoY1,servoCalculator(90.0+MissSY1));
-  analogWrite(servoY2,servoCalculator(90.0+MissSY2));
+  analogWrite(servoX1,servoCalculator(MissSX1));
+  analogWrite(servoX2,servoCalculator(MissSX2));
+  analogWrite(servoY1,servoCalculator(MissSY1));
+  analogWrite(servoY2,servoCalculator(MissSY2));
 
   Serial.println("START SWEEP");
 
   for(int i = 0; i < 3; i++){
-    analogWrite(servoX1,servoCalculator(90.0+MissSX1+tvcMaxAngle));
-    analogWrite(servoX2,servoCalculator(90.0+MissSX2-tvcMaxAngle));
-    analogWrite(servoY1,servoCalculator(90.0+MissSY1+tvcMaxAngle));
-    analogWrite(servoY2,servoCalculator(90.0+MissSY2-tvcMaxAngle));
+    analogWrite(servoX1,servoCalculator(MissSX1+tvcMaxAngle));
+    analogWrite(servoX2,servoCalculator(MissSX2-tvcMaxAngle));
+    analogWrite(servoY1,servoCalculator(MissSY1+tvcMaxAngle));
+    analogWrite(servoY2,servoCalculator(MissSY2-tvcMaxAngle));
 
     delay(400);
-    analogWrite(servoX1,servoCalculator(90.0+MissSX1-tvcMaxAngle));
-    analogWrite(servoX2,servoCalculator(90.0+MissSX2+tvcMaxAngle));
-    analogWrite(servoY1,servoCalculator(90.0+MissSY1-tvcMaxAngle));
-    analogWrite(servoY2,servoCalculator(90.0+MissSY2+tvcMaxAngle));
+    analogWrite(servoX1,servoCalculator(MissSX1-tvcMaxAngle));
+    analogWrite(servoX2,servoCalculator(MissSX2+tvcMaxAngle));
+    analogWrite(servoY1,servoCalculator(MissSY1-tvcMaxAngle));
+    analogWrite(servoY2,servoCalculator(MissSY2+tvcMaxAngle));
     delay(400);
 
   }

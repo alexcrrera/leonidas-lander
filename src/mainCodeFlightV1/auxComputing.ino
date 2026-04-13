@@ -27,8 +27,8 @@ void resetIntegralAngle(){
   integralAngleX = 0.0;
   integralAngleY = 0.0;
   integralAngleZ = 0.0;
-  integralX = 0.0;
-  integralY = 0.0;
+  integralPositionX = 0.0;
+  integralPositionY = 0.0;
 
 }
 

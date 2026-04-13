@@ -1,7 +1,7 @@
 
 
 void handleServos(){ // gets LiDAR data at appropriate rate , raises flag if NACK
-  const int SERVOFREQUENCY = 40; // in Hz
+  const int SERVOFREQUENCY = 333; // in Hz
   
   static unsigned long time = 0;
   if((micros()-time)*1.0>=1000.0*1000/SERVOFREQUENCY){
@@ -43,34 +43,36 @@ void handleThrustEDF(){
 
 void servoWrite() {
   if(!SERVOTEST){
-  analogWrite(servoX1,servoCalculator(finalOutputX1pid+90.0+MissSX1));
-  analogWrite(servoX2,servoCalculator(finalOutputX2pid+90.0+MissSX2));
-  analogWrite(servoY1,servoCalculator(finalOutputY1pid+90.0+MissSY1));
-  analogWrite(servoY2,servoCalculator(finalOutputY2pid+90.0+MissSY2));
+  analogWrite(servoX1,servoCalculator(finalOutputX1pid+MissSX1));
+  analogWrite(servoX2,servoCalculator(finalOutputX2pid+MissSX2));
+  analogWrite(servoY1,servoCalculator(finalOutputY1pid+MissSY1));
+  analogWrite(servoY2,servoCalculator(finalOutputY2pid+MissSY2));
   }
   else{ // TEST 
-  analogWrite(servoX1,servoCalculator(90.0+MissSX1+tvcMaxAngle));
-  analogWrite(servoX2,servoCalculator(90.0+MissSX2+tvcMaxAngle));
-  analogWrite(servoY1,servoCalculator(90.0+MissSY1-tvcMaxAngle));
-  analogWrite(servoY2,servoCalculator(90.0+MissSY2-tvcMaxAngle));
+  analogWrite(servoX1,servoCalculator(MissSX1+tvcMaxAngle));
+  analogWrite(servoX2,servoCalculator(MissSX2+tvcMaxAngle));
+  analogWrite(servoY1,servoCalculator(MissSY1-tvcMaxAngle));
+    
   }
 }
 
 
 
 bool isBluebird = false;
-int servoCalculator(float val){
+int servoCalculator2(float val){
+
+  int multiFactor = 10; // 1> keep int part , 10 > keep decimal part
 
   int range = 0;
   float highTimeServo = 0.0;
 
   if(isBluebird){
     range = 60;
-    highTimeServo = map(round(val*10),(90-range)*10,(90+range)*10,900,2100)/1000.0;
+    highTimeServo = map(round(val*multiFactor),(90-range)*multiFactor,(90+range)*multiFactor,900,2100)/1000.0;
   }
   else{
     range = 50;
-    highTimeServo = map(round(val*10),(90-range)*10,(90+range)*10,1000,2000)/1000.0;
+    highTimeServo = map(round(val*multiFactor),(90-range)*multiFactor,(90+range)*multiFactor,1000,2000)/1000.0;
   }
 
   float dutyCycleServo = highTimeServo/periodServo;
@@ -81,6 +83,57 @@ int servoCalculator(float val){
 
 
 
+// CM509MG — angle (deg, 1 decimal) > PWM value for analogWrite
+// 0° = center = 1500 µs
+// Range: [-50.0 ; +50.0]
+// PWM: 333 Hz, configurable resolution
+
+
+
+
+
+
+
+
+
+
+
+// ================= SERVO CONFIGURATION =================
+
+// Physical limits (datasheet-calibrated)
+constexpr float servoMinAngleDeg     = -50.0f;
+constexpr float servoMaxAngleDeg     =  50.0f;
+// Pulse widths (microseconds)
+constexpr float servoMinPulseUs      = 1000.0f;
+constexpr float servoCenterPulseUs   = 1500.0f;
+constexpr float servoMaxPulseUs      = 2000.0f;
+
+
+uint32_t servoCalculator(float angleDeg)
+{
+    if (angleDeg < servoMinAngleDeg) angleDeg = servoMinAngleDeg;
+    if (angleDeg > servoMaxAngleDeg) angleDeg = servoMaxAngleDeg;
+
+    const float angleSpanDeg =
+        servoMaxAngleDeg - servoMinAngleDeg;
+
+    const float pulseSpanUs =
+        servoMaxPulseUs - servoMinPulseUs;
+
+    const float normalized =
+        (angleDeg - servoMinAngleDeg) / angleSpanDeg;
+
+    const float pulseUs =
+        servoMinPulseUs + normalized * pulseSpanUs;
+
+    const float pwmPeriodUs =
+        1e6f / SERVOFREQUENCY;
+
+    const uint32_t pwmMaxValue =
+        (1UL << resBit) - 1;
+
+    return (uint32_t)((pulseUs / pwmPeriodUs) * pwmMaxValue);
+}
 
 
 

@@ -24,7 +24,6 @@ float calculateDistance(){
 bool offsetFound = false;
 float getHover(){
 
-  
   if(offsetFound || positionZ>= verticalTol){
     offsetFound = true;
     return(ESCOFFSET);
@@ -33,7 +32,7 @@ float getHover(){
   else{
     float ESCINCREASER =4.0; // ESCINCREASER
 
-    return(constrain(MOTORMIN+ESCINCREASER*rampLandingTime/1000.0,MOTORMIN,MOTORMAX));
+    return(constrain(MOTORSTARTUP+ESCINCREASER*rampLandingTime/1000.0,MOTORMIN,MOTORMAX));
   
 }
 }

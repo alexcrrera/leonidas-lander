@@ -38,7 +38,6 @@ SFE_UBLOX_GNSS myGNSS;
 
 int TELEMETRYFREQUENCY = 10;
 
-
 const float FREQUENCYCHECK = 0.1;
 unsigned int CLKCOUNTER = 0;
 unsigned long timeClck = 0;
@@ -64,15 +63,14 @@ String errorMessage = "NO ERRORS";
 String returnMessage = "SUCCESS";
 
 ////////////////////////////////////// PIN DEFINITION ///////////////////////////////////////////////////////
-const int switchMain = 32;  // check PCB
 const int internal_LED_BUZZER = 13;   // =35;
 const int LEDLR = 26; const int LEDLG = 25;  const int LEDLB = 24;
 const int servoX1 = 2; const int servoX2 = 3; const int servoY1 = 4; const int servoY2 = 5;
 const int motorCtrlPin = 16;
 
 /////////////////////////////////////// POSITION PID //////////////////////////////////////////
-float integralX = 0.0;
-float integralY = 0.0;
+float integralPositionX = 0.0;
+float integralPositionY = 0.0;
 float integralZ = 0.0;
 
 /////////////////////////////////////// ANGLES //////////////////////////////////////////
@@ -82,7 +80,8 @@ float desiredAngleX = 0, desiredAngleY = 0, desiredAngleZ = 0;
 /////////////////////////////////////// VECTORNAV ///////////////////////////////////////////
 float vectornavAngleX = 0; float vectornavAngleY = 0; float vectornavAngleZ = 0;
 bool vectornavAnglesUpdate = true;
-
+float EMWA_VECTORNAV = 0.10;
+float vectornavAngleX_mes = 0.0; float vectornavAngleY_mes = 0.0; float vectornavAngleZ_mes = 0.0;
 
 /////////////////////////////////////// RTK  ///////////////////////////////////////////
 String  fixTypeText = "";
@@ -101,6 +100,7 @@ float RTK_N_Offset = 0.0; float RTK_E_Offset = 0.0; float RTK_D_Offset = 0.0;
 bool RTK_ENABLED = false; 
 unsigned long  lastGnssUpdate = 0; // for GNSS time out
 String RTK_error_message = "STARTUP";
+
 /////////////////////////////////////// POSITION ///////////////////////////////////////////
 float distanceEpsilon = 0.085;
 float positionX = 0; float positionY = 0; float positionZ = 0;
@@ -111,7 +111,6 @@ float lidarReadings[4] = {0.0,0.0,0.0,0.0};// first value, av val, normalised, o
 float lidarOffset = 0.0;
 
 /////////////////////////////////////// PID //////////////////////////////////////////
-float MpGain = 0.2; float MiGain = 0.2; float MdGain = 0.03;
 float integralAngleX = 0; float integralAngleY = 0; float integralAngleZ = 0; float integralMotor = 0; // Integ error for pid motor
 float errorPreviousAngleX, errorPreviousAngleY,errorPreviousAngleZ, errorPreviousM;
 float finalOutputX1pid = 0, finalOutputY1pid = 0, finalOutputX2pid, finalOutputY2pid = 0; float finalOutputMpid=0;
@@ -123,12 +122,11 @@ float pGainAngleZ = 1.0; float iGainAngleZ = 0.1; float dGainAngleZ = 0.15;
 float percentageMotor = 0;
 
 
-
 int ki = 0; // blender stuff
 
 /////////////////////////////////// FLIGHT STUFF ////////////////////////////////////////
 float TAKEOFFALTITUDE = 0.75;
-float LANDINGSPEED = 0.15;
+float LANDINGSPEED = 0.21;
 float maxAbortAngle = 45.0;
 float abortAngle = 45.0; // lol?
 
@@ -142,7 +140,6 @@ float maxAngleXYTVC = tvcMaxAngle-maxAngleZTVC;
 const int bufferSize = 80;  // Define the maximum length of the input string
 //char incomingDataJavad[bufferSize];
 char incomingDataTelem[bufferSize];
-
 char incomingDataVectornav[bufferSize];       // Define the character array to store incoming data
                  // Index to keep track of where to store the next character
 
@@ -157,7 +154,7 @@ float MissSX1 =-1* 12.0;  // 5;
 float MissSX2 = -1*3.4;  //5;
 float MissSY1 = -1*1.0;  //10;
 float MissSY2 = -1*-5.0;  //-5;
-
+float EWMA_PID_ORIENTATION_SERVO = 0.33;
 
 ////////////////////////////////////////////SD CARD/////////////////////////////////////////
 float SDFREQUENCY = 10.0;
@@ -168,6 +165,7 @@ int sdWrite = -1; // not recording
 ////////////////////////////////////////////====================SETUP BEGIN====================/////////////////////////////////////////
 float MOTORMAX =80; //%
 float MOTORMIN =50;
+float MOTORSTARTUP = 67.0;
 
 
 int motorTestLaunch = 0;
@@ -187,8 +185,7 @@ const int MAX_PULSE = 2000; // in microseconds
 const int ANGLEDELTA = 100;
 const int ESCLOWPOINT = 1000;
 const int ESCHIGHPOINT = 2000;
-const int SERVOLOWPOINT = 900;
-const int SERVOHIGHPOINT = 2100;
+
 const int SERVOFREQUENCY = 333;
 
 
@@ -199,6 +196,3 @@ const int BUFFERMESSAGESIZE = 128;
 const int SYNCHMESSAGELENGHT = 2; // 2 CHARS for header is standard
 const int SIZEOFLENGTH = 3; // 3 chars for hex
 byte messageData[BUFFERMESSAGESIZE]; // stores bytes of the body
- 
-
-

@@ -9,77 +9,84 @@ void pidAngles(){
     Serial.println("ERROR DT!"); // smth went really wrong here
     return;
   }
-  float outputAngleXpid = 0.0, outputAngleYpid = 0.0, outputAngleZpid = 0.0;
-  float Xp = 0.0, Xd = 0.0, Yp = 0.0,  Yd = 0.0, Zp = 0.0, Zd = 0.0; 
+
+
+
 
   // coder changement angles
   float errorAngleX = AngleX - desiredAngleX;
   float errorAngleY = AngleY - desiredAngleY;
   float errorAngleZ = AngleZ - desiredAngleZ;
 
-  Xp = pGainAngleX * errorAngleX;
+  float Xp = pGainAngleX * errorAngleX;
   integralAngleX += iGainAngleX * dtAnglesPID * errorAngleX;
-  Xd = dGainAngleX * ((errorAngleX - errorPreviousAngleX) / dtAnglesPID);
+  float Xd = dGainAngleX * ((errorAngleX - errorPreviousAngleX) / dtAnglesPID);
 
-  Yp = pGainAngleY * errorAngleY;
+  float Yp = pGainAngleY * errorAngleY;
   integralAngleY += iGainAngleY * dtAnglesPID * errorAngleY;
-  Yd = dGainAngleY * ((errorAngleY - errorPreviousAngleY) / dtAnglesPID);
+  float Yd = dGainAngleY * ((errorAngleY - errorPreviousAngleY) / dtAnglesPID);
 
-  Zp = pGainAngleZ * errorAngleZ;
+  float Zp = pGainAngleZ * errorAngleZ;
   integralAngleZ += iGainAngleZ * dtAnglesPID*errorAngleZ;
-  Zd = dGainAngleZ * ((errorAngleZ - errorPreviousAngleZ) / dtAnglesPID);
+  float Zd = dGainAngleZ * ((errorAngleZ - errorPreviousAngleZ) / dtAnglesPID);
 
 
-  integralAngleZ = wrapper(integralAngleZ,maxAngleZTVC); 
-  integralAngleY =  wrapper(integralAngleY,maxAngleXYTVC); 
-  integralAngleX =  wrapper(integralAngleX,maxAngleXYTVC);
+  integralAngleZ = wrapper(integralAngleZ,maxAngleZTVC); integralAngleY =  wrapper(integralAngleY,maxAngleXYTVC); integralAngleX =  wrapper(integralAngleX,maxAngleXYTVC);
 
   errorPreviousAngleX = errorAngleX; errorPreviousAngleY = errorAngleY; errorPreviousAngleZ = errorAngleZ;
 
-  outputAngleXpid = Xp + integralAngleX + Xd;
-   outputAngleYpid = Yp + integralAngleY + Yd; 
+
+  float outputAngleXpid_temp = Xp + integralAngleX + Xd;
+  float outputAngleYpid_temp = Yp + integralAngleY + Yd; 
+  float outputAngleZpid_temp = Zp +integralAngleZ + Zd+rollOffset;
+
+  outputAngleXpid_temp = wrapper(outputAngleXpid_temp,maxAngleXYTVC);
+  outputAngleYpid_temp = wrapper(outputAngleYpid_temp,maxAngleXYTVC);
+  outputAngleZpid_temp = wrapper(outputAngleZpid_temp,maxAngleZTVC);
+
+
+  float finalOutputX1pid_temp = outputAngleXpid_temp + outputAngleZpid_temp;
+  float finalOutputY1pid_temp = -outputAngleYpid_temp + outputAngleZpid_temp;
+  float finalOutputX2pid_temp = -outputAngleXpid_temp + outputAngleZpid_temp;
+  float finalOutputY2pid_temp = outputAngleYpid_temp + outputAngleZpid_temp;
+
+  finalOutputX1pid_temp = round(finalOutputX1pid_temp*10.0)/10.0; // resolution max 0.1º
+  finalOutputY1pid_temp = round(finalOutputY1pid_temp*10.0)/10.0;
+  finalOutputX2pid_temp = round(finalOutputX2pid_temp*10.0)/10.0;
+  finalOutputY2pid_temp = round(finalOutputY2pid_temp*10.0)/10.0;
+
+  finalOutputX1pid_temp = wrapper(-finalOutputX1pid_temp,tvcMaxAngle*1.0);
+  finalOutputX2pid_temp = wrapper(-finalOutputX2pid_temp,tvcMaxAngle*1.0);
+  finalOutputY1pid_temp = wrapper(-finalOutputY1pid_temp,tvcMaxAngle*1.0);
+  finalOutputY2pid_temp = wrapper(-finalOutputY2pid_temp,tvcMaxAngle*1.0);
+
+  finalOutputX1pid = EWA(finalOutputX1pid,finalOutputX1pid_temp,EWMA_PID_ORIENTATION_SERVO);
+  finalOutputY1pid = EWA(finalOutputY1pid,finalOutputY1pid_temp,EWMA_PID_ORIENTATION_SERVO);
+  finalOutputX2pid = EWA(finalOutputX2pid,finalOutputX2pid_temp,EWMA_PID_ORIENTATION_SERVO);
+  finalOutputY2pid = EWA(finalOutputY2pid,finalOutputY2pid_temp,EWMA_PID_ORIENTATION_SERVO);
   
 
-  outputAngleZpid = Zp +integralAngleZ + Zd+rollOffset;
 
-  outputAngleXpid = wrapper(outputAngleXpid,maxAngleXYTVC);
-  outputAngleYpid = wrapper(outputAngleYpid,maxAngleXYTVC);
 
-  outputAngleZpid = wrapper(outputAngleZpid,maxAngleZTVC);
 
-    //outputAngleZpid = (fabs(outputAngleZpid) > maxAngleZTVC) ? signeValeur(outputAngleZpid) * maxAngleZTVC : outputAngleZpid;
-  //outputAngleYpid = 0.0;  outputAngleXpid = 0.0; // a degager
-
-  //Serial.println(outputXpid);
-  //outputAngleZpid = 0;
-
-  finalOutputX1pid = outputAngleXpid + outputAngleZpid;
-  finalOutputY1pid = -outputAngleYpid + outputAngleZpid;
-  finalOutputX2pid = -outputAngleXpid + outputAngleZpid;
-  finalOutputY2pid = outputAngleYpid + outputAngleZpid;
-
-  finalOutputX1pid = round(finalOutputX1pid*10.0)/10.0; // resolution max 0.1º
-  finalOutputY1pid = round(finalOutputY1pid*10.0)/10.0;
-  finalOutputX2pid = round(finalOutputX2pid*10.0)/10.0;
-  finalOutputY2pid = round(finalOutputY2pid*10.0)/10.0;
-
-  finalOutputX1pid = wrapper(-finalOutputX1pid,tvcMaxAngle*1.0);
-  finalOutputX2pid = wrapper(-finalOutputX2pid,tvcMaxAngle*1.0);
-  finalOutputY1pid = wrapper(-finalOutputY1pid,tvcMaxAngle*1.0);
-  finalOutputY2pid = wrapper(-finalOutputY2pid,tvcMaxAngle*1.0);
  dtAngles = micros();
  
 }
 
 
+
+
+
+
+
 void pidPosition(){
+  // ======== Compute PID position output ===============
   static float errX_body_previous = 0.0;
   static float errY_body_previous = 0.0;
-  static unsigned long dtPosition = 0;
+  static unsigned long time = 0;
   
-  float dt = (micros() - dtPosition)/1000000.0;
-  if(dtPosition == 0){
-    
+  float dt = (micros() - time)/1000000.0;
+  if(fabs(dt) <= 0.000001){
     return;
   }
 
@@ -93,35 +100,39 @@ void pidPosition(){
   float errY_body = -sin(psi) * errX_ENU + cos(psi) * errY_ENU;
 
 
-   float pGainXY = 15; float iGainXY = 0.075; float dGainXY = 10.0;
+  float pGainXY = 15; float iGainXY = 0.075; float dGainXY = 10.0;
 
-   float pX = pGainXY*errX_body;
-    integralX += iGainXY*errX_body*dt;
-    float dX = dGainXY*(errX_body-errX_body_previous)/dt;
+  float pX = pGainXY*errX_body;
+  integralPositionX += iGainXY*errX_body*dt;
+  integralPositionX = wrapper(integralPositionX,maxAngleXYTVC*1.0);
+  float dX = dGainXY*(errX_body-errX_body_previous)/dt;
 
 
   float pY = pGainXY*errY_body;
-  integralY += iGainXY*errY_body*dt;
+  integralPositionY += iGainXY*errY_body*dt;
+  integralPositionY = wrapper(integralPositionY,maxAngleXYTVC*1.0);
   float dY = dGainXY*(errY_body-errY_body_previous)/dt;
 
-  errX_body_previous = errX_body;
-  errY_body_previous = errY_body;
 
- float outputX = pX + integralX + dX; 
+
+  float outputX = pX + integralPositionX + dX; 
   outputX = wrapper(outputX,maxAngleXYTVC*1.0);
-  float outputY= pY + integralY + dY; 
+
+  float outputY= pY + integralPositionY + dY; 
   outputY = wrapper(outputY,maxAngleXYTVC*1.0);
 
 
   desiredAngleX = outputX;
   desiredAngleY = outputY;
+  desiredAngleZ = 0.0;
 
-  dtPosition = micros();
+  errX_body_previous = errX_body;
+  errY_body_previous = errY_body;
+
+  time = micros();
 }
 
 void pidMotor(){
-  
-
   if(!MOTORON){
     percentageMotor = 0;
     return;
@@ -140,12 +151,7 @@ void pidMotor(){
   integralMotor += iGainMotor * dtMotorPID * errorM;
   Md = dGainMotor * ((errorM - errorPreviousM) / dtMotorPID); 
 
-
-
-
   integralMotor =constrain(integralMotor,ESCOFFSET-MOTORMIN,MOTORMAX-ESCOFFSET);
-  
- 
 
   
   finalOutputMpid = Mp + integralMotor + Md+ ESCOFFSET;
@@ -161,20 +167,19 @@ void pidMotor(){
 
 void handleMotorPID(){ // gets MOTOR data at appropriate rate , raises flag if NACK
   const int MOTORFREQUENCY = 50; // in Hz
-  static unsigned long timeMOTOR= 1;
-  if((millis()-timeMOTOR)*1.0>=1000.0/MOTORFREQUENCY){
-    timeMOTOR = millis();
+  static unsigned long timeTrack= 1;
+  if((millis()-timeTrack)*1.0>=1000.0/MOTORFREQUENCY){
+    timeTrack = millis();
     pidMotor();
   }
 
 }
 
 
-
 void handleOrientationPID(){ // gets SERVOS data at appropriate rate , raises flag if NACK
   static unsigned long timeTrack= 1;
   
-  const int SERVOSFREQUENCY = 100; // in Hz
+  const int SERVOSFREQUENCY = 50; // in Hz
   if((millis()-timeTrack)*1.0>=1000.0/SERVOSFREQUENCY){
     timeTrack = millis();
     pidAngles();
@@ -188,7 +193,7 @@ void handleOrientationPID(){ // gets SERVOS data at appropriate rate , raises fl
 
 
 void handlePositionPID(){ // gets MOTOR data at appropriate rate , raises flag if NACK
-  const int POSITIONPIDFREQUENCY = 15; // in Hz
+  const int POSITIONPIDFREQUENCY = 10; // in Hz
   static unsigned long timeTrack= 1;
   if((millis()-timeTrack)*1.0>=1000.0/POSITIONPIDFREQUENCY){
     timeTrack = millis();

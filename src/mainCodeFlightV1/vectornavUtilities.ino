@@ -69,13 +69,15 @@ void processVectornav(){
 
   switch (vectornavIdentity) {
     case 1:
-      commaParser.parseLine(incomingDataVectornav,headerVectornav,vectornavAngleX,vectornavAngleY,vectornavAngleZ);
 
-      float inter = vectornavAngleZ;
+    // $VyNYPR,aw,pitch,roll,eec
+      commaParser.parseLine(incomingDataVectornav,headerVectornav,vectornavAngleX_mes,vectornavAngleY_mes,vectornavAngleZ_mes);
 
-      vectornavAngleZ = - vectornavAngleX;
-      vectornavAngleX = - inter;
-      vectornavAngleY *= -1;
+      float inter = vectornavAngleZ_mes;
+
+      vectornavAngleZ = EWA(vectornavAngleZ,-vectornavAngleX_mes, EMWA_VECTORNAV);
+      vectornavAngleX = EWA(vectornavAngleX,- inter, EMWA_VECTORNAV);
+      vectornavAngleY = EWA(vectornavAngleY,- vectornavAngleY_mes, EMWA_VECTORNAV);
 
 
 

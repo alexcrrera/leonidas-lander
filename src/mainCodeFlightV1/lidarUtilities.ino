@@ -11,9 +11,6 @@ float lidarAlphaEWA = 0.21;
 bool LIDAROK = true;
 unsigned long timeLiDAR = 0;
 
-
-
-
 void handleLidar(){ // gets LiDAR data at appropriate rate , raises flag if NACK
    const int LIDARFREQUENCY = 10;
   if((millis()-timeLiDAR)*1.0>=1000.0/LIDARFREQUENCY){
@@ -35,6 +32,7 @@ int isLidarAvailable() {
   // Check for NACK or other error (Wire.endTransmission() != 0)? -1 : 1)
   //return(1);
 }
+//test
 
 
   //float lidarReadings[4] = {0.0,0.0,0.0,0.0};// first value, av val, normalised, offset
@@ -70,8 +68,7 @@ float lidarNormalised() {
 void getLidar() {
     //LiDAR.reading(float(myLidarLite.distance() - 5));
     if(isLidarAvailable()==-1){
-   //  LIDAROK = false; 
-
+      //  LIDAROK = false; 
         errorMessage = "NO LiDAR DETECTED";
     return;
   }

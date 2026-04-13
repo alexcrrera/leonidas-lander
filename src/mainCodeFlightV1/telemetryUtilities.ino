@@ -68,9 +68,35 @@ void sendTelem(){
 
    // Indexes 15-17
      output += "," + String(desiredPositionX,2) + ","  +  String(desiredPositionY,2)  + ","  +String(desiredPositionZ,3);
+  String FLIGHTMODE = "";
 
+   if(takeOff){
+  FLIGHTMODE= "TAKING OFF";
+    }
+  else{
+
+
+    if(flightMode){
+      FLIGHTMODE = "FLIGHT MODE";
+    }
+    else{
+      if(landingNow){
+        FLIGHTMODE = "LANDING NOW";
+      }
+      else{
+
+        if(spoolMotor){
+          FLIGHTMODE = "SPOOLING UP";
+        }
+         FLIGHTMODE = "STANDBY";
+      }
+
+    }
+
+  }
+  
   // Index 18: flight mode
-  output += "," + FLIG
+  output += "," + FLIGHTMODE;
   // Index 19: nº sat.
   output += "," +String(round(numSV),0);
 
@@ -320,8 +346,7 @@ float inter = 0.0;
   switch (TelemIdentity) {
     
     case -1:
-    Serial.print("ERROR MESSAGE TELEM");
-    returnMessage = "ERROR PARSING";
+   
       return;
       break; // useless but meh
       

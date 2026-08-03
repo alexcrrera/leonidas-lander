@@ -26,14 +26,14 @@
 constexpr int   SERVOFREQUENCY = 333;   // TVC vane PWM frequency [Hz]
 constexpr int   resBit         = 12;    // analogWrite() resolution [bits] (Teensy)
 
-//////////////////////////////////// ESC PULSE CALIBRATION ////////////////////////////////////
-constexpr int   ESCLOWPOINT  = 1000;    // ESC min pulse [us] (0% throttle)
-constexpr int   ESCHIGHPOINT = 2000;    // ESC max pulse [us] (100% throttle)
+// //////////////////////////////////// ESC PULSE CALIBRATION ////////////////////////////////////
+// constexpr int   ESCLOWPOINT  = 1000;    // ESC min pulse [us] (0% throttle)
+// constexpr int   ESCHIGHPOINT = 2000;    // ESC max pulse [us] (100% throttle)
 
 //////////////////////////////////// MOTOR LIMITS [%] ////////////////////////////////////
-constexpr float MOTORMAX     = 80.0f;   // max commandable motor output [%]
-constexpr float MOTORMIN     = 50.0f;   // min controllable motor output [%]
-constexpr float MOTORSTARTUP = 67.0f;   // motor output at the start of the take-off ramp [%]
+// constexpr float MOTORMAX     = 80.0f;   // max commandable motor output [%]
+// constexpr float MOTORMIN     = 50.0f;   // min controllable motor output [%]
+// constexpr float MOTORSTARTUP = 67.0f;   // motor output at the start of the take-off ramp [%]
 
 //////////////////////////////////// FLIGHT PROFILE ////////////////////////////////////
 constexpr float TAKEOFFALTITUDE = 0.75f; // target hover/altitude setpoint [m]
@@ -54,10 +54,10 @@ constexpr float EWMA_PID_ORIENTATION_SERVO = 0.33f; // TVC output EWMA smoothing
 
 //////////////////////////////////// TVC VANE TRIM [deg] ////////////////////////////////////
 // Mechanical centering offset per vane. Applied on top of the PID command.
-constexpr float MissSX1 = -1.0f * 12.0f;
-constexpr float MissSX2 = -1.0f * 3.4f;
-constexpr float MissSY1 = -1.0f * 1.0f;
-constexpr float MissSY2 = -1.0f * -5.0f;
+// constexpr float MissSX1 = -1.0f * 12.0f;
+// constexpr float MissSX2 = -1.0f * 3.4f;
+// constexpr float MissSY1 = -1.0f * 1.0f;
+// constexpr float MissSY2 = -1.0f * -5.0f;
 
 //////////////////////////////////// VANE CONFIG ////////////////////////////////////
 constexpr bool isBluebird = false; // selects the servo pulse range used by servoCalculator2()
@@ -88,8 +88,8 @@ float pGainAngleY = 1.0; float iGainAngleY = 0.1; float dGainAngleY = 0.15; // c
 float pGainAngleZ = 1.0; float iGainAngleZ = 0.1; float dGainAngleZ = 0.15; // cmd PID-Z
 
 //////////////////////////////////// TVC ANGLE LIMITS [deg] ////////////////////////////////////
-float tvcMaxAngle  = 12.0;            // total TVC authority           (cmd "MAXANGLETVC")
-float maxAngleZTVC = 5.0;             // roll (Z) authority budget
-float maxAngleXYTVC = tvcMaxAngle - maxAngleZTVC; // pitch/yaw (X/Y) authority budget
-float rollOffset   = 0;               // roll trim added to Z PID output (cmd index 14)
-float abortAngle   = 45.0;            // live abort-angle setpoint     (cmd "ABORTANGLE")
+// float tvcMaxAngle  = 12.0;            // total TVC authority           (cmd "MAXANGLETVC")
+// float maxAngleZTVC = 5.0;             // roll (Z) authority budget
+// float maxAngleXYTVC = tvcMaxAngle - maxAngleZTVC; // pitch/yaw (X/Y) authority budget
+// float rollOffset   = 0;               // roll trim added to Z PID output (cmd index 14)
+// float abortAngle   = 45.0;            // live abort-angle setpoint     (cmd "ABORTANGLE")

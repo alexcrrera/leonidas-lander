@@ -1,4 +1,6 @@
-#include "Utilities.h"
+#pragma once
+
+#include "../Utilities/Utilities.h"
 
 enum class EpsType {
     H,
@@ -6,86 +8,84 @@ enum class EpsType {
     Yaw
 };
 
+namespace EpsConfig {
 
-struct EpsilonGroup { // epsilon group
-    float epsH = EpsilonGroup::epsH.default_; // default value
-    float epsV = EpsilonGroup::epsV.default_;
-    float epsYaw=EpsilonGroup::epsYaw.default_;
-}
+constexpr ParameterConfig<float> epsH = {
+    .min = 0.025,
+    .max = 1.0,
+    .default_ = 0.15
+};
 
+constexpr ParameterConfig<float> epsV = {
+    .min = 0.025,
+    .max = 1.0,
+    .default_ = 0.1
+};
 
- namespace EpsConfig {
+constexpr ParameterConfig<float> epsYaw = {
+    .min = 0.5,
+    .max = 15.0,
+    .default_ = 1.0
+};
 
+constexpr const ParameterConfig<float>& getData(EpsType type) {
 
-
-    constexpr ParameterConfig<float> epsH = { // Boundings for tolerances for HORIZONTAL NED positioning
-        .min = 0.025,
-        .max = 1.0,
-        .default_ = 0.15
-    };
-
-    constexpr ParameterConfig<float> epsV = { // Boundings for tolerances for VERTICAL NED positioning
-        .min = 0.025,
-        .max = 1.0,
-        .default_ = 0.1
-    };
-
-     constexpr ParameterConfig<float> epsYaw = { // Boundings for tolerances for YAW alignment
-        .min = 0.5,
-        .max = 15.0,
-        .default_ = 1
-    };
-
-
-
-
-
-
-    // ============= HELPER FUNCTIONS NO PARAMS HERE =============
-    constexpr const ParameterConfig<float>& getData(EpsType type){
-
-        switch (type)
-        {
+    switch (type) {
         case EpsType::H:
-            return(epsH);
+            return epsH;
+
         case EpsType::V:
-            return(epsV);
+            return epsV;
+
         case EpsType::Yaw:
-            return(epsYaw);
-        
+            return epsYaw;
+
         default:
-             return(epsH); // safeguard, should never happen
-        }
+            return epsH;
     }
-
-bool isValidEpsilonGroup(EpsilonGroup eps_group){
-    if(!isValidEpsilon(eps_group.epsH,EpsType::H)){
-        return(false);
-    }
-    
-    if(!isValidEpsilon(eps_group.epsV,EpsType::V)){
-        return(false);
-    }
-     if(!isValidEpsilon(eps_group.epsYaw,EpsType::Yaw)){
-        return(false);
-    }
-
-    return(true);
 }
 
+} // namespace EpsConfig
 
- bool isValidEpsilon(float eps, EpsType type){
-    // checks if epsilon is within the specified range
-    ParameterConfig<float> eps_data = EpsConfig::getData(type);
 
-    if(Utilities::isBounded(eps,eps_data.min, eps_data.max)){
+struct EpsilonGroup {
+
+    float epsH = EpsConfig::epsH.default_;
+    float epsV = EpsConfig::epsV.default_;
+    float epsYaw = EpsConfig::epsYaw.default_;
+};
+
+
+namespace EpsConfig {
+
+constexpr bool isValidEpsilon(float eps, EpsType type) {
+
+    const auto& epsData = getData(type);
+
+    return Utilities::isBounded(
+        eps,
+        epsData.min,
+        epsData.max
+    );
+}
+
+ constexpr bool isValidEpsilonGroup(
+        const EpsilonGroup& epsGroup
+    ) {
+
+        if (!isValidEpsilon(epsGroup.epsH, EpsType::H)) {
+            return false;
+        }
+
+        if (!isValidEpsilon(epsGroup.epsV, EpsType::V)) {
+            return false;
+        }
+
+        if (!isValidEpsilon(epsGroup.epsYaw, EpsType::Yaw)) {
+            return false;
+        }
+
         return true;
     }
 
-    return false; // epsilon out of range
-
- }
-
- }
-
-
+}

@@ -1,6 +1,6 @@
  
-#include "Utilities.h"
-#include "SafetyBounds.h"
+#include "../Utilities/Utilities.h"
+#include "../Config/SafetyBounds.h"
 
 enum class CoordinateType {
     Altitude_m,
@@ -76,7 +76,7 @@ enum class CoordinateType {
 
 
 
-    bool isValidCoordinate(float val, CoordinateType type){
+    constexpr bool isValidCoordinate(float val, CoordinateType type){
         // checks if coordinate is within the specified range
 
         ParameterConfig coord_data = getData(type);
@@ -91,7 +91,7 @@ enum class CoordinateType {
 
     
 
-    bool isValidPositionNED(const Vector3& positionNED){
+    constexpr bool isValidPositionNED(const Vector3& positionNED){
     // checks if NED positions is valid
 
     float North_m = positionNED.x;
@@ -110,7 +110,7 @@ enum class CoordinateType {
         return false;
     }
 
-    bool isValid = true;
+    return true;
 
     }
 

@@ -2,21 +2,15 @@
 #ifndef PID_H
 
 #define PID_H
+#include "../Utilities/Utilities.h"
 
-#include "PID.h"
-
-struct PID_3D{ // group of 3 PID's
-    PID axis_x;
-    PID axis_y;
-    PID axis_z;
-
-}
 
 class PID {
 
 
     public:
-        PID(PID_gains gains);
+        PID(PID_Gains gains)
+            : kp(gains.kp), ki(gains.ki), kd(gains.kd) {}
 
         float compute(float dt, float measurement); // outputs PID correction term
         float compute(float dt, float measurement, float measurement_derivative); // outputs PID correction term
@@ -46,11 +40,11 @@ class PID {
         float kd;
         float integral = 0.0;
 
-        float outputMin;
-        float outputMax;
+        float outputMin=0.0;
+        float outputMax=0.0;
 
-        float integralMin;
-        float integralMax;
+        float integralMin=0.0;
+        float integralMax=0.0;
 
         float desiredTarget;
 
@@ -60,4 +54,14 @@ class PID {
     
 };
 
+
+struct PID_3D{ // group of 3 PID's
+    PID axis_x;
+    PID axis_y;
+    PID axis_z;
+
+};
+
 #endif
+
+

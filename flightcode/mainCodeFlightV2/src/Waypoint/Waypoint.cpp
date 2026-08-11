@@ -1,38 +1,35 @@
 #include "Waypoint.h"
 
-
-
+Waypoint::Waypoint() : type(WaypointType::NAVIGATION), 
+state(WaypointState::INACTIVE), target{{0.0f, 0.0f, 0.0f}, 0.0f}, epsH(EpsConfig::epsH.default_), epsV(EpsConfig::epsV.default_), epsYaw(EpsConfig::epsYaw.default_), holdTimeMs(MissionConfig::holdTimeMs.default_), holdStartTimeMs(0), entryTimeMs(0), reached(false)
+{
+}
 Waypoint::Waypoint(
-        WaypointType type,
-        const Vector3& positionNED,
-        float yawDeg,
-        float epsH,
-        float epsV,
-        float epsYaw,
-        uint32_t holdTimeMs
-    )
-        :
-
-        type(type),
-        state(WaypointState::INACTIVE),
-        target{WaypointTarget(positionNED,yawDeg)},
-        epsH(epsH),
-        epsV(epsV),
-        epsYaw(epsYaw),
-        holdTimeMs(holdTimeMs),
-        entryTimeMs(0),
-        holdStartTimeMs(0),
-        reached(false)
-        {
-
-        }
-
+    WaypointType type,
+    const Vector3& positionNED,
+    float yawDeg,
+    uint32_t holdTimeMs,
+    EpsilonGroup epsilon_group
+)
+    :
+    type(type),
+    state(WaypointState::INACTIVE),
+    target{positionNED, yawDeg},
+    epsH(epsilon_group.epsH),
+    epsV(epsilon_group.epsV),
+    epsYaw(epsilon_group.epsYaw),
+    holdTimeMs(holdTimeMs),
+    holdStartTimeMs(0),
+    entryTimeMs(0),
+    reached(false)
+{
+}
 void Waypoint::activate(){
     if (isActive()){
         return; // only allows to activate if inactive...
     }
-    entryTime = millis();
-    state = Waypoint::APPROACHING
+    entryTimeMs = millis();
+    state = WaypointState::APPROACHING;
 }
 
 
@@ -54,7 +51,7 @@ WaypointState Waypoint::getState() const{
 
 void Waypoint::update(  const Vector3& currentPositionNED,float yawDeg){
 
-    if(!isActive){
+    if(!isActive()){
         return; // do nothing since wp. not activated
     }
 
@@ -90,7 +87,7 @@ void Waypoint::update(  const Vector3& currentPositionNED,float yawDeg){
         }
 
         if(millis()- holdStartTimeMs >= holdTimeMs){
-            state = WaypointState::COMPLETED
+            state = WaypointState::COMPLETED;
 
         }
         break;

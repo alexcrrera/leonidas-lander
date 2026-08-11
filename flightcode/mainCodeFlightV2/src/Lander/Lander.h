@@ -14,18 +14,18 @@
 struct LanderState
 {
     // Local NED position [m]
-    Vector3 position;
+    NED_coordinates position;
 
     // NED velocity [m/s]
-    Vector3 velocity;
+    NED_coordinates velocity;
 
     // NED linear acceleration [m/s^2]
-    Vector3 acceleration;
+    NED_coordinates acceleration;
 
     Rotation_Euler_coordinates attitude;
 
     // Body angular rates [rad/s]
-    Vector3 angularVelocity;
+    Rotation_Euler_coordinates angularVelocity;
 
     // Height above ground from LiDAR [m]
     float altitude = 0.0f;
@@ -157,7 +157,7 @@ private:
 
     void convertLlaToLocalNed(
         const VN300Measurement& measurement,
-        Vector3& position
+        NED_coordinates& position
     ) const;
 
     void updateErrors();

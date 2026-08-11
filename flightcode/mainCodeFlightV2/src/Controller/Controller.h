@@ -6,10 +6,12 @@
 
 #include <Arduino.h>
 
-#include "Utilities.h"
-#include "PID.h"
-#include "ControllerConfig.h"
-
+#include "../Utilities/Utilities.h"
+#include "../PID/PID.h"
+#include "../Config/ControllerConfig.h"
+#include "../Lander/Lander.h"
+#include "../Config/FlightRegimeConfig.h"
+#include "../Config/ActuatorsConfig.h"
 
 class Controller{
 
@@ -27,6 +29,7 @@ class Controller{
         void setAttitudeSetpoint(const Rotation_Euler_coordinates& attitude_target);
         void setBodyRatesSetpoint(const Rotation_Euler_coordinates& body_rates_target);
         
+
         void setControlCmd(const ControlCommand& cmd){ctrl_cmd = cmd;} // set control command directly
       
         ControlCommand& getControlCmd(){return(ctrl_cmd);} // get latest control command
@@ -36,14 +39,20 @@ class Controller{
         
     private:
 
-        void updatePIDOutputsLimits(); // ensures that the control command is within the limits of the current regime's parameters
+       
+
+        void updatePIDOutputsLimits(
+    const FlightRegimeData& current_regime
+);// ensures that the control command is within the limits of the current regime's parameters
 
         PID_3D PID_position; // group of 3 PID's for position control
         PID_3D PID_velocity; // group of 3 PID's for velocity control
         PID_3D PID_attitude;
         PID_3D PID_body_rates;
 
+       
 
+        FlightRegimeData current_regime = FlightRegimeConfig::STANDBY; // current flight regime
         bool active = false; // indicates if the controller is active or not
 
         ControlCommand ctrl_cmd;
@@ -51,5 +60,5 @@ class Controller{
 
 
 
-
-}
+};
+#endif

@@ -5,10 +5,10 @@
 
 
 #include <Arduino.h>
-#include "Waypoint.h"
-#include "EpsConfig.h"
-#include "Utilities.h"
-#include "MissionConfig.h"
+#include "../Waypoint/Waypoint.h"
+#include "../Config/EpsConfig.h"
+#include "../Utilities/Utilities.h"
+#include "../Config/MissionConfig.h"
 
 constexpr uint8_t MAX_MISSION_WAYPOINTS = 5;
 
@@ -25,15 +25,16 @@ enum class MissionState {
 struct MissionTarget {
     WaypointTarget target; // position in NED and YAW
     WaypointType type; // take off, landing, navig..
-}
+};
 
 enum class MissionStatus {
     SUCCESS,
     INVALID_POSITION,
     INVALID_YAW,
     INVALID_ALTITUDE,
-    PROTECTED
-}
+    PROTECTED,
+    INVALID_REQUEST
+};
 
 
 class Mission{
@@ -42,7 +43,7 @@ class Mission{
         Mission(); // no params yet
         
         MissionStatus defineTakeOff(
-            const Vector3& currentPositionNED
+            const Vector3& currentPositionNED,
             float altitude_m, // altitude above ground
             float yawDeg);
 
@@ -73,9 +74,9 @@ class Mission{
     private:
 
         void defineLandingApproach(const Vector3& landingPositionNED,
-                                   float descentStartAltitude_m
+                                   float descentStartAltitude_m,
                                    float yawDeg                            
-        )
+        );
         
 
         void updateReadiness();
@@ -92,8 +93,8 @@ class Mission{
         Waypoint navigationWaypoints[MAX_MISSION_WAYPOINTS];
         Waypoint landingWaypoint;
         Waypoint landingApproachWaypoint;
-        uint8_t = navigationWaypointCount;
-        uint8_t = currentWaypointIndex;
+        uint8_t navigationWaypointCount;
+        uint8_t currentWaypointIndex;
 
 };
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Utilities.h"
+#include "../Utilities/Utilities.h"
 #include "Arduino.h"
 
 
@@ -13,8 +13,8 @@
     };
 
 
-    constexpr String Output_Header = "$LNDAS";
-    constexpr String Output_LineEnding = "*\n";
+     String Output_Header = "$LNDAS";
+     String Output_LineEnding = "*\n";
 
 
  }

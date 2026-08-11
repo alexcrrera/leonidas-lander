@@ -78,7 +78,7 @@ private:
 
     static constexpr unsigned long gnssPollPeriodMs = 100;
     static constexpr int bufferSize = 180;
-    static constexpr unsigned long vn300TimeoutMs = 500;
+    static constexpr unsigned long vn300TimeoutMs = 200;
     static constexpr float defaultFilterAlpha = 0.10f;
 
     unsigned long lastGnssPollMs = 0;

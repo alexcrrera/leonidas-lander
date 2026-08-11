@@ -4,8 +4,8 @@
 #define MIXER_H
 
 
-#include "Utilities.h"
-#include "ActuatorsConfig.h"
+#include "../Utilities/Utilities.h"
+#include "../Config/ActuatorsConfig.h"
 
 
 
@@ -19,7 +19,7 @@ namespace Mixer
 
         
         float yaw_cmd =    clamping(command.tau_yaw,ActuatorsConfig::maxAngleZTVC );
-        float pitch_cmd =  clamping(command.pitch_roll,ActuatorsConfig::maxAngleXYTVC );
+        float pitch_cmd =  clamping(command.tau_pitch,ActuatorsConfig::maxAngleXYTVC );
         float roll_cmd =   clamping(command.tau_roll,ActuatorsConfig::maxAngleXYTVC );
         float thrust_cmd = constrain(command.thrust, ActuatorsConfig::ESC_thrust_min_percentage, ActuatorsConfig::ESC_thrust_max_percentage);
 

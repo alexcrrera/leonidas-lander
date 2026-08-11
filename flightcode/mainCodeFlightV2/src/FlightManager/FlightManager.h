@@ -3,8 +3,9 @@
 
 #include <Arduino.h>
 #include "../Lander/Lander.h"
-#include "Mission.h"
-#include "MotorManager.h"
+#include "../Mission/Mission.h"
+#include "../MotorManager/MotorManager.h"
+#include "../Controller/Controller.h"
 // ============================================================
 // Flight states
 // ============================================================
@@ -51,9 +52,9 @@ public:
     // Commands
     // --------------------------------------------------------
 
-    void requestArm();
-    void requestDisarm();
-    void requestTakeoff();
+    bool requestArm();
+    bool requestDisarm();
+    bool requestTakeoff();
     bool requestLanding();
     bool requestAbort();
 

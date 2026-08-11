@@ -1,7 +1,7 @@
 #include "Mission.h"
 #include <cmath>
-#include "FlightRegimeConfig.h"
-#include "CoordinateConfig.h"
+#include "../Config/FlightRegimeConfig.h"
+#include "../Config/CoordinateConfig.h"
 
 
 
@@ -12,7 +12,7 @@ Mission::Mission(){
 }
 
 MissionStatus Mission::defineTakeOff(
-            const Vector3& currentPositionNED
+            const Vector3& currentPositionNED,
             float altitude_m,
             float yawDeg){
 
@@ -23,15 +23,15 @@ MissionStatus Mission::defineTakeOff(
     }
 
     // verifies if current position is correct (if not out of bounds)
-    if(!isValidPositionNED(currentPositionNED)){
+    if(!CoordinateConfig::isValidPositionNED(currentPositionNED)){
         return(MissionStatus::INVALID_POSITION);
     }
 
-    if(!isValidCoordinate(yawDeg,CoordinateType::Yaw_deg)){
+    if(!CoordinateConfig::isValidCoordinate(yawDeg,CoordinateType::Yaw_deg)){
         return(MissionStatus::INVALID_YAW); // yaw command is too large
     }
 
-    if(!isValidCoordinate(altitude_m,CoordinateType::Altitude_m)){
+    if(!CoordinateConfig::isValidCoordinate(altitude_m,CoordinateType::Altitude_m)){
         return(MissionStatus::INVALID_ALTITUDE); // altitude is invalid
     }
 
@@ -74,17 +74,17 @@ MissionStatus Mission::defineLanding(const Vector3& currentPositionNED,
                             float yawDeg){
 
     if(!landingDefined){ // CANNOT DEFINE LANDING IF TAO POSITION NOT PREDEFINED AND LOCKED
-        return(false);
+        return(MissionStatus::INVALID_REQUEST);
     }
 
     if(state == MissionState::ACTIVE || state == MissionState::COMPLETED){
         return(MissionStatus::PROTECTED);
     }
 
-    const auto& regime = FlightRegimeConfig::LANDING;
+    const auto& regime_landing = FlightRegimeConfig::LANDING;
 
-    EpsilonGroup epsilon_group = regime.epsilon_group; // tolerances to define LANDING
-    uint32_t holdTimeMs = regime.holdTimeMs;
+    EpsilonGroup epsilon_group = regime_landing.epsilon_group; // tolerances to define LANDING
+    uint32_t holdTimeMs = regime_landing.holdTimeMs;
 
 
 
@@ -92,15 +92,15 @@ MissionStatus Mission::defineLanding(const Vector3& currentPositionNED,
                             currentPositionNED.y + landingRelativePositionNED.y,
                             currentPositionNED.z  + landingRelativePositionNED.z };
 
-    if(!isValidPositionNED(positionNED)){
+    if(!CoordinateConfig::isValidPositionNED(currentPositionNED)){
         return(MissionStatus::INVALID_POSITION);
     }
 
-    if(!isValidCoordinate(yawDeg,CoordinateType::Yaw_deg)){
+    if(!CoordinateConfig::isValidCoordinate(yawDeg,CoordinateType::Yaw_deg)){
         return(MissionStatus::INVALID_YAW); // yaw command is too large
     }
 
-     if(!isValidCoordinate(descentStartAltitude_m,CoordinateType::Altitude_m)){
+     if(!CoordinateConfig::isValidCoordinate(descentStartAltitude_m,CoordinateType::Altitude_m)){
         return(MissionStatus::INVALID_ALTITUDE); // altitude is invalid
     }
 
@@ -117,9 +117,9 @@ MissionStatus Mission::defineLanding(const Vector3& currentPositionNED,
 
 
     // define transition point
-    const auto& regime = FlightRegimeConfig::PRE_LANDING;
-    EpsilonGroup epsilon_group_approach = regime.epsilon_group; // tolerances to define PRE_LANDING
-    uint32_t holdTimeMs_approach = regime.holdTimeMs;
+    const auto& regime_approach = FlightRegimeConfig::PRE_LANDING;
+    EpsilonGroup epsilon_group_approach = regime_approach.epsilon_group; // tolerances to define PRE_LANDING
+    uint32_t holdTimeMs_approach = regime_approach.holdTimeMs;
 
     landingApproachWaypoint = Waypoint(
             WaypointType::LANDING,
@@ -163,13 +163,6 @@ void Mission::updateReadiness(){
 
 }
 
-bool Mission::isActive(){
-    if(state == MissionState::ACTIVE){
-        return(true);
-    }
-    return(false);
-}
-
 
 void Mission::update(const Vector3& currentPositionNED,float currentYawDeg){
     
@@ -179,7 +172,7 @@ void Mission::update(const Vector3& currentPositionNED,float currentYawDeg){
         return;
     }
 
-    if(currentWaypointIndexW>=MAX_MISSION_WAYPOINTS){
+    if(currentWaypointIndex>=MAX_MISSION_WAYPOINTS){
         return; // overflow protection
     }
 
@@ -191,4 +184,26 @@ void Mission::update(const Vector3& currentPositionNED,float currentYawDeg){
         advanceWaypoint();
     }
 
+}
+
+
+bool Mission::isReady() const{
+    if(state == MissionState::READY){
+        return(true);
+    }
+    return(false);
+}
+
+bool Mission::isCompleted() const{
+    if(state == MissionState::COMPLETED){
+        return(true);
+    }
+    return(false);
+}
+
+bool Mission::isActive() const{
+    if(state == MissionState::ACTIVE){
+        return(true);
+    }
+    return(false);
 }

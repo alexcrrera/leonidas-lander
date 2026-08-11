@@ -3,11 +3,11 @@
 
 void MotorManager::begin(){
     // attaches actuators to hardware pins
-    ESC.attach(ActuatorPWM_config::ESC);
-    vane_X1.attach(ActuatorPWM_config::Servo_X1);
-    vane_X2.attach(ActuatorPWM_config::Servo_X2);
-    vane_Y1.attach(ActuatorPWM_config::Servo_Y1);
-    vane_Y2.attach(ActuatorPWM_config::Servo_Y2);
+    ESC.attach(ActuatorsConfig::ESC);
+    vane_X1.attach(ActuatorsConfig::Servo_X1);
+    vane_X2.attach(ActuatorsConfig::Servo_X2);
+    vane_Y1.attach(ActuatorsConfig::Servo_Y1);
+    vane_Y2.attach(ActuatorsConfig::Servo_Y2);
 
 }
 

@@ -1,4 +1,8 @@
-#include "Utilities.h"
+
+#pragma once
+#ifndef SAFETY_BOUNDS_H
+#define SAFETY_BOUNDS_H
+#include "../Utilities/Utilities.h"
 
 /*
 SAFETY PARAMETERS THAT CAN TOGGLE ABORT CONDITIONS
@@ -34,8 +38,8 @@ SAFETY PARAMETERS THAT CAN TOGGLE ABORT CONDITIONS
     constexpr float max_pitch_roll_acceleration_degs2 = 20.0;
 
 
-    constexpr float  max_yaw_acceleration_degs2 = 50.0;
-    constexpr float pitch_roll_abort_angle = 20.0;
+    constexpr float  yaw_abort_angle_deg = 99999.0; // yaw angle that will trigger an abort
+    constexpr float pitch_roll_abort_angle_deg = 20.0;
     
 
 
@@ -43,3 +47,4 @@ SAFETY PARAMETERS THAT CAN TOGGLE ABORT CONDITIONS
  }
 
 
+#endif

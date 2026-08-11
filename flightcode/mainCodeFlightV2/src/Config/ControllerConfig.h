@@ -1,5 +1,5 @@
 #pragma once
-#include "Utilities.h"
+#include "../Utilities/Utilities.h"
 #include "Arduino.h"
 
 
@@ -12,11 +12,7 @@ struct ControlCommand
     float thrust;
 };
 
-struct PID_Gains{
-    float kp;
-    float ki;
-    float kd;
-}
+
 
 
 namespace ControllerPID {
@@ -38,10 +34,40 @@ namespace ControllerPID {
                                         .kd = 0.5};
 
 
+    constexpr PID_Gains PID_gains_velocity_North = {.kp = 1.0,
+                                        .ki = 0.0,
+                                        .kd = 0.5};
+
+    constexpr PID_Gains PID_gains_velocity_East = {.kp = 1.0,
+                                        .ki = 0.0,
+                                        .kd = 0.5}; 
+    constexpr PID_Gains PID_gains_velocity_Down = {.kp = 1.0,
+                                        .ki = 0.0,
+                                        .kd = 0.5};
+    constexpr PID_Gains PID_gains_attitude_roll = {.kp = 1.0,
+                                        .ki = 0.0,
+                                        .kd = 0.5};
+                                        
+    constexpr PID_Gains PID_gains_attitude_pitch = {.kp = 1.0,
+                                        .ki = 0.0,
+                                        .kd = 0.5};                                                                                
+    constexpr PID_Gains PID_gains_attitude_yaw = {.kp = 1.0,
+                                        .ki = 0.0,
+                                        .kd = 0.5};
+    
+    constexpr PID_Gains PID_gains_body_rates_roll = {.kp = 1.0,
+                                        .ki = 0.0, 
+                                        .kd = 0.5};
+    constexpr PID_Gains PID_gains_body_rates_pitch = {.kp = 1.0,
+                                        .ki = 0.0,
+                                        .kd = 0.5};
+    constexpr PID_Gains PID_gains_body_rates_yaw = {.kp = 1.0,
+                                        .ki = 0.0,
+                                        .kd = 0.5};
+                                                                                                                           
 
 
 
-    // =========== ============= ENF OF PARAMS ========================================                                        
-    constexpr PID_Gains PID_gains_position_East = PID_gains_position_North; // symmetric vehicule dynamics
+
 
 }

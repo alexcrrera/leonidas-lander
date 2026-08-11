@@ -1,5 +1,10 @@
 
-#include "Utilities.h"
+#pragma once
+#ifndef MISSION_CONFIG_H
+#define MISSION_CONFIG_H
+
+
+#include "../Utilities/Utilities.h"
 #include "Arduino.h"
 
  namespace MissionConfig {
@@ -11,5 +16,6 @@
     };
 
 
- }
+}
 
+#endif

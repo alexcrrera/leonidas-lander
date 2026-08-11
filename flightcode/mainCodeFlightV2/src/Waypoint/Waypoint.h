@@ -4,8 +4,9 @@
 
 
 #include <Arduino.h>
-#include "Utilities.h"
-#include "EpsConfig.h"
+#include "../Utilities/Utilities.h"
+#include "../Config/EpsConfig.h"
+#include "../Config/MissionConfig.h"
 
 enum class WaypointType{
     TAKEOFF,
@@ -25,7 +26,7 @@ enum class WaypointState{
 struct WaypointTarget {
     Vector3 positionNED;
     float yawDeg;
-}
+};
 
 
 class Waypoint{
@@ -33,6 +34,8 @@ class Waypoint{
 
     public:
 
+
+    Waypoint(); // default constructor as a placeholder for a waypoint that is not defined yet
     Waypoint(
         WaypointType type,
         const Vector3& positionNED,
@@ -60,6 +63,7 @@ class Waypoint{
 
 
     private:
+        bool constructed = false; // indicates if the waypoint has been constructed or not
         WaypointType type;
         WaypointState state;
         WaypointTarget target;
@@ -69,14 +73,14 @@ class Waypoint{
         float epsV; // vertical epsilon
         float epsYaw; // yaw epsilon
 
-        uint_32 holdTimeMs; // time in ms to hold 
-        uint_32 holdStartTimeMs;  // time 
-        uint_32 entryTimeMs; // time since waypoint activation
+        uint32_t holdTimeMs; // time in ms to hold 
+        uint32_t holdStartTimeMs;  // time 
+        uint32_t entryTimeMs; // time since waypoint activation
 
         bool reached;
 
 
-}
+};
 
 
 #endif

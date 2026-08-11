@@ -1,5 +1,7 @@
-
-#include "Utilities.h"
+#pragma once
+#ifndef ACTUATORS_CONFIG_H
+#define ACTUATORS_CONFIG_H
+#include "../Utilities/Utilities.h"
 //#include "Arduino.h"
 /*
 ACTUATORS PARAMETERS AND CONFIG
@@ -17,7 +19,7 @@ struct ActuatorPWM_config{
 
    float trim;
 
-}
+};
 
 
 struct ActuatorCommand{
@@ -26,7 +28,7 @@ struct ActuatorCommand{
    float vaneY1_deg;
    float vaneY2_deg;
    float thrust_percentage;
-}
+};
 
  namespace ActuatorsConfig {
 
@@ -91,7 +93,7 @@ struct ActuatorCommand{
                   .pulseMax = 2000,
                   .valueMin = 0.0,
                   .valueMax = 100.0,
-                  .trim = 0.0;
+                  .trim = 0.0
     };
 
 
@@ -104,39 +106,39 @@ struct ActuatorCommand{
                   .pulseMax = 2800,
                   .valueMin = -90,
                   .valueMax = 90,
-                  .trim = Servo_X1_trim;
+                  .trim = Servo_X1_trim
     };
 
         constexpr ActuatorPWM_config Servo_X2 = {
                   .pin = Servo_X2_pin,
-                  .frequency = Servo_X1.frquency,
-                  .pulseMin = ServoX1.pulseMin,
-                  .pulseMax = ServoX1.pulseMax,
-                  .valueMin = ServoX1.valueMin,
-                  .valueMax = ServoX1.valueMax,
-                  .trim = Servo_X2_trim;
+                  .frequency = Servo_X1.frequency,
+                  .pulseMin = Servo_X1.pulseMin,
+                  .pulseMax = Servo_X1.pulseMax,
+                  .valueMin = Servo_X1.valueMin,
+                  .valueMax = Servo_X1.valueMax,
+                  .trim = Servo_X2_trim
     };
 
     
         constexpr ActuatorPWM_config Servo_Y1 = {
                   .pin = Servo_Y1_pin,
-                  .frequency = Servo_X1.frquency,
-                  .pulseMin = ServoX1.pulseMin,
-                  .pulseMax = ServoX1.pulseMax,
-                  .valueMin = ServoX1.valueMin,
-                  .valueMax = ServoX1.valueMax,
-                  .trim = Servo_Y1_trim;
+                  .frequency = Servo_X1.frequency,
+                  .pulseMin = Servo_X1.pulseMin,
+                  .pulseMax = Servo_X1.pulseMax,
+                  .valueMin = Servo_X1.valueMin,
+                  .valueMax = Servo_X1.valueMax,
+                  .trim = Servo_Y1_trim
     };
 
     
         constexpr ActuatorPWM_config Servo_Y2 = {
                   .pin = Servo_Y2_pin,
-                  .frequency = Servo_X1.frquency,
-                  .pulseMin = ServoX1.pulseMin,
-                  .pulseMax = ServoX1.pulseMax,
-                  .valueMin = ServoX1.valueMin,
-                  .valueMax = ServoX1.valueMax,
-                  .trim = Servo_Y2_trim;
+                  .frequency = Servo_X1.frequency,
+                  .pulseMin = Servo_X1.pulseMin,
+                  .pulseMax = Servo_X1.pulseMax,
+                  .valueMin = Servo_X1.valueMin,
+                  .valueMax = Servo_X1.valueMax,
+                  .trim = Servo_Y2_trim
     };
     
 
@@ -144,5 +146,7 @@ struct ActuatorCommand{
 
 
  }
+
+ #endif
 
 

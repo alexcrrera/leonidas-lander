@@ -1,24 +1,31 @@
-#ifndef TELEEMTRYMANAGER_H
-#define TELEEMTRYMANAGER_H
+#pragma once
 
 #include <Arduino.h>
+#include <textparser.h>
 
 #include "../Utilities/Utilities.h"
-#include "CommsConfig.h"
+#include "../Config/CommsConfig.h"
 
-class TelemetryManager
-{
+
+class TelemetryManager {
+
 public:
-    TelemetryManager(); //modif
 
-    void readInput();
-    void sendCommand(const String& content); // send one line
+    TelemetryManager();
+
     void begin();
 
-private:
-    SerialPortConfig serial_port = CommsConfig::TELEMETRY_2_BASE_STATION;
-    String header = CommsConfig::Output_Header;
-    String line_ending = CommsConfig::Output_LineEnding;
-};
+    void readInput();
 
-#endif
+    void sendCommand(const String& content);
+
+
+private:
+
+    SerialPortConfig serialPort = CommsConfig::TELEMETRY_2_BASE_STATION;
+
+    String header = CommsConfig::Output_Header;
+    String lineEnding = CommsConfig::Output_LineEnding;
+
+    TextParser commaParser{","};
+};

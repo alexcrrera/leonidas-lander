@@ -1,4 +1,4 @@
-#include "src/OpticalFlow/OpticalFlow.h"
+#include "OpticalFlow.h"
 OpticalFlow opticalFlow(
     Serial8,
     19200

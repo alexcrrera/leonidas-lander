@@ -1,24 +1,7 @@
 #include "PID.h"
-#include "Utilities.h"
 
-PID::PID(float kp,
-        float ki,
-        float kd,
-        float outputMin,
-        float outputMax,
-        float integralMin,
-        float integralMax)
-        :
-        kp(kp) , ki(ki) , kd(kd)
-        
-        {
 
-            setOutputLimits(outputMin,outputMax);
-            setIntegralLimits(integralMin,integralMax);
-            setGains(kp,ki,kd);
-            initOutputLimits = true;
 
-        }
 
 
 void PID::setOutputLimits(float u_min,  float  u_max){
@@ -91,7 +74,7 @@ float PID::updateIntegral(float dt, float error){
 
     integral += ki*error*dt;
 
-    integral = Utilities::constrain(integral, integralMin,integralMax); // limits the integral output
+    integral = constrain(integral, integralMin,integralMax); // limits the integral output
 
     return(integral);
 }

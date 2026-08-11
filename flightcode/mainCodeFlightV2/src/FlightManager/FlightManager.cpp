@@ -39,9 +39,9 @@ void FlightManager::update()
 {
     // Update sensors and estimated lander state first.
     lander.update();
-    controller.update();
+    
 
-    motor_manager.actuate(controller.getControlCmd());
+    
 
 
     // Evaluate safety conditions before normal transitions.
@@ -366,29 +366,34 @@ bool FlightManager::readyToArm() const
 // Commands
 // ============================================================
 
-void FlightManager::requestArm()
+bool FlightManager::requestArm()
 {
     armRequested = true;
+    return true;
 }
 
-void FlightManager::requestDisarm()
+bool FlightManager::requestDisarm()
 {
     disarmRequested = true;
+    return true;
 }
 
-void FlightManager::requestTakeoff()
+bool FlightManager::requestTakeoff()
 {
     takeoffRequested = true;
+    return true;    
 }
 
-void FlightManager::requestLanding()
+bool FlightManager::requestLanding()
 {
     landingRequested = true;
+    return true;
 }
 
-void FlightManager::requestAbort()
+bool FlightManager::requestAbort()
 {
     status.abortRequested = true;
+    return true;
 }
 
 // ============================================================

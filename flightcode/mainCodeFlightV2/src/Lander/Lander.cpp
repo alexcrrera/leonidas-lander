@@ -92,13 +92,13 @@ void Lander::estimateAttitude()
 
     VN300Measurement measurement = vn300.getMeasurement();
 
-    solution.state.attitude.roll = measurement.roll;
-    solution.state.attitude.pitch = measurement.pitch;
-    solution.state.attitude.yaw = measurement.yaw;
+    solution.state.attitude.Roll_SI = measurement.roll;
+    solution.state.attitude.Pitch_SI = measurement.pitch;
+    solution.state.attitude.Yaw_SI = measurement.yaw;
 
-    solution.state.angularVelocity.x = measurement.gyroX;
-    solution.state.angularVelocity.y = measurement.gyroY;
-    solution.state.angularVelocity.z = measurement.gyroZ;
+    solution.state.angularVelocity.Roll_SI = measurement.gyroX;
+    solution.state.angularVelocity.Pitch_SI = measurement.gyroY;
+    solution.state.angularVelocity.Yaw_SI = measurement.gyroZ;
 
     solution.validity.attitudeValid = true;
     solution.source.attitude = AttitudeSource::VN300;
@@ -114,9 +114,9 @@ void Lander::estimateAcceleration()
     VN300Measurement measurement = vn300.getMeasurement();
 
     // Register 240 provides linear acceleration in NED.
-    solution.state.acceleration.x = measurement.accelNorth;
-    solution.state.acceleration.y = measurement.accelEast;
-    solution.state.acceleration.z = measurement.accelDown;
+    solution.state.acceleration.North_SI = measurement.accelNorth;
+    solution.state.acceleration.East_SI = measurement.accelEast;
+    solution.state.acceleration.Down_SI = measurement.accelDown;
 
     solution.validity.accelerationValid = true;
 }
@@ -136,9 +136,9 @@ void Lander::estimateVelocity()
     }
 
     // Register 58 provides GNSS velocity directly in NED.
-    solution.state.velocity.x = measurement.velocityNorth;
-    solution.state.velocity.y = measurement.velocityEast;
-    solution.state.velocity.z = measurement.velocityDown;
+    solution.state.velocity.North_SI = measurement.velocityNorth;
+    solution.state.velocity.East_SI = measurement.velocityEast;
+    solution.state.velocity.Down_SI = measurement.velocityDown;
 
     solution.validity.velocityValid = true;
     solution.source.velocity = VelocitySource::VN300;
@@ -157,7 +157,7 @@ void Lander::initializePositionOrigin(
 
 void Lander::convertLlaToLocalNed(
     const VN300Measurement& measurement,
-    Vector3& position
+    NED_coordinates& position
 ) const
 {
     constexpr double earthRadiusM = 6378137.0;
@@ -172,18 +172,18 @@ void Lander::convertLlaToLocalNed(
     const double deltaLongitudeRad =
         (measurement.longitude - originLongitude) * degToRad;
 
-    position.x = static_cast<float>(
+    position.North_SI = static_cast<float>(
         deltaLatitudeRad * earthRadiusM
     );
 
-    position.y = static_cast<float>(
+    position.East_SI = static_cast<float>(
         deltaLongitudeRad *
         earthRadiusM *
         cos(latitude0Rad)
     );
 
     // NED convention: positive Z is Down.
-    position.z = static_cast<float>(
+    position.Down_SI = static_cast<float>(
         originAltitude - measurement.altitude
     );
 }
@@ -340,22 +340,22 @@ void Lander::printStatus(Stream& serialPort) const
     if (solution.validity.attitudeValid)
     {
         serialPort.print("Roll:  ");
-        serialPort.println(solution.state.attitude.roll, 3);
+        serialPort.println(solution.state.attitude.Roll_SI, 3);
 
         serialPort.print("Pitch: ");
-        serialPort.println(solution.state.attitude.pitch, 3);
+        serialPort.println(solution.state.attitude.Pitch_SI, 3);
 
         serialPort.print("Yaw:   ");
-        serialPort.println(solution.state.attitude.yaw, 3);
+        serialPort.println(solution.state.attitude.Yaw_SI, 3);
 
         serialPort.print("Gyro X: ");
-        serialPort.println(solution.state.angularVelocity.x, 5);
+        serialPort.println(solution.state.angularVelocity.Roll_SI, 5);
 
         serialPort.print("Gyro Y: ");
-        serialPort.println(solution.state.angularVelocity.y, 5);
+        serialPort.println(solution.state.angularVelocity.Pitch_SI, 5);
 
         serialPort.print("Gyro Z: ");
-        serialPort.println(solution.state.angularVelocity.z, 5);
+        serialPort.println(solution.state.angularVelocity.Yaw_SI, 5);
     }
     else
     {
@@ -371,15 +371,15 @@ void Lander::printStatus(Stream& serialPort) const
     if (solution.validity.accelerationValid)
     {
         serialPort.print("North: ");
-        serialPort.print(solution.state.acceleration.x, 3);
+        serialPort.print(solution.state.acceleration.North_SI, 3);
         serialPort.println(" m/s^2");
 
         serialPort.print("East:  ");
-        serialPort.print(solution.state.acceleration.y, 3);
+        serialPort.print(solution.state.acceleration.East_SI, 3);
         serialPort.println(" m/s^2");
 
         serialPort.print("Down:  ");
-        serialPort.print(solution.state.acceleration.z, 3);
+        serialPort.print(solution.state.acceleration.Down_SI, 3);
         serialPort.println(" m/s^2");
     }
     else
@@ -396,15 +396,15 @@ void Lander::printStatus(Stream& serialPort) const
     if (solution.validity.positionValid)
     {
         serialPort.print("North: ");
-        serialPort.print(solution.state.position.x, 3);
+        serialPort.print(solution.state.position.North_SI, 3);
         serialPort.println(" m");
 
         serialPort.print("East:  ");
-        serialPort.print(solution.state.position.y, 3);
+        serialPort.print(solution.state.position.East_SI, 3);
         serialPort.println(" m");
 
         serialPort.print("Down:  ");
-        serialPort.print(solution.state.position.z, 3);
+        serialPort.print(solution.state.position.Down_SI, 3);
         serialPort.println(" m");
     }
     else
@@ -421,15 +421,15 @@ void Lander::printStatus(Stream& serialPort) const
     if (solution.validity.velocityValid)
     {
         serialPort.print("North: ");
-        serialPort.print(solution.state.velocity.x, 3);
+        serialPort.print(solution.state.velocity.North_SI, 3);
         serialPort.println(" m/s");
 
         serialPort.print("East:  ");
-        serialPort.print(solution.state.velocity.y, 3);
+        serialPort.print(solution.state.velocity.East_SI, 3);
         serialPort.println(" m/s");
 
         serialPort.print("Down:  ");
-        serialPort.print(solution.state.velocity.z, 3);
+        serialPort.print(solution.state.velocity.Down_SI, 3);
         serialPort.println(" m/s");
     }
     else

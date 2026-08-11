@@ -2,17 +2,6 @@
 #include <cmath>
 
 
-float Utilities::constrain(float u, float u_min, float u_max){
-    if(u < u_min){
-        return u_min;
-    }
-
-    if(u > u_max){
-        return u_max;
-    }
-
-    return u;
-}
 
 float Utilities::clamping(float u, float u_max){
     return constrain(u,-u_max,u_max); // 1D constraining
@@ -78,10 +67,3 @@ bool Utilities::isWithinEps_Yaw(float epsYaw, float yaw, float yaw_ref){
     return(isWithinEps_1D(epsYaw,yaw,yaw_ref));
 }
 
-bool Utilities::isBounded(float u, float u_min, float u_max){
-    // verify that u_min <= u <= u_max
-    if(u_min>u_max){
-        return(false); // potential bugs
-    }
-    return(u_min<=u&& u<=u_max );
-}

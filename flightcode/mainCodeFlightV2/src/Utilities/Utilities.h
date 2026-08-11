@@ -2,7 +2,17 @@
 #ifndef UTILITIES_H
 #define UTILITIES_H
 
+
+
 #include "Arduino.h"
+
+
+struct PID_Gains{
+    float kp;
+    float ki;
+    float kd;
+};
+
 struct Vector3
 {
     float x = 0.0f;
@@ -16,7 +26,7 @@ struct NED_coordinates {
     float North_SI;
     float East_SI; 
     float Down_SI;
-}
+};
 
 struct Rotation_Euler_coordinates {
     float Roll_SI = 0.0f;
@@ -51,7 +61,7 @@ struct SerialPortConfig {
     HardwareSerial* port;
     uint32_t baudrate;
     const char* name;
-}
+};
 
 
 
@@ -60,7 +70,7 @@ struct SerialPortConfig {
 
 namespace Utilities{
 
-    float constrain(float u, float u_min, float u_max);
+    
     float clamping(float u, float u_max);
     
     float EWA(float alpha, float u, float measurement);
@@ -72,7 +82,9 @@ namespace Utilities{
     bool isWithinEps_NED(float epsH, float epsV, const Vector3& p, const Vector3& p_ref);
     bool isWithinEps_Yaw(float epsYaw, float yaw, float yaw_ref);
 
-    bool isBounded(float u, float u_min, float u_max);
+    //bool isBounded(float u, float u_min, float u_max);
+    constexpr bool isBounded(float value,float minValue,float maxValue){return value >= minValue &&value <= maxValue;}
+
 
     float distance1D(float u, float u_ref);
     float distance2D(float x, float y, float x_ref, float y_ref);

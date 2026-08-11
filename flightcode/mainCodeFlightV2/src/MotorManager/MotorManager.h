@@ -3,12 +3,12 @@
 #ifndef MOTORMANAGER_H
 #define MOTORMANAGER_H
 
-#include "ActuatorsConfig.h"
+#include "../Config/ActuatorsConfig.h"
 #include <Arduino.h>
 
-#include "ActuatorPWM.h"
+#include "../ActuatorPWM/ActuatorPWM.h"
 
-#include "Utilities.h"
+#include "../Utilities/Utilities.h"
 
 
 class MotorManager { 
@@ -23,7 +23,7 @@ class MotorManager {
             ActuatorPWM vane_X2;
             ActuatorPWM vane_Y1;
             ActuatorPWM vane_Y2;
-}
+};
 
 
 #endif

@@ -6,12 +6,21 @@
 #include "../Sensor/Sensor.h"
 
 
-struct OpticalFlowMeasurement {
+struct OpticalFlowMeasurement
+{
+    uint32_t systemTimeMs = 0;
 
-    int16_t deltaX = 0;
-    int16_t deltaY = 0;
+    uint32_t distanceMm = 0;
 
-    uint8_t surfaceQuality = 0;
+    uint8_t distanceStrength = 0;
+    uint8_t distancePrecision = 0;
+    uint8_t distanceStatus = 0;
+
+    int16_t flowVelocityX = 0;
+    int16_t flowVelocityY = 0;
+
+    uint8_t flowQuality = 0;
+    uint8_t flowStatus = 0;
 
     float flowRateX = 0.0f;
     float flowRateY = 0.0f;
@@ -19,16 +28,11 @@ struct OpticalFlowMeasurement {
     float dt = 0.0f;
 };
 
-
-class OpticalFlow : public Sensor<OpticalFlowMeasurement> {
-
+class OpticalFlow : public Sensor<OpticalFlowMeasurement>
+{
 public:
 
-    explicit OpticalFlow(
-        HardwareSerial& serialPort,
-        uint32_t baudRate = 19200,
-        unsigned long sensorTimeoutMs = 500
-    );
+    OpticalFlow();
 
     bool begin() override;
     void update() override;
@@ -40,28 +44,35 @@ public:
 protected:
 
     void validateMeasurement(
-        const OpticalFlowMeasurement& rawMeasurement
+        const OpticalFlowMeasurement& measurement
     ) override;
 
 
 private:
 
-    static constexpr uint8_t packetHeader = 0xFE;
-    static constexpr uint8_t packetLength = 9;
-    static constexpr uint8_t packetFooter = 0xAA;
-    static constexpr uint8_t expectedDataLength = 0x04;
+   static constexpr uint8_t packetHeader = 0xEF;
+
+static constexpr uint8_t expectedDeviceId = 0x0F;
+static constexpr uint8_t expectedSystemId = 0x00;
+static constexpr uint8_t expectedMessageId = 0x51;
+
+static constexpr uint8_t expectedPayloadLength = 0x14;
+
+static constexpr uint8_t headerLength = 6;
+static constexpr uint8_t payloadLength = 20;
+static constexpr uint8_t packetLength = 27;
 
     static constexpr float pixelScaling = 1.76e-3f;
 
-    HardwareSerial& serialPort;
-    uint32_t baudRate;
+    HardwareSerial* serialPort = nullptr;
 
     uint8_t packetBuffer[packetLength] = {};
     uint8_t packetIndex = 0;
 
     OpticalFlowMeasurement filteredMeasurement{};
 
-    unsigned long previousMeasurementTime = 0;
+    uint32_t previousMeasurementTime = 0;
+
 
     bool readPacket(
         OpticalFlowMeasurement& measurement
@@ -75,6 +86,11 @@ private:
     void resetParser();
 
     float calculateDeltaTime(
-        unsigned long currentTime
+        uint32_t currentTime
     ) const;
+
+    uint8_t calculateChecksum(
+    const uint8_t* packet
+) const;
+
 };

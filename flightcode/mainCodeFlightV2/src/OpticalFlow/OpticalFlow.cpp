@@ -1,31 +1,65 @@
 #include "OpticalFlow.h"
+
 #include <math.h>
 
+#include "../Config/SensorConfig.h"
 
-OpticalFlow::OpticalFlow(
-    HardwareSerial& serialPort,
-    uint32_t baudRate,
-    unsigned long sensorTimeoutMs
-)
-    :
-    serialPort(serialPort),
-    baudRate(baudRate)
+
+OpticalFlow::OpticalFlow()
+    : serialPort(nullptr)
 {
-    timeoutMs = sensorTimeoutMs;
 }
 
 
 bool OpticalFlow::begin()
 {
-    serialPort.begin(baudRate);
+    Serial.println("OPTICAL FLOW: BEGIN");
 
-    initializeSensorState(timeoutMs);
+    serialPort =
+        SensorConfig::OPTICAL_FLOW.port;
+
+    if (serialPort == nullptr)
+    {
+        Serial.println(
+            "OPTICAL FLOW: ERROR - NULL SERIAL PORT"
+        );
+
+        setFault(
+            SensorFault::CommunicationError
+        );
+
+        return false;
+    }
+
+    Serial.print(
+        "OPTICAL FLOW: BAUD = "
+    );
+
+    Serial.println(
+        SensorConfig::OPTICAL_FLOW.baudrate
+    );
+
+    serialPort->begin(
+        SensorConfig::OPTICAL_FLOW.baudrate
+    );
+
+    initializeSensorState(
+        500
+    );
 
     resetParser();
 
     filteredMeasurement = {};
-    
+
     previousMeasurementTime = millis();
+
+    Serial.println(
+        "OPTICAL FLOW: SERIAL INITIALIZED"
+    );
+
+    Serial.println(
+        "OPTICAL FLOW: BEGIN COMPLETE"
+    );
 
     return true;
 }
@@ -33,32 +67,48 @@ bool OpticalFlow::begin()
 
 void OpticalFlow::update()
 {
+    if (serialPort == nullptr)
+    {
+        setFault(
+            SensorFault::CommunicationError
+        );
+
+        return;
+    }
+
     bool receivedMeasurement = false;
 
-    OpticalFlowMeasurement rawMeasurement{};
+    OpticalFlowMeasurement measurement{};
 
-    while (readPacket(rawMeasurement)) {
-
+    while (readPacket(measurement))
+    {
         receivedMeasurement = true;
 
         registerPacket();
 
         clearFaults();
 
-        validateMeasurement(rawMeasurement);
+        validateMeasurement(
+            measurement
+        );
 
-        if (!isHealthy()) {
+        if (!isHealthy())
+        {
             continue;
         }
 
-        storeRawMeasurement(rawMeasurement);
+        storeRawMeasurement(
+            measurement
+        );
 
-        filteredMeasurement = rawMeasurement;
+        filteredMeasurement =
+            measurement;
     }
 
     checkTimeout();
 
-    if (!receivedMeasurement) {
+    if (!receivedMeasurement)
+    {
         return;
     }
 }
@@ -68,55 +118,181 @@ bool OpticalFlow::readPacket(
     OpticalFlowMeasurement& measurement
 )
 {
-    while (serialPort.available() > 0) {
-
+    while (serialPort->available() > 0)
+    {
         const uint8_t incomingByte =
-            static_cast<uint8_t>(serialPort.read());
+            static_cast<uint8_t>(
+                serialPort->read()
+            );
 
+        /*
+         * Search for Micolink STX.
+         *
+         * MTF-01:
+         * 0xEF
+         */
 
-        if (packetIndex == 0) {
-
-            if (incomingByte != packetHeader) {
+        if (packetIndex == 0)
+        {
+            if (incomingByte != packetHeader)
+            {
                 continue;
             }
 
-            packetBuffer[packetIndex++] = incomingByte;
+            packetBuffer[packetIndex++] =
+                incomingByte;
 
             continue;
         }
 
+        /*
+         * Buffer protection.
+         */
 
-        packetBuffer[packetIndex++] = incomingByte;
-
-
-        if (packetIndex < packetLength) {
-            continue;
-        }
-
-
-        packetIndex = 0;
-
-
-        if (packetBuffer[0] != packetHeader ||
-            packetBuffer[1] != expectedDataLength ||
-            packetBuffer[packetLength - 1] != packetFooter)
+        if (packetIndex >= packetLength)
         {
             resetParser();
 
-            setFault(SensorFault::InvalidData);
+            setFault(
+                SensorFault::InvalidData
+            );
 
             continue;
         }
 
+        packetBuffer[packetIndex++] =
+            incomingByte;
 
-        if (decodePacket(packetBuffer, measurement)) {
+        /*
+         * Header validation.
+         *
+         * Byte 1: Device ID
+         * Byte 2: System ID
+         * Byte 3: Message ID
+         * Byte 4: Sequence
+         * Byte 5: Payload length
+         */
+
+        if (packetIndex == 2)
+        {
+            if (
+                packetBuffer[1] !=
+                expectedDeviceId
+            )
+            {
+                resetParser();
+                continue;
+            }
+        }
+
+        if (packetIndex == 3)
+        {
+            if (
+                packetBuffer[2] !=
+                expectedSystemId
+            )
+            {
+                resetParser();
+                continue;
+            }
+        }
+
+        if (packetIndex == 4)
+        {
+            if (
+                packetBuffer[3] !=
+                expectedMessageId
+            )
+            {
+                resetParser();
+                continue;
+            }
+        }
+
+        /*
+         * Payload length has arrived.
+         */
+
+        if (packetIndex == 6)
+        {
+            const uint8_t payloadLength =
+                packetBuffer[5];
+
+            if (
+                payloadLength !=
+                expectedPayloadLength
+            )
+            {
+                resetParser();
+                continue;
+            }
+        }
+
+        /*
+         * Wait until the complete packet is received.
+         *
+         * 6 header bytes
+         * 20 payload bytes
+         * 1 checksum byte
+         *
+         * Total = 27 bytes
+         */
+
+        if (packetIndex < packetLength)
+        {
+            continue;
+        }
+
+        /*
+         * Checksum.
+         */
+
+        const uint8_t receivedChecksum =
+            packetBuffer[
+                packetLength - 1
+            ];
+
+        const uint8_t calculatedChecksum =
+            calculateChecksum(
+                packetBuffer
+            );
+
+        if (
+            receivedChecksum !=
+            calculatedChecksum
+        )
+        {
+            resetParser();
+
+            setFault(
+                SensorFault::InvalidData
+            );
+
+            continue;
+        }
+
+        /*
+         * Decode.
+         */
+
+        if (
+            decodePacket(
+                packetBuffer,
+                measurement
+            )
+        )
+        {
+            resetParser();
+
             return true;
         }
 
+        resetParser();
 
-        setFault(SensorFault::InvalidData);
+        setFault(
+            SensorFault::InvalidData
+        );
     }
-
 
     return false;
 }
@@ -128,128 +304,347 @@ bool OpticalFlow::decodePacket(
 )
 {
     /*
-     * Holybro PMW3901 UART packet:
+     * Micolink MTF-01 frame:
      *
-     * 0: 0xFE
-     * 1: 0x04
-     * 2: X high
-     * 3: X low
-     * 4: Y high
-     * 5: Y low
-     * 6: checksum
-     * 7: surface quality
-     * 8: 0xAA
+     * 0   STX          0xEF
+     * 1   Device ID   0x0F
+     * 2   System ID   0x00
+     * 3   Message ID  0x51
+     * 4   Sequence
+     * 5   Payload Len 0x14
      *
-     * The checksum byte is retained in the packet but is not
-     * interpreted here because the published CX-OF-compatible
-     * frame format does not specify a checksum algorithm.
+     * Payload starts at byte 6.
+     *
+     * Payload:
+     *
+     *  0-3   uint32  system time [ms]
+     *  4-7   uint32  distance [mm]
+     *  8     uint8   strength
+     *  9     uint8   precision
+     * 10     uint8   distance status
+     * 11     uint8   reserved
+     * 12-13  int16   flow velocity X [cm/s @ 1m]
+     * 14-15  int16   flow velocity Y [cm/s @ 1m]
+     * 16     uint8   flow quality
+     * 17     uint8   flow status
+     * 18-19  uint16  reserved
+     *
+     * Byte 26:
+     * checksum
      */
 
-    measurement.deltaX =
-        static_cast<int16_t>(
-            (static_cast<uint16_t>(packet[2]) << 8) |
-            static_cast<uint16_t>(packet[3])
+    const uint8_t* payload =
+        &packet[6];
+
+    /*
+     * System time.
+     */
+
+    measurement.systemTimeMs =
+        static_cast<uint32_t>(
+            payload[0]
+            |
+            (
+                static_cast<uint32_t>(
+                    payload[1]
+                ) << 8
+            )
+            |
+            (
+                static_cast<uint32_t>(
+                    payload[2]
+                ) << 16
+            )
+            |
+            (
+                static_cast<uint32_t>(
+                    payload[3]
+                ) << 24
+            )
         );
 
+    /*
+     * Distance.
+     */
 
-    measurement.deltaY =
-        static_cast<int16_t>(
-            (static_cast<uint16_t>(packet[4]) << 8) |
-            static_cast<uint16_t>(packet[5])
+    measurement.distanceMm =
+        static_cast<uint32_t>(
+            payload[4]
+            |
+            (
+                static_cast<uint32_t>(
+                    payload[5]
+                ) << 8
+            )
+            |
+            (
+                static_cast<uint32_t>(
+                    payload[6]
+                ) << 16
+            )
+            |
+            (
+                static_cast<uint32_t>(
+                    payload[7]
+                ) << 24
+            )
         );
 
+    /*
+     * Distance information.
+     */
 
-    measurement.surfaceQuality = packet[7];
+    measurement.distanceStrength =
+        payload[8];
 
+    measurement.distancePrecision =
+        payload[9];
 
-    const unsigned long currentTime = millis();
+    measurement.distanceStatus =
+        payload[10];
 
-    measurement.dt =
-        calculateDeltaTime(currentTime);
+    /*
+     * Raw optical flow velocity.
+     *
+     * Unit:
+     *
+     * cm/s @ 1m
+     */
 
-    previousMeasurementTime = currentTime;
+    measurement.flowVelocityX =
+        static_cast<int16_t>(
+            static_cast<uint16_t>(
+                payload[12]
+            )
+            |
+            (
+                static_cast<uint16_t>(
+                    payload[13]
+                ) << 8
+            )
+        );
 
+    measurement.flowVelocityY =
+        static_cast<int16_t>(
+            static_cast<uint16_t>(
+                payload[14]
+            )
+            |
+            (
+                static_cast<uint16_t>(
+                    payload[15]
+                ) << 8
+            )
+        );
 
-    if (measurement.dt > 0.0f) {
+    /*
+     * Optical flow status.
+     */
+
+    measurement.flowQuality =
+        payload[16];
+
+    measurement.flowStatus =
+        payload[17];
+
+    /*
+     * Calculate physical velocity.
+     *
+     * speed(cm/s) =
+     *     flow_velocity * distance(m)
+     *
+     * speed(m/s) =
+     *     flow_velocity
+     *     * distance(m)
+     *     * 0.01
+     */
+
+    if (
+        measurement.distanceStatus == 1 &&
+        measurement.distanceMm >= 10 &&
+        measurement.flowStatus == 1
+    )
+    {
+        const float distanceM =
+            static_cast<float>(
+                measurement.distanceMm
+            )
+            * 0.001f;
 
         measurement.flowRateX =
-            static_cast<float>(measurement.deltaX)
-            * pixelScaling
-            / measurement.dt;
+            static_cast<float>(
+                measurement.flowVelocityX
+            )
+            * distanceM
+            * 0.01f;
 
         measurement.flowRateY =
-            static_cast<float>(measurement.deltaY)
-            * pixelScaling
-            / measurement.dt;
+            static_cast<float>(
+                measurement.flowVelocityY
+            )
+            * distanceM
+            * 0.01f;
     }
-    else {
-
+    else
+    {
         measurement.flowRateX = 0.0f;
         measurement.flowRateY = 0.0f;
     }
 
+    /*
+     * Delta time.
+     */
+
+    const uint32_t currentTime =
+        millis();
+
+    measurement.dt =
+        calculateDeltaTime(
+            currentTime
+        );
+
+    previousMeasurementTime =
+        currentTime;
 
     return true;
 }
 
 
-float OpticalFlow::calculateDeltaTime(
-    unsigned long currentTime
+uint8_t OpticalFlow::calculateChecksum(
+    const uint8_t* packet
 ) const
 {
-    if (previousMeasurementTime == 0) {
+    uint8_t checksum = 0;
+
+    for (
+        uint8_t i = 0;
+        i < packetLength - 1;
+        i++
+    )
+    {
+        checksum += packet[i];
+    }
+
+    return checksum;
+}
+
+
+float OpticalFlow::calculateDeltaTime(
+    uint32_t currentTime
+) const
+{
+    if (previousMeasurementTime == 0)
+    {
         return 0.0f;
     }
 
     return
         static_cast<float>(
-            currentTime - previousMeasurementTime
+            currentTime -
+            previousMeasurementTime
         )
         * 1.0e-3f;
 }
 
 
 void OpticalFlow::validateMeasurement(
-    const OpticalFlowMeasurement& rawMeasurement
+    const OpticalFlowMeasurement& measurement
 )
 {
-    if (!isfinite(rawMeasurement.flowRateX) ||
-        !isfinite(rawMeasurement.flowRateY) ||
-        !isfinite(rawMeasurement.dt))
-    {
-        setFault(SensorFault::InvalidData);
-
-        return;
-    }
-
-
-    if (rawMeasurement.dt <= 0.0f ||
-        rawMeasurement.dt > 0.5f)
-    {
-        setFault(SensorFault::InvalidData);
-
-        return;
-    }
-
-
     /*
-     * The PMW3901 reports surface quality as an unsigned byte.
-     * No additional range check is required.
+     * Distance status:
+     *
+     * 1 = valid
+     * 0 = invalid
      */
 
-    constexpr float maxFlowRate = 20.0f;
-
-    if (fabsf(rawMeasurement.flowRateX) > maxFlowRate ||
-        fabsf(rawMeasurement.flowRateY) > maxFlowRate)
+    if (
+        measurement.distanceStatus != 1
+    )
     {
-        setFault(SensorFault::OutOfRange);
+        setFault(
+            SensorFault::InvalidData
+        );
+
+        return;
+    }
+
+    /*
+     * MicoAir specifies:
+     *
+     * distance >= 10 mm
+     */
+
+    if (
+        measurement.distanceMm < 10
+    )
+    {
+        setFault(
+            SensorFault::OutOfRange
+        );
+
+        return;
+    }
+
+    /*
+     * Optical flow status:
+     *
+     * 1 = valid
+     * 0 = invalid
+     */
+
+    if (
+        measurement.flowStatus != 1
+    )
+    {
+        setFault(
+            SensorFault::InvalidData
+        );
+
+        return;
+    }
+
+    if (
+        !isfinite(
+            measurement.flowRateX
+        )
+        ||
+        !isfinite(
+            measurement.flowRateY
+        )
+    )
+    {
+        setFault(
+            SensorFault::InvalidData
+        );
+
+        return;
+    }
+
+    constexpr float maxFlowRate =
+        20.0f;
+
+    if (
+        fabsf(
+            measurement.flowRateX
+        ) > maxFlowRate
+        ||
+        fabsf(
+            measurement.flowRateY
+        ) > maxFlowRate
+    )
+    {
+        setFault(
+            SensorFault::OutOfRange
+        );
 
         return;
     }
 }
 
 
-OpticalFlowMeasurement OpticalFlow::getMeasurement() const
+OpticalFlowMeasurement
+OpticalFlow::getMeasurement() const
 {
     return filteredMeasurement;
 }
@@ -258,9 +653,10 @@ OpticalFlowMeasurement OpticalFlow::getMeasurement() const
 void OpticalFlow::zero()
 {
     /*
-     * Optical flow reports frame-to-frame displacement.
-     * There is no static bias to zero in the same sense as
-     * an accelerometer or gyroscope.
+     * Optical flow is not a biased sensor
+     * in the same sense as an accelerometer.
+     *
+     * No zero operation required.
      */
 }
 

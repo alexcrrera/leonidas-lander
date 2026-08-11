@@ -29,7 +29,7 @@ struct SerialPortConfig {
 namespace CommsConfig {
 
     constexpr SerialPortConfig RADIO = {
-        .port = &Serial1,
+        .port = &Serial5,
         .baudrate = 115200,
         .name = "MAIN COMMS",
         .enabled = true,
@@ -39,12 +39,12 @@ namespace CommsConfig {
 
 
     constexpr SerialPortConfig USB = {
-        .port = &Serial1,
+        .port = &Serial2, /// unused, but still initialized to avoid conflicts
         .baudrate = 115200,
         .name = "DEBUG COMMS",
-        .enabled = false,
+        .enabled = true,
         .frequency = 10.0f, // 10 Hz
-        .outputType = SerialOutputType::HUMAN_READABLE
+        .outputType = SerialOutputType::BASE_STATION_FORMAT
     };
 
 
@@ -89,18 +89,6 @@ constexpr bool isBaudrateAllowed(uint32_t baudrate)
 }
 
 
-constexpr bool isPortConflicting(
-    const SerialPortConfig& port1,
-    const SerialPortConfig& port2
-)
-{
-    return (
-        port1.port == port2.port &&
-        port1.enabled &&
-        port2.enabled
-    );
-}
-
 
 static_assert(
     isBaudrateAllowed(CommsConfig::RADIO.baudrate),
@@ -114,13 +102,6 @@ static_assert(
 );
 
 
-static_assert(
-    !isPortConflicting(
-        CommsConfig::RADIO,
-        CommsConfig::USB
-    ),
-    "RADIO and USB ports cannot be the same."
-);
 
 static_assert(
     Utilities::isBounded(

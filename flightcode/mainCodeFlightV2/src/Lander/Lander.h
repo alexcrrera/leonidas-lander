@@ -6,6 +6,7 @@
 #include "../Sensor/Sensor.h"
 #include "../VN300/VN300.h"
 #include "../Lidar/Lidar.h"
+#include "../OpticalFlow/OpticalFlow.h"
 
 #include "../Utilities/Utilities.h"
 
@@ -63,7 +64,8 @@ enum class VelocitySource : uint8_t
     None,
     VN300,
     Inertial,
-    Fused
+    Fused,
+    OpticalFlow
 };
 
 enum class AttitudeSource : uint8_t
@@ -129,11 +131,13 @@ public:
     uint16_t getErrors() const;
 
     void printStatus(Stream& serialPort = Serial) const;
-
+    VN300& getVN300() { return vn300; }
+    Lidar& getLidar() { return lidar; }
+    OpticalFlow& getOpticalFlow() { return opticalFlow; }
 private:
     VN300 vn300;
     Lidar lidar;
-
+    OpticalFlow opticalFlow;
     LanderSolution solution;
 
     // First valid Register 58 GNSS position defines local NED origin.

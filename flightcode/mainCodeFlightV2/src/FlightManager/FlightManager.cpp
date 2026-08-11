@@ -5,8 +5,8 @@
 // Constructor
 // ============================================================
 
-FlightManager::FlightManager(Lander& lander)
-    : lander(lander),
+FlightManager::FlightManager()
+    : 
       telemetry_manager(this)
 {
 }
@@ -33,8 +33,13 @@ void FlightManager::begin()
     takeoffRequested = false;
     landingRequested = false;
 
+    lander.begin();
 
     telemetry_manager.begin();
+
+    
+
+   
 }
 
 
@@ -50,8 +55,10 @@ void FlightManager::update()
     // --------------------------------------------------------
     // Update sensors and estimated lander state first
     // --------------------------------------------------------
-
+    
     lander.update();
+
+    
 
 
     // --------------------------------------------------------
@@ -545,17 +552,6 @@ bool FlightManager::isAborted() const
 // ============================================================
 // Lander access
 // ============================================================
-
-Lander& FlightManager::getLander()
-{
-    return lander;
-}
-
-
-const Lander& FlightManager::getLander() const
-{
-    return lander;
-}
 
 
 // ============================================================

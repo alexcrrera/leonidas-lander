@@ -1,6 +1,7 @@
 #include "VN300.h"
 
 #include <math.h>
+#include "../Utilities/Utilities.h"
 #include <string.h>
 
 #include "../Config/SensorConfig.h"
@@ -70,25 +71,27 @@ bool VN300::begin()
 }
 
 
+
 void VN300::update()
 {
-    if (
-        millis() - lastGnssPollMs >=
-        gnssPollPeriodMs
-    )
+    const uint32_t now = millis();
+
+    // Periodically request GNSS data
+    if (now - lastGnssPollMs >= gnssPollPeriodMs)
     {
-        lastGnssPollMs = millis();
+        lastGnssPollMs = now;
 
         pollGnssSolution();
     }
 
 
-    while (vectornav->available() > 0)
+    // Consume exactly one byte per update
+    if (vectornav->available() > 0)
     {
-        char incomingChar =
-            vectornav->read();
+        const char incomingChar = vectornav->read();
 
 
+        // Complete message
         if (incomingChar == '\n')
         {
             incomingData[dataIndex] = '\0';
@@ -96,21 +99,38 @@ void VN300::update()
             processVectornav();
 
             dataIndex = 0;
-
             incomingDataString = "";
+
+            return;
         }
-        else if (incomingChar != '\r')
+
+
+        // Ignore carriage return
+        if (incomingChar == '\r')
         {
-            incomingData[dataIndex] =
-                incomingChar;
-
-            incomingDataString +=
-                incomingChar;
-
-            dataIndex++;
-
-            checkOverflowVectornav();
+            return;
         }
+
+
+        // Prevent buffer overflow
+        if (dataIndex >= bufferSize - 1)
+        {
+            dataIndex = 0;
+            incomingDataString = "";
+
+            setFault(
+                SensorFault::InvalidData
+            );
+
+            return;
+        }
+
+
+        // Store byte
+        incomingData[dataIndex] = incomingChar;
+        dataIndex++;
+
+        incomingDataString += incomingChar;
     }
 
 
@@ -283,25 +303,25 @@ void VN300::applyFilter(
 
 
     // ---------------------------------------------------------
-    // Linear acceleration ewa
+    // Linear acceleration EWA
     // ---------------------------------------------------------
 
     filteredMeasurement.accelNorth =
-        ewa(
+        Utilities::EWA(
             filterAlpha,
             filteredMeasurement.accelNorth,
             rawMeasurement.accelNorth
         );
 
     filteredMeasurement.accelEast =
-        ewa(
+        Utilities::EWA(
             filterAlpha,
             filteredMeasurement.accelEast,
             rawMeasurement.accelEast
         );
 
     filteredMeasurement.accelDown =
-        ewa(
+        Utilities::EWA(
             filterAlpha,
             filteredMeasurement.accelDown,
             rawMeasurement.accelDown
@@ -309,25 +329,25 @@ void VN300::applyFilter(
 
 
     // ---------------------------------------------------------
-    // Angular velocity ewa
+    // Angular velocity EWA
     // ---------------------------------------------------------
 
     filteredMeasurement.gyroX =
-        ewa(
+        Utilities::EWA(
             filterAlpha,
             filteredMeasurement.gyroX,
             rawMeasurement.gyroX
         );
 
     filteredMeasurement.gyroY =
-        ewa(
+        Utilities::EWA(
             filterAlpha,
             filteredMeasurement.gyroY,
             rawMeasurement.gyroY
         );
 
     filteredMeasurement.gyroZ =
-        ewa(
+        Utilities::EWA(
             filterAlpha,
             filteredMeasurement.gyroZ,
             rawMeasurement.gyroZ
@@ -533,9 +553,7 @@ int VN300::checkHeaderVectornav()
 
 void VN300::pollGnssSolution()
 {
-    vectornav->println(
-        "$VNRRG,58*XX"
-    );
+    vectornav->println("$VNRRG,58*XX" );
 }
 
 

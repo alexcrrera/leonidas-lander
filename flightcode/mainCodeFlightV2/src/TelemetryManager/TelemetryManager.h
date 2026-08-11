@@ -119,11 +119,11 @@ private:
     // Formatting
     // --------------------------------------------------------
 
-    String getFormattedOutput(
-        OutputType outputType,
-        const String& content,
-        bool jumpToNextLine = false
-    ) const;
+   String getFormattedOutput(
+    SerialOutputType outputType,
+    const String& content,
+    bool jumpToNextLine
+) const;
 
 
     // --------------------------------------------------------

@@ -84,7 +84,7 @@ public:
     void printStatus(Stream& serialPort = Serial) const;
 
 private:
-    Lander& lander; // state of the vehicule
+    Lander lander; // state of the vehicule
     Controller controller; // outputs corrections
     Mission mission; // sets setpoints
     MotorManager motor_manager; // owns EDF and servo vanes

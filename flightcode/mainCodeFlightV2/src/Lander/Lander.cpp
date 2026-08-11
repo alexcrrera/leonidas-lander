@@ -3,28 +3,57 @@
 #include <math.h>
 
 void Lander::begin()
+
+
+
 {
+    
     vn300.begin();
+    opticalFlow.begin();
+    
     lidar.begin();
+    
 }
 
 void Lander::update()
 {
+    
+
+
     vn300.update();
+
+    opticalFlow.update();
+
+    
+
+   
+
     lidar.update();
+
+   
 
     clearSolutionStatus();
 
+    
+
     estimateAttitude();
+    
+
     estimateAcceleration();
+    
+
     estimateVelocity();
+    
+
     estimatePosition();
+    
+
     estimateAltitude();
+    
 
     updateErrors();
 
-    solution.timestamp = millis();
-    solution.state.timestamp = solution.timestamp;
+    
 }
 
 void Lander::clearSolutionStatus()
@@ -123,26 +152,35 @@ void Lander::estimateAcceleration()
 
 void Lander::estimateVelocity()
 {
-    if (!vn300.isHealthy() || !vn300.hasValidData())
+    if (
+        !opticalFlow.isHealthy() ||
+        !opticalFlow.hasValidData()
+    )
     {
         return;
     }
 
-    VN300Measurement measurement = vn300.getMeasurement();
+    OpticalFlowMeasurement measurement =
+        opticalFlow.getMeasurement();
 
-    if (!gnssSolutionUsable(measurement))
-    {
-        return;
-    }
+    solution.state.velocity.North_SI =
+        measurement.flowRateX;
 
-    // Register 58 provides GNSS velocity directly in NED.
-    solution.state.velocity.North_SI = measurement.velocityNorth;
-    solution.state.velocity.East_SI = measurement.velocityEast;
-    solution.state.velocity.Down_SI = measurement.velocityDown;
+    solution.state.velocity.East_SI =
+        measurement.flowRateY;
+
+    // Optical flow does not provide vertical velocity.
+    solution.state.velocity.Down_SI =
+        0.0f;
 
     solution.validity.velocityValid = true;
-    solution.source.velocity = VelocitySource::VN300;
+
+    solution.source.velocity =
+        VelocitySource::OpticalFlow;
 }
+
+
+
 
 void Lander::initializePositionOrigin(
     const VN300Measurement& measurement

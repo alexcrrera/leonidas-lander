@@ -3,7 +3,7 @@
 #include <Arduino.h>
 #include "../Config/CommsConfig.h"
 
-
+#include <Wire.h>
 
 struct SerialSensorConfig {
 
@@ -47,7 +47,7 @@ namespace SensorConfig {
 
     // optical flow
     constexpr SerialSensorConfig OPTICAL_FLOW = {
-        .port = &Serial7,
+        .port = &Serial3,
         .baudrate = 115200,
         .frequency = -1.0f, // no polling
         

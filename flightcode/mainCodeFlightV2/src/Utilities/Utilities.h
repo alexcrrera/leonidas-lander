@@ -57,12 +57,6 @@ enum class OutputType{
 };
 
 
-struct SerialPortConfig {
-    HardwareSerial* port;
-    uint32_t baudrate;
-    const char* name;
-};
-
 
 
 

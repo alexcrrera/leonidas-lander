@@ -111,7 +111,10 @@ struct LanderSolution
 class Lander
 {
 public:
-    Lander(VN300& vn300, Lidar& lidar);
+    Lander()=default;
+
+    void begin();
+
 
     void update();
 
@@ -128,8 +131,8 @@ public:
     void printStatus(Stream& serialPort = Serial) const;
 
 private:
-    VN300& vn300;
-    Lidar& lidar;
+    VN300 vn300;
+    Lidar lidar;
 
     LanderSolution solution;
 

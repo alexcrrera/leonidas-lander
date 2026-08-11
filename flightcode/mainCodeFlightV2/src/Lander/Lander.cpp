@@ -2,10 +2,10 @@
 
 #include <math.h>
 
-Lander::Lander(VN300& vn300, Lidar& lidar)
-    : vn300(vn300),
-      lidar(lidar)
+void Lander::begin()
 {
+    vn300.begin();
+    lidar.begin();
 }
 
 void Lander::update()

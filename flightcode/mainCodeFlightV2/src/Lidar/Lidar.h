@@ -4,6 +4,7 @@
 #include <Wire.h>
 
 #include "../Sensor/Sensor.h"
+#include "../Config/SensorConfig.h"
 
 
 struct LidarMeasurement
@@ -25,10 +26,7 @@ class Lidar : public Sensor<LidarMeasurement>
 {
 public:
 
-    Lidar(
-        TwoWire& wirePort = Wire,
-        uint8_t address = 0x62
-    );
+    Lidar() = default;
 
     bool begin() override;
     void update() override;
@@ -55,22 +53,57 @@ private:
 
     static constexpr unsigned long measurementTimeoutUs = 20000;
 
-    TwoWire* wire;
-    uint8_t address;
+
+    // ========================================
+    // Hardware configuration
+    // ========================================
+
+    TwoWire* wire = nullptr;
+
+    uint8_t address = 0x62;
+
+
+    // ========================================
+    // Timing
+    // ========================================
 
     float frequencyHz = 100.0f;
+
     unsigned long updatePeriodUs = 10000;
+
     unsigned long lastUpdateUs = 0;
 
+
+    // ========================================
+    // Filtering
+    // ========================================
+
     float filterAlpha = 0.3f;
+
     float filteredDistanceM = 0.0f;
+
     bool filterInitialized = false;
+
+
+    // ========================================
+    // Zero offset
+    // ========================================
 
     float offsetM = 0.0f;
 
+
+    // ========================================
+    // Acquisition
+    // ========================================
+
     bool measurementPending = false;
+
     unsigned long measurementStartUs = 0;
 
+
+    // ========================================
+    // Internal functions
+    // ========================================
 
     bool checkCommunication();
 

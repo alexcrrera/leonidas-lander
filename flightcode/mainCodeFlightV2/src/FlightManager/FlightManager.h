@@ -6,6 +6,11 @@
 #include "../Mission/Mission.h"
 #include "../MotorManager/MotorManager.h"
 #include "../Controller/Controller.h"
+
+
+
+#include "../TelemetryManager/TelemetryManager.h"
+
 // ============================================================
 // Flight states
 // ============================================================
@@ -43,7 +48,7 @@ struct FlightStatus {
 
 class FlightManager {
 public:
-    FlightManager(Lander& lander);
+    FlightManager();
 
     void begin();
     void update();
@@ -57,6 +62,10 @@ public:
     bool requestTakeoff();
     bool requestLanding();
     bool requestAbort();
+
+    Lander& getLander(){return lander;}
+    Controller& getController(){return controller;}
+    Mission& getMission(){return mission;}
 
     // --------------------------------------------------------
     // Status
@@ -79,6 +88,7 @@ private:
     Controller controller; // outputs corrections
     Mission mission; // sets setpoints
     MotorManager motor_manager; // owns EDF and servo vanes
+    TelemetryManager telemetry_manager; // manages telemetry output
 
 
     FlightStatus status;

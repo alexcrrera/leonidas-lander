@@ -1,19 +1,30 @@
 #include "Lidar.h"
 
 
-Lidar::Lidar(
-    TwoWire& wirePort,
-    uint8_t address
-)
-{
-    wire = &wirePort;
-    this->address = address;
-}
-
-
 bool Lidar::begin()
 {
     initializeSensorState(500);
+
+    wire = SensorConfig::LIDAR.port;
+    address = SensorConfig::LIDAR.address;
+
+    if (wire == nullptr)
+    {
+        setFault(
+            SensorFault::CommunicationError
+        );
+
+        return false;
+    }
+
+
+    if (SensorConfig::LIDAR.frequency > 0.0f)
+    {
+        setFrequency(
+            SensorConfig::LIDAR.frequency
+        );
+    }
+
 
     measurementPending = false;
     filterInitialized = false;
@@ -23,11 +34,19 @@ bool Lidar::begin()
 
     lastUpdateUs = micros();
 
+
+    wire->begin();
+
+
     if (!checkCommunication())
     {
-        setFault(SensorFault::CommunicationError);
+        setFault(
+            SensorFault::CommunicationError
+        );
+
         return false;
     }
+
 
     return true;
 }

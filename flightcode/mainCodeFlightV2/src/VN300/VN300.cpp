@@ -1,10 +1,13 @@
 #include "VN300.h"
 
 #include <math.h>
+#include <string.h>
+
+#include "../Config/SensorConfig.h"
 
 
-VN300::VN300(HardwareSerial& serialPort)
-    : vectornav(serialPort),
+VN300::VN300()
+    : vectornav(nullptr),
       commaParser(",")
 {
 }
@@ -14,40 +17,37 @@ bool VN300::begin()
 {
     Serial.println("INITIALIZING VECTORNAV");
 
-    vectornav.begin(115200);
+    vectornav = SensorConfig::VN300.port;
+
+    if (vectornav == nullptr)
+    {
+        setFault(
+            SensorFault::CommunicationError
+        );
+
+        return false;
+    }
+
+    vectornav->begin(
+        SensorConfig::VN300.baudrate
+    );
 
     delay(200);
-
-
-    // ---------------------------------------------------------
-    // Select asynchronous output register
-    // ---------------------------------------------------------
-
-    // Register 1:
-    // Yaw / Pitch / Roll
-    //
-    // Output:
-    // $VNYPR,yaw,pitch,roll
-    //
-    // vectornav.println("$VNWRG,6,1*XX");
 
 
     // Register 240:
     // Yaw / Pitch / Roll
     // Linear acceleration NED
     // Compensated angular rates
-    //
-    // Output:
-    // $VNYIA,
-    // yaw,pitch,roll,
-    // linAccelN,linAccelE,linAccelD,
-    // gyroX,gyroY,gyroZ
-    //
-    vectornav.println("$VNWRG,6,17*XX");
+    vectornav->println(
+        "$VNWRG,6,17*XX"
+    );
 
 
     // Asynchronous output frequency
-    vectornav.println("$VNWRG,7,300*XX");
+    vectornav->println(
+        "$VNWRG,7,300*XX"
+    );
 
 
     dataIndex = 0;
@@ -61,7 +61,10 @@ bool VN300::begin()
     filterInitialized = false;
 
 
-    initializeSensorState(vn300TimeoutMs);
+    initializeSensorState(
+        vn300TimeoutMs
+    );
+
 
     return true;
 }
@@ -69,7 +72,10 @@ bool VN300::begin()
 
 void VN300::update()
 {
-    if (millis() - lastGnssPollMs >= gnssPollPeriodMs)
+    if (
+        millis() - lastGnssPollMs >=
+        gnssPollPeriodMs
+    )
     {
         lastGnssPollMs = millis();
 
@@ -77,9 +83,10 @@ void VN300::update()
     }
 
 
-    while (vectornav.available() > 0)
+    while (vectornav->available() > 0)
     {
-        char incomingChar = vectornav.read();
+        char incomingChar =
+            vectornav->read();
 
 
         if (incomingChar == '\n')
@@ -94,9 +101,11 @@ void VN300::update()
         }
         else if (incomingChar != '\r')
         {
-            incomingData[dataIndex] = incomingChar;
+            incomingData[dataIndex] =
+                incomingChar;
 
-            incomingDataString += incomingChar;
+            incomingDataString +=
+                incomingChar;
 
             dataIndex++;
 
@@ -108,28 +117,18 @@ void VN300::update()
     checkTimeout();
 }
 
+
 void VN300::processVectornav()
-
-
-
 {
-    // print temporary debug output to serial monitor
-   // Serial.println(incomingDataString);
+    int vectornavIdentity =
+        checkHeaderVectornav();
 
-
-    int vectornavIdentity = checkHeaderVectornav();
 
     char headerVectornav[10];
 
 
     switch (vectornavIdentity)
     {
-        // =====================================================
-        // REGISTER 1
-        //
-        // Yaw / Pitch / Roll
-        // =====================================================
-
         case 1:
         {
             VN300Measurement rawMeasurement;
@@ -149,17 +148,16 @@ void VN300::processVectornav()
 
             clearFaults();
 
-
-            validateMeasurement(rawMeasurement);
+            validateMeasurement(
+                rawMeasurement
+            );
 
 
             if (isHealthy())
             {
-                storeRawMeasurement(rawMeasurement);
-
-
-                // VN300 attitude is already internally filtered.
-                // Do not add additional EWA latency here.
+                storeRawMeasurement(
+                    rawMeasurement
+                );
 
                 filteredMeasurement.yaw =
                     rawMeasurement.yaw;
@@ -169,15 +167,11 @@ void VN300::processVectornav()
 
                 filteredMeasurement.roll =
                     rawMeasurement.roll;
-
-
-                // Register 1 contains no acceleration or gyro.
-                // Leave the other values at their existing values.
             }
-
 
             break;
         }
+
 
         case 58:
         {
@@ -186,14 +180,6 @@ void VN300::processVectornav()
             break;
         }
 
-
-        // =====================================================
-        // REGISTER 240
-        //
-        // YPR
-        // Linear Acceleration NED
-        // Gyro XYZ
-        // =====================================================
 
         case 240:
         {
@@ -222,26 +208,28 @@ void VN300::processVectornav()
 
             clearFaults();
 
-
-            validateMeasurement(rawMeasurement);
+            validateMeasurement(
+                rawMeasurement
+            );
 
 
             if (isHealthy())
             {
-                storeRawMeasurement(rawMeasurement);
+                storeRawMeasurement(
+                    rawMeasurement
+                );
 
-                applyFilter(rawMeasurement);
+                applyFilter(
+                    rawMeasurement
+                );
             }
-
 
             break;
         }
 
 
         default:
-        {
             break;
-        }
     }
 }
 
@@ -252,8 +240,6 @@ void VN300::applyFilter(
 {
     // ---------------------------------------------------------
     // Attitude
-    //
-    // No additional EWA filtering.
     // ---------------------------------------------------------
 
     filteredMeasurement.yaw =
@@ -267,10 +253,7 @@ void VN300::applyFilter(
 
 
     // ---------------------------------------------------------
-    // First valid sample
-    //
-    // Initialize directly from measurement to avoid filtering
-    // from zero during startup.
+    // First valid measurement
     // ---------------------------------------------------------
 
     if (!filterInitialized)
@@ -284,7 +267,6 @@ void VN300::applyFilter(
         filteredMeasurement.accelDown =
             rawMeasurement.accelDown;
 
-
         filteredMeasurement.gyroX =
             rawMeasurement.gyroX;
 
@@ -294,7 +276,6 @@ void VN300::applyFilter(
         filteredMeasurement.gyroZ =
             rawMeasurement.gyroZ;
 
-
         filterInitialized = true;
 
         return;
@@ -302,63 +283,61 @@ void VN300::applyFilter(
 
 
     // ---------------------------------------------------------
-    // Linear acceleration EWA
+    // Linear acceleration ewa
     // ---------------------------------------------------------
 
     filteredMeasurement.accelNorth =
         ewa(
+            filterAlpha,
             filteredMeasurement.accelNorth,
             rawMeasurement.accelNorth
         );
 
     filteredMeasurement.accelEast =
         ewa(
+            filterAlpha,
             filteredMeasurement.accelEast,
             rawMeasurement.accelEast
         );
 
     filteredMeasurement.accelDown =
         ewa(
+            filterAlpha,
             filteredMeasurement.accelDown,
             rawMeasurement.accelDown
         );
 
 
     // ---------------------------------------------------------
-    // Gyroscope EWA
+    // Angular velocity ewa
     // ---------------------------------------------------------
 
     filteredMeasurement.gyroX =
         ewa(
+            filterAlpha,
             filteredMeasurement.gyroX,
             rawMeasurement.gyroX
         );
 
     filteredMeasurement.gyroY =
         ewa(
+            filterAlpha,
             filteredMeasurement.gyroY,
             rawMeasurement.gyroY
         );
 
     filteredMeasurement.gyroZ =
         ewa(
+            filterAlpha,
             filteredMeasurement.gyroZ,
             rawMeasurement.gyroZ
         );
 }
 
 
-float VN300::ewa(
-    float previousValue,
-    float newValue
-) const
-{
-    return previousValue * (1.0f - filterAlpha)
-        + newValue * filterAlpha;
-}
-
-
-void VN300::setFilterAlpha(float alpha)
+void VN300::setFilterAlpha(
+    float alpha
+)
 {
     if (alpha < 0.0f)
     {
@@ -370,7 +349,6 @@ void VN300::setFilterAlpha(float alpha)
         alpha = 1.0f;
     }
 
-
     filterAlpha = alpha;
 }
 
@@ -379,11 +357,8 @@ void VN300::validateMeasurement(
     const VN300Measurement& rawMeasurement
 )
 {
-    // ---------------------------------------------------------
-    // NaN / infinity detection
-    // ---------------------------------------------------------
-
-    if (!isfinite(rawMeasurement.yaw) ||
+    if (
+        !isfinite(rawMeasurement.yaw) ||
         !isfinite(rawMeasurement.pitch) ||
         !isfinite(rawMeasurement.roll) ||
 
@@ -393,59 +368,76 @@ void VN300::validateMeasurement(
 
         !isfinite(rawMeasurement.gyroX) ||
         !isfinite(rawMeasurement.gyroY) ||
-        !isfinite(rawMeasurement.gyroZ))
+        !isfinite(rawMeasurement.gyroZ)
+    )
     {
-        setFault(SensorFault::InvalidData);
+        setFault(
+            SensorFault::InvalidData
+        );
 
         return;
     }
 
 
-    // ---------------------------------------------------------
-    // Attitude sanity checking
-    // ---------------------------------------------------------
-
-    if (rawMeasurement.yaw < -180.0f ||
+    if (
+        rawMeasurement.yaw < -180.0f ||
         rawMeasurement.yaw > 360.0f ||
 
         rawMeasurement.pitch < -180.0f ||
         rawMeasurement.pitch > 180.0f ||
 
         rawMeasurement.roll < -180.0f ||
-        rawMeasurement.roll > 180.0f)
+        rawMeasurement.roll > 180.0f
+    )
     {
-        setFault(SensorFault::OutOfRange);
+        setFault(
+            SensorFault::OutOfRange
+        );
 
         return;
     }
 
 
-    // ---------------------------------------------------------
-    // Dynamic sanity limits
-    //
-    // Intentionally generous. These should catch corrupted
-    // packets, not restrict the lander's flight envelope.
-    // ---------------------------------------------------------
+    constexpr float maxAcceleration =
+        200.0f;
 
-    constexpr float maxAcceleration = 200.0f;
-    constexpr float maxGyroRate = 50.0f;
+    constexpr float maxGyroRate =
+        50.0f;
 
 
-    if (fabsf(rawMeasurement.accelNorth) > maxAcceleration ||
-        fabsf(rawMeasurement.accelEast) > maxAcceleration ||
-        fabsf(rawMeasurement.accelDown) > maxAcceleration)
+    if (
+        fabsf(rawMeasurement.accelNorth) >
+            maxAcceleration ||
+
+        fabsf(rawMeasurement.accelEast) >
+            maxAcceleration ||
+
+        fabsf(rawMeasurement.accelDown) >
+            maxAcceleration
+    )
     {
-        setFault(SensorFault::OutOfRange);
+        setFault(
+            SensorFault::OutOfRange
+        );
 
         return;
     }
 
 
-    if (fabsf(rawMeasurement.gyroX) > maxGyroRate ||
-        fabsf(rawMeasurement.gyroY) > maxGyroRate ||
-        fabsf(rawMeasurement.gyroZ) > maxGyroRate)
+    if (
+        fabsf(rawMeasurement.gyroX) >
+            maxGyroRate ||
+
+        fabsf(rawMeasurement.gyroY) >
+            maxGyroRate ||
+
+        fabsf(rawMeasurement.gyroZ) >
+            maxGyroRate
+    )
     {
-        setFault(SensorFault::OutOfRange);
+        setFault(
+            SensorFault::OutOfRange
+        );
 
         return;
     }
@@ -457,8 +449,6 @@ VN300Measurement VN300::getMeasurement() const
     VN300Measurement measurement =
         filteredMeasurement;
 
-
-    // Zeroing applies only to attitude.
 
     measurement.yaw += offset.yaw;
 
@@ -498,31 +488,40 @@ void VN300::checkOverflowVectornav()
 
         incomingDataString = "";
 
-        setFault(SensorFault::InvalidData);
+        setFault(
+            SensorFault::InvalidData
+        );
     }
 }
 
 
-
-
 int VN300::checkHeaderVectornav()
 {
-    // Register 1
-    if (incomingDataString.indexOf("$VNYPR") != -1)
+    if (
+        incomingDataString.indexOf(
+            "$VNYPR"
+        ) != -1
+    )
     {
         return 1;
     }
 
 
-    // Register 240
-    if (incomingDataString.indexOf("$VNYIA") != -1)
+    if (
+        incomingDataString.indexOf(
+            "$VNYIA"
+        ) != -1
+    )
     {
         return 240;
     }
 
 
-    // Register 58 read response
-    if (incomingDataString.indexOf("$VNRRG,58,") != -1)
+    if (
+        incomingDataString.indexOf(
+            "$VNRRG,58,"
+        ) != -1
+    )
     {
         return 58;
     }
@@ -534,38 +533,47 @@ int VN300::checkHeaderVectornav()
 
 void VN300::pollGnssSolution()
 {
-    vectornav.println("$VNRRG,58*XX");
+    vectornav->println(
+        "$VNRRG,58*XX"
+    );
 }
-
 
 
 void VN300::parseGnssSolution()
 {
     VN300Measurement gnssMeasurement;
 
-    char* payload = strstr(
-        incomingData,
-        "$VNRRG,58,"
-    );
+
+    char* payload =
+        strstr(
+            incomingData,
+            "$VNRRG,58,"
+        );
+
 
     if (payload == nullptr)
     {
         return;
     }
 
-    // Move past "$VNRRG,58,"
-    payload += strlen("$VNRRG,58,");
+
+    payload += strlen(
+        "$VNRRG,58,"
+    );
+
 
     char dummyHeader[4];
+
     char parseBuffer[bufferSize];
 
-    // TextParser expects a header before the first comma.
+
     snprintf(
         parseBuffer,
         sizeof(parseBuffer),
         "GPS,%s",
         payload
     );
+
 
     commaParser.parseLine(
         parseBuffer,
@@ -592,29 +600,40 @@ void VN300::parseGnssSolution()
         gnssMeasurement.timeUncertainty
     );
 
-    // Register 58 is considered usable only with a 2D or 3D GNSS fix.
+
     if (gnssMeasurement.gnssFix < 2)
     {
         return;
     }
 
-    if (!isfinite(gnssMeasurement.latitude) ||
+
+    if (
+        !isfinite(gnssMeasurement.latitude) ||
         !isfinite(gnssMeasurement.longitude) ||
         !isfinite(gnssMeasurement.altitude) ||
         !isfinite(gnssMeasurement.velocityNorth) ||
         !isfinite(gnssMeasurement.velocityEast) ||
         !isfinite(gnssMeasurement.velocityDown) ||
-        !isfinite(gnssMeasurement.positionUncertaintyNorth) ||
-        !isfinite(gnssMeasurement.positionUncertaintyEast) ||
-        !isfinite(gnssMeasurement.positionUncertaintyDown) ||
-        !isfinite(gnssMeasurement.velocityUncertainty) ||
-        !isfinite(gnssMeasurement.timeUncertainty))
+        !isfinite(
+            gnssMeasurement.positionUncertaintyNorth
+        ) ||
+        !isfinite(
+            gnssMeasurement.positionUncertaintyEast
+        ) ||
+        !isfinite(
+            gnssMeasurement.positionUncertaintyDown
+        ) ||
+        !isfinite(
+            gnssMeasurement.velocityUncertainty
+        ) ||
+        !isfinite(
+            gnssMeasurement.timeUncertainty
+        )
+    )
     {
         return;
     }
 
-    // Do not overwrite attitude, acceleration or gyro.
-    // Those arrive from Register 240.
 
     filteredMeasurement.gpsTow =
         gnssMeasurement.gpsTow;

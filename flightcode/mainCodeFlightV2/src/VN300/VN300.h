@@ -8,7 +8,7 @@
 
 struct VN300Measurement
 {
-    // Attitude [deg] from Register 240
+    // Attitude [deg]
     float yaw = 0.0f;
     float pitch = 0.0f;
     float roll = 0.0f;
@@ -23,28 +23,27 @@ struct VN300Measurement
     float gyroY = 0.0f;
     float gyroZ = 0.0f;
 
-    // Primary GNSS solution, Register 58
+    // GNSS
     double gpsTow = 0.0;
     uint16_t gpsWeek = 0;
     uint8_t gnssFix = 0;
     uint8_t numSats = 0;
 
-    // Geodetic position
     double latitude = 0.0;
     double longitude = 0.0;
     double altitude = 0.0;
 
-    // GNSS velocity in NED frame [m/s]
+    // GNSS velocity NED [m/s]
     float velocityNorth = 0.0f;
     float velocityEast = 0.0f;
     float velocityDown = 0.0f;
 
-    // GNSS position uncertainty in NED frame [m]
+    // GNSS position uncertainty [m]
     float positionUncertaintyNorth = 0.0f;
     float positionUncertaintyEast = 0.0f;
     float positionUncertaintyDown = 0.0f;
 
-    // GNSS scalar velocity uncertainty [m/s]
+    // GNSS velocity uncertainty [m/s]
     float velocityUncertainty = 0.0f;
 
     // GNSS time uncertainty [s]
@@ -56,7 +55,7 @@ class VN300 : public Sensor<VN300Measurement>
 {
 public:
 
-    VN300(HardwareSerial& serialPort);
+    VN300();
 
     bool begin() override;
     void update() override;
@@ -83,7 +82,7 @@ private:
 
     unsigned long lastGnssPollMs = 0;
 
-    HardwareSerial& vectornav;
+    HardwareSerial* vectornav = nullptr;
 
     TextParser commaParser;
 
@@ -101,6 +100,7 @@ private:
 
     float filterAlpha = defaultFilterAlpha;
 
+
     void processVectornav();
 
     void checkOverflowVectornav();
@@ -115,8 +115,5 @@ private:
         const VN300Measurement& rawMeasurement
     );
 
-    float ewa(
-        float previousValue,
-        float newValue
-    ) const;
+   
 };

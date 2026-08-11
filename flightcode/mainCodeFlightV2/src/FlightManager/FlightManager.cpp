@@ -1,13 +1,16 @@
 #include "FlightManager.h"
 
+
 // ============================================================
 // Constructor
 // ============================================================
 
 FlightManager::FlightManager(Lander& lander)
-    : lander(lander)
+    : lander(lander),
+      telemetry_manager(this)
 {
 }
+
 
 // ============================================================
 // Initialization
@@ -29,7 +32,11 @@ void FlightManager::begin()
     disarmRequested = false;
     takeoffRequested = false;
     landingRequested = false;
+
+
+    telemetry_manager.begin();
 }
+
 
 // ============================================================
 // Main update
@@ -37,22 +44,44 @@ void FlightManager::begin()
 
 void FlightManager::update()
 {
-    // Update sensors and estimated lander state first.
+    const uint32_t now = millis();
+
+
+    // --------------------------------------------------------
+    // Update sensors and estimated lander state first
+    // --------------------------------------------------------
+
     lander.update();
-    
-
-    
 
 
-    // Evaluate safety conditions before normal transitions.
+    // --------------------------------------------------------
+    // Update telemetry
+    // --------------------------------------------------------
+
+    telemetry_manager.update(now);
+
+
+    // --------------------------------------------------------
+    // Evaluate safety conditions
+    // --------------------------------------------------------
+
     checkFailsafes();
 
-    // Update flight state machine.
+
+    // --------------------------------------------------------
+    // Update flight state machine
+    // --------------------------------------------------------
+
     updateStateMachine();
 
 
-    status.timestamp = millis();
+    // --------------------------------------------------------
+    // Update timestamp
+    // --------------------------------------------------------
+
+    status.timestamp = now;
 }
+
 
 // ============================================================
 // State machine
@@ -96,6 +125,7 @@ void FlightManager::updateStateMachine()
     }
 }
 
+
 // ============================================================
 // State transition
 // ============================================================
@@ -107,12 +137,15 @@ void FlightManager::transitionTo(FlightState newState)
         return;
     }
 
+
     status.previousState = status.state;
     status.state = newState;
     status.stateEntryTime = millis();
 
+
     onStateEntry(newState);
 }
+
 
 // ============================================================
 // State entry actions
@@ -123,39 +156,63 @@ void FlightManager::onStateEntry(FlightState newState)
     switch (newState)
     {
         case FlightState::Boot:
+
             status.armed = false;
+
             break;
+
 
         case FlightState::Standby:
+
             status.armed = false;
+
             break;
+
 
         case FlightState::Armed:
+
             status.armed = true;
+
             break;
+
 
         case FlightState::Takeoff:
+
             status.armed = true;
             status.flightStartTime = millis();
+
             break;
+
 
         case FlightState::Flight:
+
             status.armed = true;
+
             break;
+
 
         case FlightState::Landing:
+
             status.armed = true;
+
             break;
+
 
         case FlightState::Landed:
+
             status.armed = false;
+
             break;
 
+
         case FlightState::Abort:
+
             status.armed = false;
+
             break;
     }
 }
+
 
 // ============================================================
 // BOOT
@@ -169,6 +226,7 @@ void FlightManager::handleBoot()
     }
 }
 
+
 // ============================================================
 // STANDBY
 // ============================================================
@@ -180,13 +238,16 @@ void FlightManager::handleStandby()
         return;
     }
 
+
     armRequested = false;
+
 
     if (readyToArm())
     {
         transitionTo(FlightState::Armed);
     }
 }
+
 
 // ============================================================
 // ARMED
@@ -197,16 +258,21 @@ void FlightManager::handleArmed()
     if (disarmRequested)
     {
         disarmRequested = false;
+
         transitionTo(FlightState::Standby);
+
         return;
     }
+
 
     if (takeoffRequested)
     {
         takeoffRequested = false;
+
         transitionTo(FlightState::Takeoff);
     }
 }
+
 
 // ============================================================
 // TAKEOFF
@@ -227,6 +293,7 @@ void FlightManager::handleTakeoff()
      */
 }
 
+
 // ============================================================
 // FLIGHT
 // ============================================================
@@ -236,9 +303,11 @@ void FlightManager::handleFlight()
     if (landingRequested)
     {
         landingRequested = false;
+
         transitionTo(FlightState::Landing);
     }
 }
+
 
 // ============================================================
 // LANDING
@@ -259,6 +328,7 @@ void FlightManager::handleLanding()
      */
 }
 
+
 // ============================================================
 // LANDED
 // ============================================================
@@ -276,6 +346,7 @@ void FlightManager::handleLanded()
      */
 }
 
+
 // ============================================================
 // ABORT
 // ============================================================
@@ -289,6 +360,7 @@ void FlightManager::handleAbort()
      * an airborne abort may require controlled recovery.
      */
 }
+
 
 // ============================================================
 // Safety checks
@@ -306,6 +378,7 @@ void FlightManager::checkFailsafes()
         return;
     }
 
+
     /*
      * Automatic failsafes will be added here later.
      *
@@ -320,6 +393,7 @@ void FlightManager::checkFailsafes()
      * - low battery
      */
 }
+
 
 // ============================================================
 // Readiness checks
@@ -339,13 +413,16 @@ bool FlightManager::readyForStandby() const
         return false;
     }
 
+
     if (!lander.hasAltitudeSolution())
     {
         return false;
     }
 
+
     return true;
 }
+
 
 bool FlightManager::readyToArm() const
 {
@@ -354,13 +431,16 @@ bool FlightManager::readyToArm() const
         return false;
     }
 
+
     if (!lander.hasAltitudeSolution())
     {
         return false;
     }
 
+
     return true;
 }
+
 
 // ============================================================
 // Commands
@@ -369,32 +449,42 @@ bool FlightManager::readyToArm() const
 bool FlightManager::requestArm()
 {
     armRequested = true;
+
     return true;
 }
+
 
 bool FlightManager::requestDisarm()
 {
     disarmRequested = true;
+
     return true;
 }
+
 
 bool FlightManager::requestTakeoff()
 {
     takeoffRequested = true;
-    return true;    
+
+    return true;
 }
+
 
 bool FlightManager::requestLanding()
 {
     landingRequested = true;
+
     return true;
 }
+
 
 bool FlightManager::requestAbort()
 {
     status.abortRequested = true;
+
     return true;
 }
+
 
 // ============================================================
 // Status access
@@ -405,15 +495,18 @@ FlightState FlightManager::getState() const
     return status.state;
 }
 
+
 const FlightStatus& FlightManager::getStatus() const
 {
     return status;
 }
 
+
 uint32_t FlightManager::getTimeInState() const
 {
     return millis() - status.stateEntryTime;
 }
+
 
 uint32_t FlightManager::getFlightTime() const
 {
@@ -422,13 +515,16 @@ uint32_t FlightManager::getFlightTime() const
         return 0;
     }
 
+
     return millis() - status.flightStartTime;
 }
+
 
 bool FlightManager::isArmed() const
 {
     return status.armed;
 }
+
 
 bool FlightManager::isFlying() const
 {
@@ -439,10 +535,28 @@ bool FlightManager::isFlying() const
     );
 }
 
+
 bool FlightManager::isAborted() const
 {
     return status.state == FlightState::Abort;
 }
+
+
+// ============================================================
+// Lander access
+// ============================================================
+
+Lander& FlightManager::getLander()
+{
+    return lander;
+}
+
+
+const Lander& FlightManager::getLander() const
+{
+    return lander;
+}
+
 
 // ============================================================
 // State string
@@ -481,34 +595,7 @@ const char* FlightManager::stateToString(FlightState state) const
     }
 }
 
+
 // ============================================================
 // Debug output
 // ============================================================
-
-void FlightManager::printStatus(Stream& serialPort) const
-{
-    serialPort.println();
-    serialPort.println("================================");
-    serialPort.println("        FLIGHT MANAGER");
-    serialPort.println("================================");
-
-    serialPort.print("State: ");
-    serialPort.println(stateToString(status.state));
-
-    serialPort.print("Previous state: ");
-    serialPort.println(stateToString(status.previousState));
-
-    serialPort.print("Armed: ");
-    serialPort.println(status.armed);
-
-    serialPort.print("Abort requested: ");
-    serialPort.println(status.abortRequested);
-
-    serialPort.print("Time in state: ");
-    serialPort.print(getTimeInState());
-    serialPort.println(" ms");
-
-    serialPort.print("Flight time: ");
-    serialPort.print(getFlightTime());
-    serialPort.println(" ms");
-}

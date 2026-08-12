@@ -25,10 +25,7 @@ public:
 
     TelemetryManager(FlightManager* flightManager);
 
-    void begin(
-        SerialOutputType debugOutputType = SerialOutputType::HUMAN_READABLE,
-        SerialOutputType telemetryOutputType = SerialOutputType::BASE_STATION_FORMAT
-    );
+    void begin(SerialOutputType debugOutputType = SerialOutputType::HUMAN_READABLE,SerialOutputType telemetryOutputType = SerialOutputType::BASE_STATION_FORMAT);
 
     void update(uint32_t now);
 
@@ -39,15 +36,9 @@ public:
     void toggle_RADIO(bool enable);
 
 
-    void send_USB_String(
-        const String& content,
-        bool jumpToNextLine = false
-    );
+    void send_USB_String(const String& content,bool jumpToNextLine = false);
 
-    void send_RADIO_String(
-        const String& content,
-        bool jumpToNextLine = false
-    );
+    void send_RADIO_String(const String& content,bool jumpToNextLine = false    );
 
 
     String get_debug_payload();
@@ -75,11 +66,9 @@ private:
     // Output configuration
     // --------------------------------------------------------
 
-    SerialOutputType USB_output_type =
-        SerialOutputType::HUMAN_READABLE;
+    SerialOutputType USB_output_type = SerialOutputType::HUMAN_READABLE;
 
-    SerialOutputType RADIO_output_type =
-        SerialOutputType::BASE_STATION_FORMAT;
+    SerialOutputType RADIO_output_type = SerialOutputType::BASE_STATION_FORMAT;
 
 
     bool USB_output_active = true;
@@ -105,30 +94,23 @@ private:
     String telemetry_payload;
 
 
-    String header_telemetry_format =
-        CommsConfig::outputHeaderTelemetryFormat;
+    String header_telemetry_format = CommsConfig::outputHeaderTelemetryFormat;
 
-    String lineEnding_telemetry_format =
-        CommsConfig::outputLineEndingTelemetryFormat;
+    String lineEnding_telemetry_format = CommsConfig::outputLineEndingTelemetryFormat;
 
 
     TextParser commaParser{","};
 
 
-    // --------------------------------------------------------
-    // Formatting
-    // --------------------------------------------------------
-
-   String getFormattedOutput(
-    SerialOutputType outputType,
-    const String& content,
-    bool jumpToNextLine
-) const;
-
-
+  
     // --------------------------------------------------------
     // Debug formatting helpers
     // --------------------------------------------------------
+    void addDebugGroup(String& payload, const NED_coordinates& NED_payload, const String& name);
+
+    void addDebugGroup(String& payload, const Rotation_Euler_coordinates& Euler_payload, const String& name);
+
+
 
     void addDebugTitle(
         String& payload,
@@ -159,10 +141,26 @@ private:
     );
 
 
+    template <typename T>
+    void addTelemetryField(String& payload, T value, int decimals = -1  );
     // --------------------------------------------------------
     // Output state
     // --------------------------------------------------------
-
+    void addTelemetryGroup(String& payload, const NED_coordinates& NED_payload);
+    void addTelemetryGroup(String& payload, const Rotation_Euler_coordinates& Euler_payload);
     bool isUSB_OutputEnabled();
     bool isRADIO_OutputEnabled();
 };
+
+
+template <typename T>
+void TelemetryManager::addTelemetryField(String& payload, T value, int decimals)
+{
+    if (payload.length() > 0)
+        payload += ",";
+
+    if (decimals >= 0)
+        payload += String(value, decimals);
+    else
+        payload += String(value);
+}

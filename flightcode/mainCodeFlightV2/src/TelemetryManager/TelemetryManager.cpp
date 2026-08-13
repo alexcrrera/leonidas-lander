@@ -157,6 +157,20 @@ String TelemetryManager::get_telemetry_payload()
     // -------------------8-10--------------------------
     addTelemetryGroup(payload, solution.state.attitude);
 
+    // -------------------11-13 ------- GPS DATA -----LATITUDE LONGITUDE ALTITUDE --------------
+   // addTelemetryField(payload, solution.state.latitude, 6);
+    addTelemetryField(payload, 48.8466, 6);
+    addTelemetryField(payload, 2.35455, 6);
+    ///addTelemetryField(payload, solution.state.longitude, 6);
+    addTelemetryField(payload, solution.state.altitude, 2);
+
+    // -------------------Sensor states - 14 - 17--------------------------
+    addTelemetryField(payload, solution.validity.positionValid);
+    addTelemetryField(payload, solution.validity.velocityValid);
+    addTelemetryField(payload, solution.validity.accelerationValid);
+    addTelemetryField(payload, solution.validity.altitudeValid);
+
+
 
 
     //addTelemetryField(payload, solution.state.altitude, 3);

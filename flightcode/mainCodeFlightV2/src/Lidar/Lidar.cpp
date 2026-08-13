@@ -18,10 +18,10 @@ bool Lidar::begin()
     }
 
 
-    if (SensorConfig::LIDAR.frequency > 0.0f)
+    if (SensorConfig::LIDAR.parameters.frequency > 0.0f)
     {
         setFrequency(
-            SensorConfig::LIDAR.frequency
+            SensorConfig::LIDAR.parameters.frequency
         );
     }
 

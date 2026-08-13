@@ -152,6 +152,7 @@ private:
     bool isRADIO_OutputEnabled();
 };
 
+#include <type_traits>
 
 template <typename T>
 void TelemetryManager::addTelemetryField(String& payload, T value, int decimals)
@@ -159,8 +160,16 @@ void TelemetryManager::addTelemetryField(String& payload, T value, int decimals)
     if (payload.length() > 0)
         payload += ",";
 
-    if (decimals >= 0)
+    if constexpr (std::is_same_v<T, bool>)
+    {
+        payload += value ? "[OK]" : "[X]";
+    }
+    else if (decimals >= 0)
+    {
         payload += String(value, decimals);
+    }
     else
+    {
         payload += String(value);
+    }
 }

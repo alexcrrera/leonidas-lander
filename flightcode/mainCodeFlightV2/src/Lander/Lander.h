@@ -10,105 +10,9 @@
 
 #include "../Utilities/Utilities.h"
 
+#include "../StateEstimator/StateEstimator.h"
 
-
-struct LanderState
-{
-    // Local NED position [m]
-    NED_coordinates position;
-
-    // NED velocity [m/s]
-    NED_coordinates velocity;
-
-    // NED linear acceleration [m/s^2]
-    NED_coordinates acceleration;
-
-    Rotation_Euler_coordinates attitude;
-
-    // Body angular rates [rad/s]
-    Rotation_Euler_coordinates angularVelocity;
-
-    // Height above ground from LiDAR [m]
-    float altitude = 0.0f;
-
-    uint32_t timestamp = 0;
-};
-
-struct StateValidity
-{
-    bool positionValid = false;
-    bool velocityValid = false;
-    bool accelerationValid = false;
-    bool attitudeValid = false;
-    bool altitudeValid = false;
-};
-
-enum class AltitudeSource : uint8_t
-{
-    None,
-    Lidar,
-    VN300,
-    Fused
-};
-
-enum class PositionSource : uint8_t
-{
-    None,
-    VN300,
-    Inertial,
-    Fused
-};
-
-enum class VelocitySource : uint8_t
-{
-    None,
-    VN300,
-    Inertial,
-    Fused,
-    OpticalFlow
-};
-
-enum class AttitudeSource : uint8_t
-{
-    None,
-    VN300,
-    Fused
-};
-
-struct SolutionSource
-{
-    AltitudeSource altitude = AltitudeSource::None;
-    PositionSource position = PositionSource::None;
-    VelocitySource velocity = VelocitySource::None;
-    AttitudeSource attitude = AttitudeSource::None;
-};
-
-enum LanderError : uint16_t
-{
-    LANDER_ERROR_NONE              = 0,
-
-    LANDER_ERROR_NO_POSITION       = 1 << 0,
-    LANDER_ERROR_NO_ALTITUDE       = 1 << 1,
-    LANDER_ERROR_NO_ATTITUDE       = 1 << 2,
-    LANDER_ERROR_NO_VELOCITY       = 1 << 3,
-
-    LANDER_ERROR_VN300_UNAVAILABLE = 1 << 4,
-    LANDER_ERROR_LIDAR_UNAVAILABLE = 1 << 5,
-    LANDER_ERROR_GNSS_INVALID      = 1 << 6,
-
-    LANDER_ERROR_SOLUTION_STALE    = 1 << 7
-};
-
-struct LanderSolution
-{
-    LanderState state;
-    StateValidity validity;
-    SolutionSource source;
-
-    uint16_t errors = LANDER_ERROR_NONE;
-
-    uint32_t timestamp = 0;
-};
+#include "Lander_structs.h"
 
 class Lander
 {
@@ -116,8 +20,6 @@ public:
     Lander()=default;
 
     void begin();
-
-
     void update();
 
     const LanderSolution& getSolution() const;
@@ -130,15 +32,20 @@ public:
     bool hasError(LanderError error) const;
     uint16_t getErrors() const;
 
-    void printStatus(Stream& serialPort = Serial) const;
+    
     VN300& getVN300() { return vn300; }
     Lidar& getLidar() { return lidar; }
     OpticalFlow& getOpticalFlow() { return opticalFlow; }
+
 private:
     VN300 vn300;
     Lidar lidar;
     OpticalFlow opticalFlow;
+    
+    StateEstimator stateEstimator;
     LanderSolution solution;
+
+
 
     // First valid Register 58 GNSS position defines local NED origin.
     bool positionOriginInitialized = false;

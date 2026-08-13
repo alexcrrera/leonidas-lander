@@ -4,15 +4,11 @@
 
 void Lander::begin()
 
-
-
 {
-    
     vn300.begin();
     opticalFlow.begin();
-    
     lidar.begin();
-    
+    stateEstimator.begin(*this);
 }
 
 void Lander::update()
@@ -21,14 +17,10 @@ void Lander::update()
 
 
     vn300.update();
-
     opticalFlow.update();
-
-    
-
-   
-
     lidar.update();
+
+    stateEstimator.update();
 
    
 

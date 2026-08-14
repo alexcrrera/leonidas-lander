@@ -8,8 +8,10 @@
 
 struct LidarMeasurement
 {
-    float rawDistanceM = 0.0f;
-    float filteredDistanceM = 0.0f;
+    float rawDistance_M = 0.0f;
+    float filteredDistance_M = 0.0f;
+    float offset_M = 0.0f;
+    float altitude_M = 0.0f;
 };
 
 
@@ -59,14 +61,14 @@ private:
 
     TwoWire* wire = nullptr;
 
-    uint8_t address = 0x62;
+    uint8_t address = SensorConfig::LIDAR.address;
 
 
     // ========================================
     // Timing
     // ========================================
 
-    float frequencyHz = 100.0f;
+    float frequencyHz = SensorConfig::LIDAR.parameters.frequency;
 
     unsigned long updatePeriodUs = 10000;
 
@@ -77,9 +79,9 @@ private:
     // Filtering
     // ========================================
 
-    float filterAlpha = 0.3f;
+    float filterAlpha = SensorConfig::LIDAR.parameters.EWA_alpha;
 
-    float filteredDistanceM = 0.0f;
+    float filteredDistance_M = 0.0f;
 
     bool filterInitialized = false;
 
@@ -88,7 +90,7 @@ private:
     // Zero offset
     // ========================================
 
-    float offsetM = 0.0f;
+    float offset_M = 0.0f;
 
 
     // ========================================

@@ -5,6 +5,7 @@
 
 #include "../Utilities/Utilities.h"
 #include "../Config/CommsConfig.h"
+#include "Telemetry_utilities.h"
 
 
 #define TELEMETRY_MAX_CMD_HISTORY 15
@@ -13,11 +14,15 @@
 class FlightManager;
 
 
+// placeholder for the command history
 enum class COMMANDS {
-    TOGGLE_USB_OUTPUT,
-    TOGGLE_RADIO_OUTPUT
+    NONE,
+    ARM,
+    DISARM,
+    TAKEOFF,
+    LAND,
+    ABORT
 };
-
 
 class TelemetryManager {
 
@@ -37,7 +42,6 @@ public:
 
 
     void send_USB_String(const String& content,bool jumpToNextLine = false);
-
     void send_RADIO_String(const String& content,bool jumpToNextLine = false    );
 
 
@@ -46,7 +50,7 @@ public:
     String get_telemetry_payload();
 
 
-    COMMANDS getLatestCommand();
+
 
 
 private:
@@ -106,70 +110,13 @@ private:
     // --------------------------------------------------------
     // Debug formatting helpers
     // --------------------------------------------------------
-    void addDebugGroup(String& payload, const NED_coordinates& NED_payload, const String& name);
-
-    void addDebugGroup(String& payload, const Rotation_Euler_coordinates& Euler_payload, const String& name);
+  
 
 
-
-    void addDebugTitle(
-        String& payload,
-        const String& title
-    );
-
-    void addDebugGroup(
-        String& payload,
-        const String& name
-    );
-
-    void addDebugField(
-        String& payload,
-        const String& name,
-        const String& value
-    );
-
-    void addDebugField(
-        String& payload,
-        const String& name,
-        float value
-    );
-
-    void addDebugField(
-        String& payload,
-        const String& name,
-        bool value
-    );
+    
 
 
-    template <typename T>
-    void addTelemetryField(String& payload, T value, int decimals = -1  );
-    // --------------------------------------------------------
-    // Output state
-    // --------------------------------------------------------
-    void addTelemetryGroup(String& payload, const NED_coordinates& NED_payload);
-    void addTelemetryGroup(String& payload, const Rotation_Euler_coordinates& Euler_payload);
-    bool isUSB_OutputEnabled();
+   bool isUSB_OutputEnabled();
     bool isRADIO_OutputEnabled();
 };
 
-#include <type_traits>
-
-template <typename T>
-void TelemetryManager::addTelemetryField(String& payload, T value, int decimals)
-{
-    if (payload.length() > 0)
-        payload += ",";
-
-    if constexpr (std::is_same_v<T, bool>)
-    {
-        payload += value ? "[OK]" : "[X]";
-    }
-    else if (decimals >= 0)
-    {
-        payload += String(value, decimals);
-    }
-    else
-    {
-        payload += String(value);
-    }
-}

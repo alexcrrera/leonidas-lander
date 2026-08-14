@@ -203,13 +203,13 @@ String TelemetryManager::get_debug_payload()
     Lander& lander = flightManager->getLander();
     const LanderState& state  = lander.getState();
 
-    addDebugTitle(payload, "FLIGHT STATUS");
+    TelemetryUtilities::addDebugTitle(payload, "FLIGHT STATUS");
 
     // --------------------------------------------------------
     // Lander
     // --------------------------------------------------------
 
-    addDebugGroup(payload, "LANDER");
+    TelemetryUtilities::addDebugGroup(payload, "LANDER");
 
 
 
@@ -217,25 +217,25 @@ String TelemetryManager::get_debug_payload()
     // Position
     // --------------------------------------------------------
 
-    addDebugGroup(payload, state.position, "POSITION NED");
+    TelemetryUtilities::addDebugGroup(payload, state.position, "POSITION NED");
 
     // --------------------------------------------------------
     // Velocity
     // --------------------------------------------------------
 
-    addDebugGroup(payload, state.velocity, "VELOCITY NED");
+    TelemetryUtilities::addDebugGroup(payload, state.velocity, "VELOCITY NED");
 
     // --------------------------------------------------------
     // Acceleration
     // --------------------------------------------------------
 
-    addDebugGroup(payload, state.acceleration, "ACCELERATION NED");
+    TelemetryUtilities::addDebugGroup(payload, state.acceleration, "ACCELERATION NED");
 
     // --------------------------------------------------------
     // Attitude
     // --------------------------------------------------------
 
-    addDebugGroup(payload, state.attitude, "ATTITUDE");
+    TelemetryUtilities::addDebugGroup(payload, state.attitude, "ATTITUDE");
 
     // --------------------------------------------------------
     // Altitude
@@ -253,93 +253,6 @@ String TelemetryManager::get_debug_payload()
 
     return payload;
     
-}
-
-
-
-// ============================================================
-// DEBUG HELPERS
-// ============================================================
-
-void TelemetryManager::addDebugTitle(
-    String& payload,
-    const String& title
-)
-{
-    payload += "\n===== ";
-    payload += title;
-    payload += " =====\n";
-}
-
-
-void TelemetryManager::addDebugGroup(String& payload, const NED_coordinates& NED_payload, const String& name)
-{
-    addDebugGroup(payload, name);
-
-    payload += "North: " + String(NED_payload.North_SI);
-    payload += " | East: " + String(NED_payload.East_SI);
-    payload += " | Down: " + String(NED_payload.Down_SI);
-    payload += "\n";
-}
-
-void TelemetryManager::addDebugGroup(String& payload, const Rotation_Euler_coordinates& Euler_payload, const String& name)
-{
-    addDebugGroup(payload, name);
-
-    payload += "Roll: " + String(Euler_payload.Roll_SI);
-    payload += " | Pitch: " + String(Euler_payload.Pitch_SI);
-    payload += " | Yaw: " + String(Euler_payload.Yaw_SI);
-    payload += "\n";
-}
-
-
-void TelemetryManager::addDebugGroup(
-    String& payload,
-    const String& name
-)
-{
-    payload += "\n--- ";
-    payload += name;
-    payload += " ---\n";
-}
-
-
-void TelemetryManager::addDebugField(
-    String& payload,
-    const String& name,
-    const String& value
-)
-{
-    payload += name;
-    payload += ": ";
-    payload += value;
-    payload += "\n";
-}
-
-
-void TelemetryManager::addDebugField(
-    String& payload,
-    const String& name,
-    float value
-)
-{
-    payload += name;
-    payload += ": ";
-    payload += String(value, 3);
-    payload += "\n";
-}
-
-
-void TelemetryManager::addDebugField(
-    String& payload,
-    const String& name,
-    bool value
-)
-{
-    payload += name;
-    payload += ": ";
-    payload += value ? "YES" : "NO";
-    payload += "\n";
 }
 
 
@@ -400,20 +313,6 @@ void TelemetryManager::send_USB_String(
 
 
 
-
-void TelemetryManager::addTelemetryGroup(String& payload, const NED_coordinates& NED_payload)
-{
-    addTelemetryField(payload, NED_payload.North_SI, 3);
-    addTelemetryField(payload, NED_payload.East_SI, 3);
-    addTelemetryField(payload, NED_payload.Down_SI, 3);
-}
-
-void TelemetryManager::addTelemetryGroup(String& payload, const Rotation_Euler_coordinates& Euler_payload)
-{
-    addTelemetryField(payload, Euler_payload.Roll_SI, 3);
-    addTelemetryField(payload, Euler_payload.Pitch_SI, 3);
-    addTelemetryField(payload, Euler_payload.Yaw_SI, 3);
-}
 
 
 // ============================================================

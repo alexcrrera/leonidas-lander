@@ -16,7 +16,7 @@ struct SerialPortConfig {
 
     uint32_t baudrate;
 
-    const char* name;
+    const char* name;   
 
     bool enabled;
 

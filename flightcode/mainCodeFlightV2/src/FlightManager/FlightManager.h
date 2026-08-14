@@ -12,6 +12,8 @@
 #include "../TelemetryManager/TelemetryManager.h"
 
 #include "FlightManager_structs_and_more.h"
+#include "../StateMachine/StateMachine.h"
+
 // ============================================================
 // Flight states
 // ============================================================
@@ -40,7 +42,7 @@ public:
     Mission& getMission(){return mission;}
     TelemetryManager& getTelemetryManager(){return telemetry_manager;}
     MotorManager& getMotorManager(){return motor_manager;}
-
+    StateMachine& getStateMachine(){return state_machine;}
     // --------------------------------------------------------
     // Status
     // --------------------------------------------------------
@@ -53,9 +55,8 @@ private:
     Mission mission; // sets setpoints
     MotorManager motor_manager; // owns EDF and servo vanes
     TelemetryManager telemetry_manager; // manages telemetry output
+    StateMachine state_machine; // manages the state of the flight
 
-
-    FlightStatus status;
 
 
 

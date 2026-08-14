@@ -209,6 +209,12 @@ String TelemetryManager::get_debug_payload()
 
     TelemetryUtilities::addDebugTitle(payload, "FLIGHT STATUS");
 
+
+     TelemetryUtilities::addDebugGroup(payload, "STATUS");
+
+
+    
+   TelemetryUtilities::addDebugField(payload, "State", flightManager->getStateMachine().getStateAsString());
     // --------------------------------------------------------
     // Lander
     // --------------------------------------------------------

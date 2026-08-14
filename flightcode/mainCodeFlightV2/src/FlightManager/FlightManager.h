@@ -11,36 +11,12 @@
 
 #include "../TelemetryManager/TelemetryManager.h"
 
+#include "FlightManager_structs_and_more.h"
 // ============================================================
 // Flight states
 // ============================================================
 
-enum class FlightState : uint8_t {
-    Boot,
-    Standby,
-    Armed,
-    Takeoff,
-    Flight,
-    Landing,
-    Landed,
-    Abort
-};
 
-// ============================================================
-// Flight manager status
-// ============================================================
-
-struct FlightStatus {
-    FlightState state = FlightState::Boot;
-    FlightState previousState = FlightState::Boot;
-
-    bool armed = false;
-    bool abortRequested = false;
-
-    uint32_t stateEntryTime = 0;
-    uint32_t flightStartTime = 0;
-    uint32_t timestamp = 0;
-};
 
 // ============================================================
 // Flight Manager
@@ -57,31 +33,19 @@ public:
     // Commands
     // --------------------------------------------------------
 
-    bool requestArm();
-    bool requestDisarm();
-    bool requestTakeoff();
-    bool requestLanding();
-    bool requestAbort();
-
+  
+    // getters for main components
     Lander& getLander(){return lander;}
     Controller& getController(){return controller;}
     Mission& getMission(){return mission;}
+    TelemetryManager& getTelemetryManager(){return telemetry_manager;}
+    MotorManager& getMotorManager(){return motor_manager;}
 
     // --------------------------------------------------------
     // Status
     // --------------------------------------------------------
 
-    FlightState getState() const;
-    const FlightStatus& getStatus() const;
-
-    uint32_t getTimeInState() const;
-    uint32_t getFlightTime() const;
-
-    bool isArmed() const;
-    bool isFlying() const;
-    bool isAborted() const;
-
-    void printStatus(Stream& serialPort = Serial) const;
+ 
 
 private:
     Lander lander; // state of the vehicule
@@ -94,50 +58,8 @@ private:
     FlightStatus status;
 
 
-    // --------------------------------------------------------
-    // Command requests
-    // --------------------------------------------------------
-
-    bool armRequested = false;
-    bool disarmRequested = false;
-    bool takeoffRequested = false;
-    bool landingRequested = false;
-
-    // --------------------------------------------------------
-    // State machine
-    // --------------------------------------------------------
-
-    void updateStateMachine();
-
-    void transitionTo(FlightState newState);
-    void onStateEntry(FlightState newState);
-
-    void handleBoot();
-    void handleStandby();
-    void handleArmed();
-    void handleTakeoff();
-    void handleFlight();
-    void handleLanding();
-    void handleLanded();
-    void handleAbort();
-
-    // --------------------------------------------------------
-    // Safety
-    // --------------------------------------------------------
-
-    bool readyForStandby() const;
-    bool readyToArm() const;
-
-    void checkFailsafes();
-
-    
 
 
-    // --------------------------------------------------------
-    // Utilities
-    // --------------------------------------------------------
-
-    const char* stateToString(FlightState state) const;
 };
 
 #endif

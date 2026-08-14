@@ -1,7 +1,6 @@
 #pragma once
 
-#ifndef LANDER_STRUCTS_H
-#define LANDER_STRUCTS_H
+
 
 #include <Arduino.h>
 struct StateValidity
@@ -79,5 +78,3 @@ struct LanderSolution
     uint32_t timestamp = 0;
 };
 
-
-#endif // LANDER_STRUCTS_H

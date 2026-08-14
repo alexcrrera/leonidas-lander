@@ -21,7 +21,7 @@ bool OpticalFlow::begin()
     {
         Serial.println("OPTICAL FLOW: ERROR - NULL SERIAL PORT");
 
-        setFault(SensorFault::CommunicationError);
+       
 
         return false;
     }
@@ -31,13 +31,11 @@ bool OpticalFlow::begin()
 
     serialPort->begin(SensorConfig::OPTICAL_FLOW.baudrate);
 
-    initializeSensorState(500);
 
     resetParser();
 
     latestMeasurement = {};
 
-    previousMeasurementTime = millis();
 
     Serial.println("OPTICAL FLOW: SERIAL INITIALIZED");
     Serial.println("OPTICAL FLOW: BEGIN COMPLETE");
@@ -48,33 +46,9 @@ bool OpticalFlow::begin()
 
 void OpticalFlow::update()
 {
-    if (serialPort == nullptr)
-    {
-        setFault(SensorFault::CommunicationError);
-        return;
-    }
+   
 
-    OpticalFlowMeasurement measurement{};
-
-    while (readPacket(measurement))
-    {
-        registerPacket();
-
-        clearFaults();
-
-        validateMeasurement(measurement);
-
-        if (!isHealthy())
-        {
-            continue;
-        }
-
-        storeRawMeasurement(measurement);
-
-        latestMeasurement = measurement;
-    }
-
-    checkTimeout();
+  
 }
 
 
@@ -112,7 +86,7 @@ bool OpticalFlow::readPacket(OpticalFlowMeasurement& measurement)
         {
             resetParser();
 
-            setFault(SensorFault::InvalidData);
+            
 
             continue;
         }
@@ -200,8 +174,6 @@ bool OpticalFlow::readPacket(OpticalFlowMeasurement& measurement)
         {
             resetParser();
 
-            setFault(SensorFault::InvalidData);
-
             continue;
         }
 
@@ -218,7 +190,7 @@ bool OpticalFlow::readPacket(OpticalFlowMeasurement& measurement)
 
         resetParser();
 
-        setFault(SensorFault::InvalidData);
+       
     }
 
     return false;
@@ -285,105 +257,7 @@ bool OpticalFlow::decodePacket(
      * checksum
      */
 
-    const uint8_t* payload = &packet[6];
-
-    /*
-     * System time.
-     */
-
-    measurement.systemTimeMs = static_cast<uint32_t>(
-        payload[0] |
-        (static_cast<uint32_t>(payload[1]) << 8) |
-        (static_cast<uint32_t>(payload[2]) << 16) |
-        (static_cast<uint32_t>(payload[3]) << 24)
-    );
-
-    /*
-     * Distance.
-     */
-
-    measurement.distanceMm = static_cast<uint32_t>(
-        payload[4] |
-        (static_cast<uint32_t>(payload[5]) << 8) |
-        (static_cast<uint32_t>(payload[6]) << 16) |
-        (static_cast<uint32_t>(payload[7]) << 24)
-    );
-
-    /*
-     * Distance information.
-     */
-
-    measurement.distanceStrength = payload[8];
-    measurement.distancePrecision = payload[9];
-    measurement.distanceStatus = payload[10];
-
-    /*
-     * Raw optical flow velocity.
-     *
-     * Unit:
-     *
-     * cm/s @ 1m
-     */
-
-    measurement.flowVelocityX = static_cast<int16_t>(
-        static_cast<uint16_t>(payload[12]) |
-        (static_cast<uint16_t>(payload[13]) << 8)
-    );
-
-    measurement.flowVelocityY = static_cast<int16_t>(
-        static_cast<uint16_t>(payload[14]) |
-        (static_cast<uint16_t>(payload[15]) << 8)
-    );
-
-    /*
-     * Optical flow status.
-     */
-
-    measurement.flowQuality = payload[16];
-    measurement.flowStatus = payload[17];
-
-    /*
-     * Calculate physical velocity.
-     *
-     * speed(cm/s) = flow_velocity * distance(m)
-     *
-     * speed(m/s) = flow_velocity * distance(m) * 0.01
-     */
-
-    if (
-        measurement.distanceStatus == 1 &&
-        measurement.distanceMm >= 10 &&
-        measurement.flowStatus == 1
-    )
-    {
-        const float distanceM =
-            static_cast<float>(measurement.distanceMm) * 0.001f;
-
-        measurement.flowRateX =
-            static_cast<float>(measurement.flowVelocityX) *
-            distanceM *
-            0.01f;
-
-        measurement.flowRateY =
-            static_cast<float>(measurement.flowVelocityY) *
-            distanceM *
-            0.01f;
-    }
-    else
-    {
-        measurement.flowRateX = 0.0f;
-        measurement.flowRateY = 0.0f;
-    }
-
-    /*
-     * Delta time.
-     */
-
-    const uint32_t currentTime = millis();
-
-    measurement.dt = calculateDeltaTime(currentTime);
-
-    previousMeasurementTime = currentTime;
+   
 
     return true;
 }

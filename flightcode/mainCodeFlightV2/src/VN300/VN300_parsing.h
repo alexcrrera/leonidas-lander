@@ -14,13 +14,14 @@
 
 namespace VN300Parsing
 {
-    void parse_GNSS_Solution(char *payload, VN300Measurement& measurement);
-    void parse_INS_Solution(char *payload, VN300Measurement& measurement);
+    inline TextParser commaParser(",");
+    void parse_GNSS_Solution_LLA(char *payload, VN300Measurement& measurement);
+    void parse_INS_Solution_LLA(char *payload, VN300Measurement& measurement);
     void parse_YPR_LinearAccel_Gyro(char *payload, VN300Measurement& measurement);
 }
 
 
-void VN300Parsing::parse_GNSS_Solution(char* payload, VN300Measurement& measurement)
+void VN300Parsing::parse_GNSS_Solution_LLA(char* payload, VN300Measurement& measurement)
 {
 
    
@@ -30,52 +31,55 @@ void VN300Parsing::parse_GNSS_Solution(char* payload, VN300Measurement& measurem
         payload,
         header,
 
-        measurement.gnssSolution.gpsTow,
-        measurement.gnssSolution.gpsWeek,
-        measurement.gnssSolution.gnssFix,
-        measurement.gnssSolution.numSats,
+        measurement.gnssSolution.GpsTow,
+        measurement.gnssSolution.GpsWeek,
+        measurement.gnssSolution.GnssFix,
+        measurement.gnssSolution.NumSats,
+        measurement.gnssSolution.Pad, // 4 bytes of padding
 
-        measurement.gnssSolution.latitude,
-        measurement.gnssSolution.longitude,
-        measurement.gnssSolution.altitude,
-        measurement.gnssSolution.velocityNorth,
-        measurement.gnssSolution.velocityEast,
-        measurement.gnssSolution.velocityDown,
+        measurement.gnssSolution.Lat,
+        measurement.gnssSolution.Lon,
+        measurement.gnssSolution.Alt,
+        measurement.gnssSolution.VelN,
+        measurement.gnssSolution.VelE,
+        measurement.gnssSolution.VelD,
 
-        measurement.gnssSolution.positionUncertaintyNorth,
-        measurement.gnssSolution.positionUncertaintyEast,
-        measurement.gnssSolution.positionUncertaintyDown,
+        measurement.gnssSolution.PosUncertaintyN,
+        measurement.gnssSolution.PosUncertaintyE,
+        measurement.gnssSolution.PosUncertaintyD,
 
-        measurement.gnssSolution.velocityUncertainty,
-        measurement.gnssSolution.timeUncertainty
+        measurement.gnssSolution.GnssVelUncertainty,
+        measurement.gnssSolution.GnssTimeUncertainty
     );
 }
 
 
-void VN300Parsing::parse_INS_Solution(char* payload, VN300Measurement& measurement){
+void VN300Parsing::parse_INS_Solution_LLA(char* payload, VN300Measurement& measurement){
     char header[7];
+
+
 
     commaParser.parseLine(payload,header,
 
-        measurement.insSolution.gpsTow,
-        measurement.insSolution.gpsWeek,
-        measurement.insSolution.insStatus,
+        measurement.insSolution.GpsTow,
+        measurement.insSolution.GpsWeek,
+        measurement.insSolution.InsStatus,
 
-        measurement.insSolution.yaw,
-        measurement.insSolution.pitch,
-        measurement.insSolution.roll,
+        measurement.insSolution.Yaw,
+        measurement.insSolution.Pitch,
+        measurement.insSolution.Roll,
 
-        measurement.insSolution.latitude,
-        measurement.insSolution.longitude,
-        measurement.insSolution.altitude,
+        measurement.insSolution.PosLat,
+        measurement.insSolution.PosLon,
+        measurement.insSolution.PosAlt,
 
-        measurement.insSolution.velocityNorth,
-        measurement.insSolution.velocityEast,
-        measurement.insSolution.velocityDown,
+        measurement.insSolution.VelN,
+        measurement.insSolution.VelE,
+        measurement.insSolution.VelD,
 
-        measurement.insSolution.attitudeUncertainty,
-        measurement.insSolution.positionUncertainty,
-        measurement.insSolution.velocityUncertainty
+        measurement.insSolution.AttUncertainty,
+        measurement.insSolution.PosUncertainty,
+        measurement.insSolution.VelUncertainty
     );
 }
 
@@ -89,17 +93,28 @@ void VN300Parsing::parse_YPR_LinearAccel_Gyro(char* payload, VN300Measurement& m
 
     commaParser.parseLine(payload,header,
 
-        measurement.yaw,
-        measurement.pitch,
-        measurement.roll,
+//         struct YPR_LinearAccel_Gyro {
+//     float Yaw;
+//     float Pitch;
+//     float Roll;
+//     float LinAccelN;
+//     float LinAccelE;
+//     float LinAccelD;
+//     float GyroX;
+//     float GyroY;
+//     float GyroZ;
+// };
+        measurement.yprLinearAccelGyro.Yaw,
+        measurement.yprLinearAccelGyro.Pitch,
+        measurement.yprLinearAccelGyro.Roll,
 
-        measurement.linearAccelerationNorth,
-        measurement.linearAccelerationEast,
-        measurement.linearAccelerationDown,
+        measurement.yprLinearAccelGyro.LinAccelN,
+        measurement.yprLinearAccelGyro.LinAccelE,
+        measurement.yprLinearAccelGyro.LinAccelD,
 
-        measurement.gyroX,
-        measurement.gyroY,
-        measurement.gyroZ
+        measurement.yprLinearAccelGyro.GyroX,
+        measurement.yprLinearAccelGyro.GyroY,
+        measurement.yprLinearAccelGyro.GyroZ
     );
 }
 

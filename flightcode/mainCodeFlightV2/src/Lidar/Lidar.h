@@ -3,7 +3,6 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#include "../Sensor/Sensor.h"
 #include "../Config/SensorConfig.h"
 
 
@@ -22,17 +21,17 @@ enum class LidarReadyState
 };
 
 
-class Lidar : public Sensor<LidarMeasurement>
+class Lidar
 {
 public:
 
     Lidar() = default;
 
-    bool begin() override;
-    void update() override;
-    void zero() override;
+    bool begin();
+    void update() ;
 
-    LidarMeasurement getMeasurement() const override;
+
+    LidarMeasurement getMeasurement() const;
 
     void setFrequency(float frequencyHz);
     void setFilterAlpha(float alpha);
@@ -117,5 +116,5 @@ private:
 
     void validateMeasurement(
         const LidarMeasurement& rawMeasurement
-    ) override;
+    );
 };

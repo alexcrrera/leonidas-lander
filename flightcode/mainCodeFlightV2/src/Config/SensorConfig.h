@@ -21,10 +21,10 @@ struct SerialSensorConfig {
 
     uint32_t baudrate;
 
-    uint bufferSize = 180;
-
+  
 
     SensorParameters parameters;
+  uint bufferSize = 180;
 
 };
 
@@ -49,7 +49,8 @@ namespace SensorConfig {
         .parameters = {
             .frequency = 10.0f,
             .EWA_alpha = 0.1f
-        }
+        },
+        .bufferSize = 180
     };
 
     constexpr float INS_Solution_LLA_poll_frequency = 20.0f; // Hz
@@ -80,6 +81,6 @@ namespace SensorConfig {
 }
 
 
-static_assert(INS_Solution_LLA_poll_frequency > 0.0f, "INS_Solution_LLA_poll_frequency must be greater than 0");
-static_assert(YPR_LinearAccel_Gyro_poll_frequency > 0.0f, "YPR_LinearAccel_Gyro_poll_frequency must be greater than 0");
-static_assert(GNSS_Solution_LLA_poll_frequency > 0.0f, "GNSS_Solution_LLA_poll_frequency must be greater than 0");
+static_assert(SensorConfig::INS_Solution_LLA_poll_frequency > 0.0f, "INS_Solution_LLA_poll_frequency must be greater than 0");
+static_assert(SensorConfig::YPR_LinearAccel_Gyro_poll_frequency > 0.0f, "YPR_LinearAccel_Gyro_poll_frequency must be greater than 0");
+static_assert(SensorConfig::GNSS_Solution_LLA_poll_frequency > 0.0f, "GNSS_Solution_LLA_poll_frequency must be greater than 0");

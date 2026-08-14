@@ -13,6 +13,8 @@
 #include "State_structs.h"
 #include "../Lander/Lander_structs.h"
 
+class Lander;
+
 struct SensorMeasurements
 { 
     VN300Measurement vn300_data;
@@ -27,18 +29,20 @@ class StateEstimator
 {
 
     public:
-        StateEstimator(Lander& lander) : lander_(lander) {}
-        void begin();
-        void update(LanderState& state, SensorMeasurements& sensorMeasurements);
+        StateEstimator() = default;
+        
+        void begin(Lander& lander_);
+        void update(SensorMeasurements& sensorMeasurements);
+        LanderState getState() const { return state; }
 
     private:
 
-        Lander& lander_;
+        Lander*  lander = nullptr;
         LanderState state;
         SensorMeasurements sensorMeasurements;
 
         void estimateAttitude_EULER(LanderState& state, const SensorMeasurements& sensorMeasurements);
-        void estimateAcceleration_EULER(LanderState& state, const SensorMeasurements& sensorMeasurements);
+       
         void estimateVelocity_EULER(LanderState& state, const SensorMeasurements& sensorMeasurements    );
 
 

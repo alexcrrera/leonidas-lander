@@ -135,54 +135,57 @@ void TelemetryManager::update(uint32_t now)
 
 String TelemetryManager::get_telemetry_payload()
 {
-    String payload;
+//     String payload;
 
-    if (flightManager == nullptr)
-        return "";
+//     if (flightManager == nullptr)
+//         return "";
 
-    const LanderSolution& solution = flightManager->getLander().getSolution();
+//     const LanderSolution& solution = flightManager->getLander().getSolution();
 
-    payload += CommsConfig::outputHeaderTelemetryFormat;
+//     payload += CommsConfig::outputHeaderTelemetryFormat;
 
-    // -------------------2-4--------------------------
-    //addTelemetryGroup(payload, solution.state.position);
-    // random data for testing
-    addTelemetryField(payload, 69);
-    addTelemetryField(payload, 420);
-    addTelemetryField(payload, 1337);
+//     // -------------------2-4--------------------------
+//     //addTelemetryGroup(payload, solution.state.position);
+//     // random data for testing
+//     addTelemetryField(payload, 69);
+//     addTelemetryField(payload, 420);
+//     addTelemetryField(payload, 1337);
 
-    // -------------------5-7--------------------------
-    addTelemetryGroup(payload, solution.state.velocity);
+//     // -------------------5-7--------------------------
+//     addTelemetryGroup(payload, solution.state.velocity);
 
-    // -------------------8-10--------------------------
-    addTelemetryGroup(payload, solution.state.attitude);
+//     // -------------------8-10--------------------------
+//     addTelemetryGroup(payload, solution.state.attitude);
 
-    // -------------------11-13 ------- GPS DATA -----LATITUDE LONGITUDE ALTITUDE --------------
-   // addTelemetryField(payload, solution.state.latitude, 6);
-    addTelemetryField(payload, 48.8466, 6);
-    addTelemetryField(payload, 2.35455, 6);
-    ///addTelemetryField(payload, solution.state.longitude, 6);
-    addTelemetryField(payload, solution.state.altitude, 2);
+//     // -------------------11-13 ------- GPS DATA -----LATITUDE LONGITUDE ALTITUDE --------------
+//    // addTelemetryField(payload, solution.state.latitude, 6);
+//     addTelemetryField(payload, 48.8466, 6);
+//     addTelemetryField(payload, 2.35455, 6);
+//     ///addTelemetryField(payload, solution.state.longitude, 6);
+//     addTelemetryField(payload, solution.state.altitude, 2);
 
-    // -------------------Sensor states - 14 - 17--------------------------
-    addTelemetryField(payload, solution.validity.positionValid);
-    addTelemetryField(payload, solution.validity.velocityValid);
-    addTelemetryField(payload, solution.validity.accelerationValid);
-    addTelemetryField(payload, solution.validity.altitudeValid);
-
-
+//     // -------------------Sensor states - 14 - 17--------------------------
+//     addTelemetryField(payload, solution.validity.positionValid);
+//     addTelemetryField(payload, solution.validity.velocityValid);
+//     addTelemetryField(payload, solution.validity.accelerationValid);
+//     addTelemetryField(payload, solution.validity.altitudeValid);
 
 
-    //addTelemetryField(payload, solution.state.altitude, 3);
 
 
-    addTelemetryField(payload, solution.errors);
-    addTelemetryField(payload, solution.timestamp);
+//     //addTelemetryField(payload, solution.state.altitude, 3);
 
-    payload += CommsConfig::outputLineEndingTelemetryFormat;
-    payload += "\n";
 
-    return payload;
+//     addTelemetryField(payload, solution.errors);
+//     addTelemetryField(payload, solution.timestamp);
+
+//     payload += CommsConfig::outputLineEndingTelemetryFormat;
+//     payload += "\n";
+
+//     return payload;
+
+
+return("NOTIMPLEMENTED");
 }
 
 // ============================================================
@@ -198,7 +201,7 @@ String TelemetryManager::get_debug_payload()
         return "FlightManager: NULL\n";
 
     Lander& lander = flightManager->getLander();
-    const LanderSolution& solution = lander.getSolution();
+    const LanderState& state  = lander.getState();
 
     addDebugTitle(payload, "FLIGHT STATUS");
 
@@ -208,54 +211,48 @@ String TelemetryManager::get_debug_payload()
 
     addDebugGroup(payload, "LANDER");
 
-    addDebugField(payload, "Position Valid", solution.validity.positionValid);
-    addDebugField(payload, "Velocity Valid", solution.validity.velocityValid);
-    addDebugField(payload, "Acceleration Valid", solution.validity.accelerationValid);
-    addDebugField(payload, "Altitude Valid", solution.validity.altitudeValid);
-    addDebugField(payload, "Attitude Valid", solution.validity.attitudeValid);
+
 
     // --------------------------------------------------------
     // Position
     // --------------------------------------------------------
 
-    addDebugGroup(payload, solution.state.position, "POSITION NED");
+    addDebugGroup(payload, state.position, "POSITION NED");
 
     // --------------------------------------------------------
     // Velocity
     // --------------------------------------------------------
 
-    addDebugGroup(payload, solution.state.velocity, "VELOCITY NED");
+    addDebugGroup(payload, state.velocity, "VELOCITY NED");
 
     // --------------------------------------------------------
     // Acceleration
     // --------------------------------------------------------
 
-    addDebugGroup(payload, solution.state.acceleration, "ACCELERATION NED");
+    addDebugGroup(payload, state.acceleration, "ACCELERATION NED");
 
     // --------------------------------------------------------
     // Attitude
     // --------------------------------------------------------
 
-    addDebugGroup(payload, solution.state.attitude, "ATTITUDE");
+    addDebugGroup(payload, state.attitude, "ATTITUDE");
 
     // --------------------------------------------------------
     // Altitude
     // --------------------------------------------------------
 
-    addDebugGroup(payload, "ALTITUDE");
-    addDebugField(payload, "Altitude", solution.state.altitude);
+    //addDebugGroup(payload, "ALTITUDE");
+    //addDebugField(payload, "Altitude", solution.state.altitude);
 
     // --------------------------------------------------------
     // Solution
     // --------------------------------------------------------
 
-    addDebugGroup(payload, "SOLUTION");
-    addDebugField(payload, "Errors", String(solution.errors));
-    addDebugField(payload, "Timestamp", String(solution.timestamp));
-
+   
     payload += "\n";
 
     return payload;
+    
 }
 
 

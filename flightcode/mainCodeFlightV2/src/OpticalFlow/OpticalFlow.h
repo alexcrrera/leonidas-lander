@@ -1,30 +1,36 @@
 #pragma once
+#ifndef OPTICAL_FLOW_H
+#define OPTICAL_FLOW_H
 
 #include <Arduino.h>
 #include <stdint.h>
 
-#include "../Sensor/Sensor.h"
+
 
 #include "OpticalFlow_structs.h"
 
 #include "OpticalFlow_utilities.h"
 
 
-class OpticalFlow : public Sensor<OpticalFlo_data>
+class OpticalFlow
 {
 public:
 
     OpticalFlow();
 
-    bool begin() override;
-    void update() override;
+    bool begin();
+    void update();
    
-    OpticalFlowMeasurement getMeasurement() const override;
+    OpticalFlowMeasurement getMeasurement() const;
 
 
 
 
 private:
+
+   OpticalFlowMeasurement latestMeasurement{};
+
+    
 
    static constexpr uint8_t packetHeader = 0xEF;
 
@@ -57,3 +63,5 @@ private:
     uint8_t calculateChecksum(const uint8_t* packet) const;
 
 };
+
+#endif // OPTICAL_FLOW_H

@@ -20,8 +20,7 @@ bool VN300::begin()
 
     vectornav = SensorConfig::VN300.port;
 
-    if (vectornav == nullptr)
-    {setFault(SensorFault::CommunicationError);return false;}
+   
 
     vectornav->begin(SensorConfig::VN300.baudrate);
 
@@ -41,9 +40,17 @@ bool VN300::begin()
   
     // polls solutions at the specified rates
     //YPR_LinearAccel_Gyro_poll_handler.begin(SensorConfig::YPR_LinearAccel_Gyro_poll_frequency,[this]() { poll_YPR_LinearAccel_Gyro(); }); // set to automatic output from VN300, no need to poll
-    GNSS_Solution_LLA_poll_handler.begin(SensorConfig::GNSS_Solution_LLA_poll_frequency,[this]() { poll_GNSS_Solution_LLA(); });
-    INS_Solution_LLA_poll_handler.begin(SensorConfig::INS_Solution_LLA_poll_frequency,[this]() { poll_INS_Solution_LLA(); });
+   GNSS_Solution_LLA_poll_handler.begin(
+    SensorConfig::GNSS_Solution_LLA_poll_frequency,
+    this,
+    &VN300::poll_GNSS_Solution_LLA
+);
 
+INS_Solution_LLA_poll_handler.begin(
+    SensorConfig::INS_Solution_LLA_poll_frequency,
+    this,
+    &VN300::poll_INS_Solution_LLA
+);
 
     return true;
 }
@@ -54,8 +61,8 @@ bool VN300::begin()
 void VN300::update()
 {
     // YPR Linear Accel Gyro is set to automatic output from VN300, no need to poll
-    GNSS_Solution_LLA_poll_handler.update();
-    INS_Solution_LLA_poll_handler.update();
+    GNSS_Solution_LLA_poll_handler.handle();
+    INS_Solution_LLA_poll_handler.handle();
 
     manage_incoming_data(); // read one byte at a time
    
@@ -65,7 +72,7 @@ void VN300::update()
 
 void VN300::process_data()
 {
-    int vectornavIdentity = VN300Utilities::getHeader(incomingDataString);
+    int vectornavIdentity = VN300Utilities::getHeader(incomingData);
 
     switch (vectornavIdentity)
     {
@@ -126,9 +133,6 @@ void VN300::manage_incoming_data(){
         if (dataIndex >= bufferSize - 1) //  overflow protection
         {
             dataIndex = 0;
-
-            setFault(SensorFault::InvalidData);
-            return;
         }
 
         incomingData[dataIndex] = incomingChar;
@@ -153,7 +157,7 @@ void VN300::poll_YPR_LinearAccel_Gyro()
 }
 
 
-VN300 VN300::getMeasurement() const
+VN300Measurement VN300::getMeasurement() const
 {
     return measurement_data;
 }

@@ -11,7 +11,7 @@
 #include "../Lidar/Lidar.h"
 #include "../OpticalFlow/OpticalFlow.h"
 #include "State_structs.h"
-#include "../Lander/Lander.h"
+#include "../Lander/Lander_structs.h"
 
 struct SensorMeasurements
 { 
@@ -29,7 +29,7 @@ class StateEstimator
     public:
         StateEstimator(Lander& lander) : lander_(lander) {}
         void begin();
-        void update();
+        void update(LanderState& state, SensorMeasurements& sensorMeasurements);
 
     private:
 
@@ -37,14 +37,14 @@ class StateEstimator
         LanderState state;
         SensorMeasurements sensorMeasurements;
 
-        void estimateAttitude_EULER();
-        void estimateAcceleration_EULER();
-        void estimateVelocity_EULER();
+        void estimateAttitude_EULER(LanderState& state, const SensorMeasurements& sensorMeasurements);
+        void estimateAcceleration_EULER(LanderState& state, const SensorMeasurements& sensorMeasurements);
+        void estimateVelocity_EULER(LanderState& state, const SensorMeasurements& sensorMeasurements    );
 
 
-        void estimateAcceleration_NED();
-        void estimateVelocity_NED();
-        void estimatePosition_NED();
+        void estimateAcceleration_NED(LanderState& state, const SensorMeasurements& sensorMeasurements);
+        void estimateVelocity_NED(LanderState& state, const SensorMeasurements& sensorMeasurements);
+        void estimatePosition_NED(LanderState& state, const SensorMeasurements& sensorMeasurements);
 };
 
 #endif // STATE_ESTIMATOR_H

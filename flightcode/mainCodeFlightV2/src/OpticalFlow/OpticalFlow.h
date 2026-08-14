@@ -18,14 +18,10 @@ public:
 
     bool begin() override;
     void update() override;
-    void zero() override;
-
+   
     OpticalFlowMeasurement getMeasurement() const override;
 
 
-protected:
-
-    void validateMeasurement(const OpticalFlowMeasurement& measurement) override;
 
 
 private:

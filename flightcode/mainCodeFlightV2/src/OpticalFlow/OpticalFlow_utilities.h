@@ -6,7 +6,7 @@
 
 namespace OpticalFlowUtilities
 {
-    float calculateDeltaTime(uint32_t currentTime, uint32_t previousTime);
+    float getQua
 }
 
 

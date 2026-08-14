@@ -22,7 +22,7 @@ struct ActuatorPWM_config{
 };
 
 
-struct ActuatorCommand{
+struct ActuatorsCommand{
    float vaneX1_deg;
    float vaneX2_deg;
    float vaneY1_deg;
@@ -37,14 +37,14 @@ struct ActuatorCommand{
    constexpr float TVC_YAW_AUTHORITY_BUDGET_deg = 5.0;  // YAW (Z) authority budget
 
 
-   static_assert(TVC_YAW_AUTHORITY_BUDGET_deg <=TVC_TOTAL_AUTHORITY_BUDGET_deg, "YAW AUTHORITY BUDGET IS TOO LARGE");  
+   
    // Automatic
    constexpr float TVC_PITCH_ROLL_AUTHORITY_BUDGET_deg = TVC_TOTAL_AUTHORITY_BUDGET_deg - TVC_YAW_AUTHORITY_BUDGET_deg; // pitch/yaw (X/Y) authority budget
 
 
    // ESC LIMITS
 
-   constexpr float ESC_thrust_min_percentage = 50.0; // in %
+   constexpr float ESC_thrust_min_percentage = 20.0; // in %
    constexpr float ESC_thrust_max_percentage = 90.0; // in %
 
    constexpr float ESC_thrust_initial_spooling_up_percentage = 65.0; // in %
@@ -56,7 +56,7 @@ struct ActuatorCommand{
 
 
 
-
+   static_assert(TVC_YAW_AUTHORITY_BUDGET_deg <=TVC_TOTAL_AUTHORITY_BUDGET_deg, "YAW AUTHORITY BUDGET IS TOO LARGE");  
    static_assert(ESC_thrust_min_percentage <ESC_thrust_max_percentage, "MAX THRUST SHOULD BE GREATER THAN MIN THRUST");  
    static_assert(ESC_thrust_max_percentage <=100, "MAX THRUST SHOULD BE GEQ THAN 100%");  
    static_assert(0 < ESC_thrust_min_percentage, "MIN THRUST SHOULD BE GREATER THAN 0%");  

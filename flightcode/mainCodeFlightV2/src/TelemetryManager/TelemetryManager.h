@@ -7,7 +7,7 @@
 #include "../Config/CommsConfig.h"
 #include "Telemetry_utilities.h"
 
-
+#include <Handler.h>
 #define TELEMETRY_MAX_CMD_HISTORY 15
 
 
@@ -54,6 +54,8 @@ public:
 
 
 private:
+    Handler USB_output_handler;
+    Handler RADIO_output_handler;
 
     FlightManager* flightManager;
 

@@ -29,6 +29,9 @@ void TelemetryManager::begin(SerialOutputType debugOutputType,SerialOutputType t
         Serial.begin(CommsConfig::USB.baudrate);
 
         send_USB_String("INIT SERIAL OK",true);
+
+        //USB_output_handler.begin(CommsConfig::USB.frequency, this, &TelemetryManager::send_USB_String);
+        
     }
 
 
@@ -38,6 +41,7 @@ void TelemetryManager::begin(SerialOutputType debugOutputType,SerialOutputType t
         RADIO_output_active = true;
         CommsConfig::RADIO.port->begin(CommsConfig::RADIO.baudrate);
         RADIO_output_initialized = true;
+        //RADIO_output_handler.begin(CommsConfig::RADIO.frequency, this, &TelemetryManager::send_RADIO_String);   
 
         send_RADIO_String(get_telemetry_payload(),false);
     }
@@ -271,16 +275,12 @@ void TelemetryManager::send_RADIO_String(
     }
 
 
-    CommsConfig::RADIO.port->print(
-        content
-    );
+    CommsConfig::RADIO.port->print(content);
 
 
     if (jumpToNextLine)
     {
-        CommsConfig::RADIO.port->print(
-            "\n"
-        );
+        CommsConfig::RADIO.port->print("\n");
     }
 }
 

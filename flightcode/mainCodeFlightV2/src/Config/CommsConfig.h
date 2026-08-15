@@ -17,24 +17,34 @@ struct SerialPortConfig {
     uint32_t baudrate;
 
     const char* name;   
-
-    bool enabled;
+    bool enabled = true; // default to true, can be set to false if the port is not needed
+     bool input_enabled = true; // default to true, can be set to false if input is not needed
+    bool output_enabled = true; // default to true, can be set to false if output is not needed
+    bool periodic_output_enabled = true; // default to true, can be set to false if periodic output is not needed
 
     float frequency;
 
     SerialOutputType outputType;
+
+    int bufferSize = 100; // default buffer size for incoming data
+    
 };
 
 
 namespace CommsConfig {
 
+    
+
     constexpr SerialPortConfig RADIO = {
         .port = &Serial5,
         .baudrate = 115200,
         .name = "MAIN COMMS",
-        .enabled = true,
+        .input_enabled = true,
+        .output_enabled = true,
+        .periodic_output_enabled = true,
         .frequency = 10.0f, // 10 Hz
-        .outputType = SerialOutputType::HUMAN_READABLE
+        .outputType = SerialOutputType::HUMAN_READABLE,
+        .bufferSize = 30 // buffer size for incoming data
     };
 
 
@@ -42,9 +52,13 @@ namespace CommsConfig {
         .port = &Serial2, /// unused, but still initialized to avoid conflicts
         .baudrate = 115200,
         .name = "DEBUG COMMS",
-        .enabled = true,
-        .frequency = 10.0f, // 10 Hz
-        .outputType = SerialOutputType::BASE_STATION_FORMAT
+        .input_enabled = true, // enable input for USB
+        .output_enabled = true,
+        .periodic_output_enabled = false,
+        .frequency = 2.0f, // 2 Hz
+        .outputType = SerialOutputType::BASE_STATION_FORMAT,
+        .bufferSize = 30 // buffer size for incoming data
+       
     };
 
 
@@ -90,23 +104,16 @@ constexpr bool isBaudrateAllowed(uint32_t baudrate)
 
 
 
-static_assert(
-    isBaudrateAllowed(CommsConfig::RADIO.baudrate),
-    "RADIO baudrate is not allowed."
-);
+static_assert(isBaudrateAllowed(CommsConfig::RADIO.baudrate),"RADIO baudrate is not allowed.");
 
 
-static_assert(
-    isBaudrateAllowed(CommsConfig::USB.baudrate),
-    "USB baudrate is not allowed."
-);
+static_assert(isBaudrateAllowed(CommsConfig::USB.baudrate),"USB baudrate is not allowed.");
 
 
 
 static_assert(
     Utilities::isBounded(
-        CommsConfig::RADIO.frequency,
-        frequencyConfig.min,
+        CommsConfig::RADIO.frequency,frequencyConfig.min,
         frequencyConfig.max
     ),
     "RADIO frequency is out of range."

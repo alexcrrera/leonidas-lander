@@ -21,9 +21,8 @@ void FlightManager::begin()
    
 
     lander.begin();
-
+    command_handler.begin(this);
     telemetry_manager.begin();
-
    
 }
 
@@ -40,16 +39,9 @@ void FlightManager::update()
     // --------------------------------------------------------
     // Update sensors and estimated lander state first
     // --------------------------------------------------------
-    
     lander.update();
 
     
-
-
-    // --------------------------------------------------------
-    // Update telemetry
-    // --------------------------------------------------------
-
     telemetry_manager.update(now);
 
 

@@ -15,18 +15,18 @@ TelemetryManager::TelemetryManager(
 // BEGIN
 // ============================================================
 
-void TelemetryManager::begin(SerialOutputType debugOutputType,SerialOutputType telemetryOutputType)
+void TelemetryManager::begin()
 {
 
     send_USB_String("INIT START OF TELEM",true);
 
     if (CommsConfig::USB.enabled)
     {
-        USB_output_type = debugOutputType;
+        
         USB_output_initialized = true;
-        USB_output_active = true;
+      
 
-        Serial.begin(CommsConfig::USB.baudrate);
+        Serial.begin(CommsConfig::USB.baudrate); // Initialize USB serial port
 
         send_USB_String("INIT SERIAL OK",true);
 
@@ -37,8 +37,8 @@ void TelemetryManager::begin(SerialOutputType debugOutputType,SerialOutputType t
 
     if (CommsConfig::RADIO.enabled)
     {
-        RADIO_output_type = telemetryOutputType;
-        RADIO_output_active = true;
+        
+       
         CommsConfig::RADIO.port->begin(CommsConfig::RADIO.baudrate);
         RADIO_output_initialized = true;
         //RADIO_output_handler.begin(CommsConfig::RADIO.frequency, this, &TelemetryManager::send_RADIO_String);   
@@ -48,88 +48,61 @@ void TelemetryManager::begin(SerialOutputType debugOutputType,SerialOutputType t
 }
 
 
-// ============================================================
-// UPDATE
-// ============================================================
-void TelemetryManager::handleInput()
-{
-
-}
 
 
 void TelemetryManager::update(uint32_t now)
 {
     handleInput();
 
-
     // --------------------------------------------------------
     // USB
     // --------------------------------------------------------
-
-    if (now - USB_last_output_time >=static_cast<uint32_t>(1000.0f / CommsConfig::USB.frequency)
-    )
+    if (USB_output_initialized && USB_periodic_output_enabled)
     {
+    if (now - USB_last_output_time >=static_cast<uint32_t>(1000.0f / CommsConfig::USB.frequency)){
         
         USB_last_output_time = now;
 
 
-        if (isUSB_OutputEnabled())
+        if (USB_output_enabled)
         {
-            if (
-                USB_output_type ==
-                SerialOutputType::HUMAN_READABLE
-            )
+            if (USB_output_type ==SerialOutputType::HUMAN_READABLE)
             {
-                send_USB_String(
-                    get_debug_payload(),
-                    false
-                );
+                send_USB_String(get_debug_payload(),false);
             }
             else
             {
-                send_USB_String(
-                    get_telemetry_payload(),
-                    false
-                );
+                send_USB_String(get_telemetry_payload(),false);
             }
         }
     }
+}
 
 
     // --------------------------------------------------------
     // RADIO
     // --------------------------------------------------------
 
-    if (now - RADIO_last_output_time >=static_cast<uint32_t>(1000.0f / CommsConfig::RADIO.frequency))
+    if (RADIO_periodic_output_enabled && (now - RADIO_last_output_time >= static_cast<uint32_t>(1000.0f / CommsConfig::RADIO.frequency)))
     {
         RADIO_last_output_time = now;
 
 
-        if (isRADIO_OutputEnabled())
+        if (RADIO_output_enabled)
         {
            
-            if (
-                RADIO_output_type ==
-                SerialOutputType::HUMAN_READABLE
-            )
-            {
+            if (RADIO_output_type ==SerialOutputType::HUMAN_READABLE){
                 
-                send_RADIO_String(
-                    get_debug_payload(),
-                    false
-                );
+                send_RADIO_String(get_debug_payload(),false);
             }
             else
             {
-                 
-                send_RADIO_String(
-                    get_telemetry_payload(),
-                    false
-                );
+                send_RADIO_String(get_telemetry_payload(),false);
             }
         }
     }
 }
+
 
 
 // ============================================================
@@ -209,61 +182,139 @@ String TelemetryManager::get_debug_payload()
 
     TelemetryUtilities::addDebugTitle(payload, "FLIGHT STATUS");
 
+    TelemetryUtilities::addDebugGroup(payload, "STATUS");
 
-     TelemetryUtilities::addDebugGroup(payload, "STATUS");
-
-
-    
-   TelemetryUtilities::addDebugField(payload, "State", flightManager->getStateMachine().getStateAsString());
-    // --------------------------------------------------------
-    // Lander
-    // --------------------------------------------------------
+    TelemetryUtilities::addDebugField(payload, "State", flightManager->getStateMachine().getStateAsString());
 
     TelemetryUtilities::addDebugGroup(payload, "LANDER");
 
-
-
-    // --------------------------------------------------------
-    // Position
-    // --------------------------------------------------------
-
     TelemetryUtilities::addDebugGroup(payload, state.position, "POSITION NED");
-
-    // --------------------------------------------------------
-    // Velocity
-    // --------------------------------------------------------
 
     TelemetryUtilities::addDebugGroup(payload, state.velocity, "VELOCITY NED");
 
-    // --------------------------------------------------------
-    // Acceleration
-    // --------------------------------------------------------
-
     TelemetryUtilities::addDebugGroup(payload, state.acceleration, "ACCELERATION NED");
-
-    // --------------------------------------------------------
-    // Attitude
-    // --------------------------------------------------------
 
     TelemetryUtilities::addDebugGroup(payload, state.attitude, "ATTITUDE");
 
-    // --------------------------------------------------------
-    // Altitude
-    // --------------------------------------------------------
-
-    //addDebugGroup(payload, "ALTITUDE");
-    //addDebugField(payload, "Altitude", solution.state.altitude);
-
-    // --------------------------------------------------------
-    // Solution
-    // --------------------------------------------------------
-
-   
     payload += "\n";
 
     return payload;
     
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ============================================================
+// UPDATE
+// ============================================================
+void TelemetryManager::handleInput()
+{
+    if (USB_input_enabled)
+    {
+        handle_USB_input();
+    }
+
+    if (RADIO_input_enabled)
+    {
+        handle_RADIO_input();
+    }
+}
+
+
+void TelemetryManager::handle_USB_input()
+{
+    while (Serial.available() > 0)
+    {
+        char incomingChar = Serial.read();
+
+        if (incomingChar == '\n' || incomingChar == '\r')
+        {
+            if (dataIndexUSB > 0)
+            {
+                incomingDataUSB[dataIndexUSB] = '\0'; // Null-terminate the string
+                String incomingText = String(incomingDataUSB);
+                flightManager->getCommandHandler().consumeIncomingCommand(incomingText);
+                dataIndexUSB = 0; // Reset index for next command
+            }
+        }
+        else
+        {
+            if (dataIndexUSB < bufferSizeUSB - 1)
+            {
+                incomingDataUSB[dataIndexUSB++] = incomingChar;
+            }
+            if (dataIndexUSB >= bufferSizeUSB - 1)
+            {
+                // Buffer overflow, reset index
+                dataIndexUSB = 0;
+            }
+        }
+    }
+}
+
+
+void TelemetryManager::handle_RADIO_input()
+{
+    while (RADIO_port->available() > 0)
+    {
+        char incomingChar = RADIO_port->read();
+
+        if (incomingChar == '\n' || incomingChar == '\r')
+        {
+            if (dataIndexRADIO > 0)
+            {
+                incomingDataRADIO[dataIndexRADIO] = '\0'; // Null-terminate the string
+                String incomingText = String(incomingDataRADIO);
+                flightManager->getCommandHandler().consumeIncomingCommand(incomingText);
+                dataIndexRADIO = 0; // Reset index for next command
+            }
+        }
+        else
+        {
+            if (dataIndexRADIO < bufferSizeRADIO - 1)
+            {
+                incomingDataRADIO[dataIndexRADIO++] = incomingChar;
+            }
+            if (dataIndexRADIO >= bufferSizeRADIO - 1)
+            {
+                // Buffer overflow, reset index
+                dataIndexRADIO = 0;
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // ============================================================
@@ -275,18 +326,18 @@ void TelemetryManager::send_RADIO_String(
     bool jumpToNextLine
 )
 {
-    if (!isRADIO_OutputEnabled())
-    {
+    
+    if(!RADIO_output_enabled || !RADIO_output_initialized){
         return;
     }
 
 
-    CommsConfig::RADIO.port->print(content);
+    RADIO_port->print(content);
 
 
     if (jumpToNextLine)
     {
-        CommsConfig::RADIO.port->print("\n");
+        RADIO_port->print("\n");
     }
 }
 
@@ -301,18 +352,16 @@ void TelemetryManager::send_USB_String(
 )
 {
 
-    if (!isUSB_OutputEnabled())
-    {
+    if(!USB_output_enabled || !USB_output_initialized){
         return;
     }
 
-
-    Serial.print(content);
+    USB_port->print(content);
 
 
     if (jumpToNextLine)
     {
-        Serial.print("\n");
+        USB_port->print("\n");
     }
 }
 
@@ -329,11 +378,11 @@ void TelemetryManager::toggle_RADIO(bool enable)
 {
     if (!RADIO_output_initialized)
     {
-        RADIO_output_active = false;
+        RADIO_output_enabled = false;
         return;
     }
 
-    RADIO_output_active = enable;
+    RADIO_output_enabled = enable;
 }
 
 
@@ -341,34 +390,14 @@ void TelemetryManager::toggle_USB(bool enable)
 {
     if (!USB_output_initialized)
     {
-        USB_output_active = false;
+        USB_output_enabled = false;
         return;
     }
 
-    USB_output_active = enable;
+    USB_output_enabled = enable;
 }
 
 
 
 
 
-// ============================================================
-// OUTPUT STATE
-// ============================================================
-
-bool TelemetryManager::isUSB_OutputEnabled()
-{
-    return
-        USB_output_active &&
-        USB_output_initialized &&
-        CommsConfig::USB.enabled;
-}
-
-
-bool TelemetryManager::isRADIO_OutputEnabled()
-{
-    return
-        RADIO_output_active &&
-        RADIO_output_initialized &&
-        CommsConfig::RADIO.enabled;
-}

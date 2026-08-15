@@ -14,15 +14,7 @@
 class FlightManager;
 
 
-// placeholder for the command history
-enum class COMMANDS {
-    NONE,
-    ARM,
-    DISARM,
-    TAKEOFF,
-    LAND,
-    ABORT
-};
+
 
 class TelemetryManager {
 
@@ -30,11 +22,11 @@ public:
 
     TelemetryManager(FlightManager* flightManager);
 
-    void begin(SerialOutputType debugOutputType = SerialOutputType::HUMAN_READABLE,SerialOutputType telemetryOutputType = SerialOutputType::BASE_STATION_FORMAT);
+    void begin();
 
     void update(uint32_t now);
 
-    void handleInput();
+   
 
 
     void toggle_USB(bool enable);
@@ -45,20 +37,33 @@ public:
     void send_RADIO_String(const String& content,bool jumpToNextLine = false    );
 
 
-    String get_debug_payload();
-
-    String get_telemetry_payload();
+   
 
 
 
 
 
 private:
+
+    Stream* USB_port = &Serial;
+    HardwareSerial* RADIO_port = CommsConfig::RADIO.port;
+
     Handler USB_output_handler;
     Handler RADIO_output_handler;
 
     FlightManager* flightManager;
 
+
+    int bufferSizeUSB = CommsConfig::USB.bufferSize;
+    int bufferSizeRADIO = CommsConfig::RADIO.bufferSize;
+    
+    
+    void handleInput();
+    void handle_USB_input();
+    void handle_RADIO_input();
+     String get_debug_payload();
+
+    String get_telemetry_payload();
 
     // --------------------------------------------------------
     // Output timing
@@ -73,24 +78,7 @@ private:
     // --------------------------------------------------------
 
     SerialOutputType USB_output_type = SerialOutputType::HUMAN_READABLE;
-
     SerialOutputType RADIO_output_type = SerialOutputType::BASE_STATION_FORMAT;
-
-
-    bool USB_output_active = true;
-    bool RADIO_output_active = true;
-
-    bool USB_output_initialized = false;
-    bool RADIO_output_initialized = false;
-
-
-    // --------------------------------------------------------
-    // Command history
-    // --------------------------------------------------------
-
-    COMMANDS commandHistory[TELEMETRY_MAX_CMD_HISTORY];
-
-    int commandHistoryIndex = 0;
 
 
     // --------------------------------------------------------
@@ -108,17 +96,29 @@ private:
     TextParser commaParser{","};
 
 
+
+    int dataIndexUSB = 0; //  for the incoming data buffer via USB
+    int dataIndexRADIO = 0; //  for the incoming data buffer via RADIO
+
+    char incomingDataUSB[CommsConfig::USB.bufferSize];
+    char incomingDataRADIO[CommsConfig::RADIO.bufferSize];
+
+
+    bool USB_output_enabled = CommsConfig::USB.output_enabled;
+    bool RADIO_output_enabled = CommsConfig::RADIO.output_enabled;
+
+    bool USB_input_enabled = CommsConfig::USB.input_enabled;
+    bool RADIO_input_enabled = CommsConfig::RADIO.input_enabled;
+
+    bool USB_periodic_output_enabled = CommsConfig::USB.periodic_output_enabled;
+    bool RADIO_periodic_output_enabled = CommsConfig::RADIO.periodic_output_enabled;
+
+
+    bool USB_output_initialized = false;
+    bool RADIO_output_initialized = false;
+
+
+
   
-    // --------------------------------------------------------
-    // Debug formatting helpers
-    // --------------------------------------------------------
-  
-
-
-    
-
-
-   bool isUSB_OutputEnabled();
-    bool isRADIO_OutputEnabled();
 };
 

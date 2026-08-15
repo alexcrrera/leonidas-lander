@@ -13,7 +13,7 @@
 
 #include "FlightManager_structs_and_more.h"
 #include "../StateMachine/StateMachine.h"
-
+#include "../CommandHandler/CommandHandler.h"
 // ============================================================
 // Flight states
 // ============================================================
@@ -43,6 +43,7 @@ public:
     TelemetryManager& getTelemetryManager(){return telemetry_manager;}
     MotorManager& getMotorManager(){return motor_manager;}
     StateMachine& getStateMachine(){return state_machine;}
+    CommandHandler& getCommandHandler(){return command_handler;}
     // --------------------------------------------------------
     // Status
     // --------------------------------------------------------
@@ -56,6 +57,11 @@ private:
     MotorManager motor_manager; // owns EDF and servo vanes
     TelemetryManager telemetry_manager; // manages telemetry output
     StateMachine state_machine; // manages the state of the flight
+    CommandHandler command_handler; // manages commands received from telemetry
+
+
+
+    
 
 
 

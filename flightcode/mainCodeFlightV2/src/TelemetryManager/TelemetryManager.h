@@ -32,6 +32,12 @@ public:
     void toggle_USB(bool enable);
     void toggle_RADIO(bool enable);
 
+    void toggle_USB();
+    void toggle_RADIO();
+
+    void toggle_USB_periodic();
+    void toggle_RADIO_periodic();
+
 
     void send_USB_String(const String& content,bool jumpToNextLine = false);
     void send_RADIO_String(const String& content,bool jumpToNextLine = false    );
@@ -77,8 +83,8 @@ private:
     // Output configuration
     // --------------------------------------------------------
 
-    SerialOutputType USB_output_type = SerialOutputType::HUMAN_READABLE;
-    SerialOutputType RADIO_output_type = SerialOutputType::BASE_STATION_FORMAT;
+    SerialOutputType USB_output_type = CommsConfig::USB.outputType;
+    SerialOutputType RADIO_output_type = CommsConfig::RADIO.outputType;
 
 
     // --------------------------------------------------------

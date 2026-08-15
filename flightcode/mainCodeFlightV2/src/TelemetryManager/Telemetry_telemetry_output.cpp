@@ -44,6 +44,10 @@ String TelemetryManager::get_telemetry_payload()
     TelemetryUtilities::addTelemetryField(payload, solution.validity.altitudeValid);
 
 
+    //  Command feedback - 18
+    TelemetryUtilities::addTelemetryField(payload, flightManager->getCommandHandler().command_feedback);
+
+
 
 
 

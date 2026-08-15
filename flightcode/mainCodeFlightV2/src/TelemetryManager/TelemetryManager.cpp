@@ -43,7 +43,7 @@ void TelemetryManager::begin()
         RADIO_output_initialized = true;
         //RADIO_output_handler.begin(CommsConfig::RADIO.frequency, this, &TelemetryManager::send_RADIO_String);   
 
-        send_RADIO_String(get_telemetry_payload(),false);
+        send_RADIO_String("INIT RADIO OK",true);
     }
 }
 
@@ -295,6 +295,32 @@ void TelemetryManager::toggle_RADIO(bool enable)
 }
 
 
+void TelemetryManager::toggle_USB_periodic()
+{
+    if (!USB_output_initialized)
+    {
+        USB_output_enabled = false;
+        Serial.println("USB output not initialized, cannot toggle.");
+        return;
+    }
+
+    USB_periodic_output_enabled = !USB_periodic_output_enabled;
+}
+
+void TelemetryManager::toggle_RADIO_periodic()
+{
+    if (!RADIO_output_initialized)
+    {
+        RADIO_output_enabled = false;
+        Serial.println("RADIO output not initialized, cannot toggle.");
+        return;
+    }
+
+    RADIO_periodic_output_enabled = !RADIO_periodic_output_enabled;
+}
+
+
+
 void TelemetryManager::toggle_USB(bool enable)
 {
     if (!USB_output_initialized)
@@ -308,5 +334,16 @@ void TelemetryManager::toggle_USB(bool enable)
 
 
 
+
+void TelemetryManager::toggle_USB()
+{
+    if (!USB_output_initialized)
+    {
+        USB_output_enabled = false;
+        return;
+    }
+
+    USB_output_enabled = !USB_output_enabled;
+}
 
 

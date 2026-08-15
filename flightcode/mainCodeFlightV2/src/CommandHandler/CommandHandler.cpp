@@ -7,32 +7,6 @@ void CommandHandler::begin(FlightManager* flight_manager_){
 
 
 
-void CommandHandler::parseCommand(String header, String payload) {
-    // Parse the incoming text
-    if (header == "ARM") {
-        Serial.println("Arm command received");
-       // return COMMAND::ARM;
-    } else if (header    == "DISARM") {
-        Serial.println("Disarm command received");
-       // return COMMAND::DISARM;
-    } else if (header == "LAUNCH") {
-        Serial.println("Launch command received");
-       // return COMMAND::LAUNCH;
-    } else if (header == "ABORT") {
-      Serial.println("Abort command received");
-       // return COMMAND::ABORT;
-    } else if (header == "LAND") {
-       Serial.println("Land command received");
-       // return COMMAND::LAND;
-    } else if (header == "RESET") {
-       Serial.println("Reset command received");
-    } else {
-        // Handle unknown command
-        Serial.println("Unknown command received: " + header);
-        return;
-    }
-} 
-
 
 
 

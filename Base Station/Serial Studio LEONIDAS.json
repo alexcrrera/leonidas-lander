@@ -4,7 +4,7 @@
             "eol": "\n",
             "icon": "Accuracy",
             "title": "RESET ANGLES",
-            "txData": "RANGLES"
+            "txData": "RANGLES:"
         },
         {
             "eol": "\n",
@@ -22,7 +22,7 @@
             "eol": "\n",
             "icon": "Connected",
             "title": "ARM MOTOR",
-            "txData": "MARM"
+            "txData": "ARM:"
         },
         {
             "eol": "\n",
@@ -58,7 +58,7 @@
             "eol": "\n",
             "icon": "Play Property",
             "title": "Change output mode",
-            "txData": "PLT,50"
+            "txData": "TGL_RAD_PER:"
         },
         {
             "eol": "\n",
@@ -453,6 +453,23 @@
                     "max": 0,
                     "min": 0,
                     "title": "ALTITUDE VALID",
+                    "units": "",
+                    "value": "--.--",
+                    "widget": ""
+                },
+                {
+                    "alarm": 0,
+                    "fft": false,
+                    "fftSamples": 256,
+                    "fftSamplingRate": 100,
+                    "graph": false,
+                    "index": 18,
+                    "led": false,
+                    "ledHigh": 1,
+                    "log": false,
+                    "max": 0,
+                    "min": 0,
+                    "title": "CMD FEEDBACK",
                     "units": "",
                     "value": "--.--",
                     "widget": ""

@@ -20,15 +20,17 @@ namespace TelemetryUtilities
     template <typename T>
     inline void addTelemetryField(String& payload, T value, int decimals = -1)
     {
-        if (payload.length() > 0)
-            payload += ",";
+    if (payload.length() > 0)
+        payload += ",";
 
-        if constexpr (std::is_same_v<T, bool>)
-            payload += value ? "[OK]" : "[X]";
-        else if (decimals >= 0)
-            payload += String(value, decimals);
-        else
-            payload += String(value);
+    if constexpr (std::is_same_v<T, bool>)
+        payload += value ? "[OK]" : "[X]";
+    else if constexpr (std::is_same_v<T, String>)
+        payload += value;
+    else if (decimals >= 0)
+        payload += String(value, decimals);
+    else
+        payload += String(value);
     }
 
     void addTelemetryGroup(String& payload, const NED_coordinates& NED_payload);

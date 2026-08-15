@@ -10,7 +10,8 @@
 #include "OpticalFlow_structs.h"
 
 #include "OpticalFlow_utilities.h"
-
+#include "../Config/SensorConfig.h"
+#include "../Lander/Lander_structs.h"
 
 class OpticalFlow
 {
@@ -19,16 +20,17 @@ public:
     OpticalFlow();
 
     bool begin();
-    void update();
+    void update(LanderState& landerState);
    
-    OpticalFlowMeasurement getMeasurement() const;
+    OpticalFlowMeasurement& getMeasurement(){return opti_measurement;}
 
 
 
 
 private:
 
-   OpticalFlowMeasurement latestMeasurement{};
+   OpticalFlowMeasurement opti_measurement;
+   OpticalFlow_data measurement ;
 
     
 
@@ -51,11 +53,11 @@ private:
     uint8_t packetBuffer[packetLength] = {};
     uint8_t packetIndex = 0;
 
+    void projectOpticalFlowToNED(LanderState& landerState);
 
 
-    bool readPacket(OpticalFlowMeasurement& measurement);
-
-    bool decodePacket(const uint8_t* packet,OpticalFlowMeasurement& measurement);
+    bool readPacket(LanderState& landerState);
+    bool decodePacket(const uint8_t* packet, LanderState& landerState);
 
     void resetParser();
 

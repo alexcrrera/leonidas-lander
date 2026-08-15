@@ -45,8 +45,8 @@ void StateEstimator::estimateAcceleration_NED(LanderState& state, const SensorMe
 void StateEstimator::estimateVelocity_NED(LanderState& state, const SensorMeasurements& sensorMeasurements)
 {
     
-    float VelN = sensorMeasurements.vn300_data.insSolution.VelN;
-    float VelE = sensorMeasurements.vn300_data.insSolution.VelE;
+    float VelN = sensorMeasurements.opticalFlow_data.velocity_North_SI;
+    float VelE = sensorMeasurements.opticalFlow_data.velocity_East_SI;
     float VelD = sensorMeasurements.vn300_data.insSolution.VelD;
 
     
@@ -60,10 +60,10 @@ void StateEstimator::estimateVelocity_NED(LanderState& state, const SensorMeasur
 void StateEstimator::estimatePosition_NED(LanderState& state, const SensorMeasurements& sensorMeasurements)
 {
     // Convert latitude, longitude, and altitude to NED coordinates
-    float positionNorth, positionEast, positionDown;
+
     state.position.North_SI = -1;
     state.position.East_SI = -1;
-    state.position.Down_SI = -sensorMeasurements.lidar_data.altitude_M; // Use Lidar altitude for Down coordinate
+    state.position.Down_SI = - sensorMeasurements.lidar_data.altitude_M; // Use Lidar altitude for Down coordinate
 }
 
 

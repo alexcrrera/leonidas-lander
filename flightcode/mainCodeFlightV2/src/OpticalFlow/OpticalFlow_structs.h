@@ -29,13 +29,9 @@ struct OpticalFlow_data
 
 struct OpticalFlowMeasurement
 {
-    uint32_t systemTimeMs = 0;
+    float velocity_North_SI = 0.0f;
+    float velocity_East_SI = 0.0f;
 
-    float distance_m = 0.0f;
-    float velocity_x_ms = 0.0f;
-    float velocity_y_ms = 0.0f;
-
-    bool distanceValid = false;
     bool velocityValid = false;
 };
 

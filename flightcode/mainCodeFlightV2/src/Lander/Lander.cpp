@@ -16,7 +16,7 @@ void Lander::update()
     
 
     vn300.update();
-    opticalFlow.update();
+    opticalFlow.update(getState());
     lidar.update(getState());
 
     SensorData.vn300_data = vn300.getMeasurement();

@@ -10,7 +10,6 @@
 #include "../VN300/VN300.h"
 #include "../Lidar/Lidar.h"
 #include "../OpticalFlow/OpticalFlow.h"
-#include "State_structs.h"
 #include "../Lander/Lander_structs.h"
 
 class Lander;

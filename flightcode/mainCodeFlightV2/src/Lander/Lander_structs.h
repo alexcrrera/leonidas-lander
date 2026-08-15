@@ -3,6 +3,8 @@
 
 
 #include <Arduino.h>
+#include "../Utilities/Utilities.h"
+#include "../StateMachine/StateMachine_utilities.h"
 
 struct StateValidity
 {
@@ -85,6 +87,10 @@ struct LanderState
 
     // Body angular rates [deg/s]
     Rotation_Euler_coordinates angularVelocity;
+
+    STATE_MACHINE_STATES state = STATE_MACHINE_STATES::BOOT;
+
+    
 
 };
 

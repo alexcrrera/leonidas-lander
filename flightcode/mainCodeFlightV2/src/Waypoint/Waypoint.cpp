@@ -6,15 +6,15 @@ state(WaypointState::INACTIVE), target{{0.0f, 0.0f, 0.0f}, 0.0f}, epsH(EpsConfig
 }
 Waypoint::Waypoint(
     WaypointType type,
-    const Vector3& positionNED,
-    float yawDeg,
+    const NED_coordinates& positionNED,
+    float yaw_deg,
     uint32_t holdTimeMs,
     EpsilonGroup epsilon_group
 )
     :
     type(type),
     state(WaypointState::INACTIVE),
-    target{positionNED, yawDeg},
+    target{positionNED, yaw_deg},
     epsH(epsilon_group.epsH),
     epsV(epsilon_group.epsV),
     epsYaw(epsilon_group.epsYaw),
@@ -49,22 +49,15 @@ WaypointState Waypoint::getState() const{
 
 
 
-void Waypoint::update(  const Vector3& currentPositionNED,float yawDeg){
+void Waypoint::update(  const NED_coordinates& currentPositionNED,float yaw_deg){
 
     if(!isActive()){
         return; // do nothing since wp. not activated
     }
 
-    bool positionReached = Utilities::isWithinEps_NED(
-        epsH,
-        epsV,
-        currentPositionNED,
-        target.positionNED);
-    
-    bool yawReached = Utilities::isWithinEps_Yaw(
-        epsYaw,yawDeg,target.yawDeg);
 
-    reached = positionReached && yawReached;
+
+    reached = targetReached();
 
     switch (state)
     {
@@ -93,8 +86,6 @@ void Waypoint::update(  const Vector3& currentPositionNED,float yawDeg){
         break;
 
 
-
-    
     default:
         break;
     }
@@ -103,4 +94,31 @@ void Waypoint::update(  const Vector3& currentPositionNED,float yawDeg){
 
 bool Waypoint::isActive(){
     return(state != WaypointState::INACTIVE && state != WaypointState::COMPLETED);
+}
+
+
+
+
+bool Waypoint::positionReached() const{
+    if(!isActive()){
+        return(false);
+    }
+    return Utilities::isWithinEps_NED(
+        epsH,
+        epsV,
+        target.positionNED,
+        target.positionNED
+    );
+}
+
+
+bool Waypoint::yawReached() const{
+    if(!isActive()){
+        return(false);
+    }
+    return Utilities::isWithinEps_Yaw(
+        epsYaw,
+        target.yaw_deg,
+        target.yaw_deg
+    );
 }

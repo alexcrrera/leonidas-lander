@@ -7,6 +7,8 @@
 #include "Arduino.h"
 
 
+
+
 struct PID_Gains{
     float kp;
     float ki;
@@ -27,6 +29,15 @@ struct NED_coordinates {
     float East_SI; 
     float Down_SI;
 };
+
+
+struct WaypointTarget {
+    NED_coordinates positionNED;
+    float yaw_deg;
+};
+
+
+
 
 struct Rotation_Euler_coordinates {
     float Roll_SI = 0.0f;
@@ -75,7 +86,7 @@ namespace Utilities{
     bool isWithinEps_3D(float epsH, float epsV,const Vector3& p, const Vector3& p_ref);
     bool isWithinEps_NED(float epsH, float epsV, const Vector3& p, const Vector3& p_ref);
     bool isWithinEps_Yaw(float epsYaw, float yaw, float yaw_ref);
-
+    bool isWithinEps_NED(float epsH, float epsV, const NED_coordinates& p, const NED_coordinates& p_ref);
     //bool isBounded(float u, float u_min, float u_max);
     constexpr bool isBounded(float value,float minValue,float maxValue){return value >= minValue &&value <= maxValue;}
 

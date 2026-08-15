@@ -16,6 +16,34 @@ String TelemetryManager::get_debug_payload()
 
     TelemetryUtilities::addDebugTitle(payload, "FLIGHT STATUS");
 
+    // take off point
+  
+    
+
+
+// take off point
+TelemetryUtilities::addDebugGroup(payload, "TAKE OFF POINT");
+
+const auto& mission = flightManager->getMission();
+
+TelemetryUtilities::addDebugGroup(payload, mission.takeOffWaypoint.getTarget().positionNED, "Take Off Point NED");
+TelemetryUtilities::addDebugField(payload, "Take Off Point Yaw", mission.takeOffWaypoint.getTarget().yaw_deg);
+
+
+// transition point for landing
+TelemetryUtilities::addDebugGroup(payload, "LANDING TRANSITION POINT");
+
+TelemetryUtilities::addDebugGroup(payload, mission.landingTransitionWaypoint.getTarget().positionNED, "Landing Transition Point NED");
+TelemetryUtilities::addDebugField(payload, "Landing Transition Point Yaw", mission.landingTransitionWaypoint.getTarget().yaw_deg);
+
+
+// landing point
+TelemetryUtilities::addDebugGroup(payload, "LANDING POINT");
+
+TelemetryUtilities::addDebugGroup(payload, mission.landingWaypoint.getTarget().positionNED, "Landing Point NED");
+TelemetryUtilities::addDebugField(payload, "Landing Point Yaw", mission.landingWaypoint.getTarget().yaw_deg);
+
+
     TelemetryUtilities::addDebugGroup(payload, "STATUS");
 
     TelemetryUtilities::addDebugField(payload, "State", flightManager->getStateMachine().getStateAsString());

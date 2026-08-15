@@ -67,3 +67,6 @@ bool Utilities::isWithinEps_Yaw(float epsYaw, float yaw, float yaw_ref){
     return(isWithinEps_1D(epsYaw,yaw,yaw_ref));
 }
 
+bool Utilities::isWithinEps_NED(float epsH, float epsV, const NED_coordinates& p, const NED_coordinates& p_ref){
+    return(isWithinEps_3D(epsH,epsV,p.North_SI,p.East_SI,p.Down_SI,p_ref.North_SI,p_ref.East_SI,p_ref.Down_SI));
+}

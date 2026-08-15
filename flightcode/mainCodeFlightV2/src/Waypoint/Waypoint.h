@@ -8,25 +8,9 @@
 #include "../Config/EpsConfig.h"
 #include "../Config/MissionConfig.h"
 
-enum class WaypointType{
-    TAKEOFF,
-    NAVIGATION,
-    PRE_LANDING,
-    LANDING
-};
 
 
-enum class WaypointState{
-    INACTIVE,
-    APPROACHING,
-    HOLDING,
-    COMPLETED
-};
 
-struct WaypointTarget {
-    Vector3 positionNED;
-    float yawDeg;
-};
 
 
 class Waypoint{
@@ -38,18 +22,18 @@ class Waypoint{
     Waypoint(); // default constructor as a placeholder for a waypoint that is not defined yet
     Waypoint(
         WaypointType type,
-        const Vector3& positionNED,
-        float yawDeg,
+        const NED_coordinates& positionNED,
+        float yaw_deg,
         uint32_t holdTimeMs = MissionConfig::holdTimeMs.default_,
         EpsilonGroup epsilon_group = {}
     );
 
     void update(
-        const Vector3& currentPositionNED,
-        float yawDeg
+        const NED_coordinates& currentPositionNED,
+        float yaw_deg
     );
 
-    bool isReached();
+    bool isReached() const;
 
     void activate();
 
@@ -79,6 +63,9 @@ class Waypoint{
 
         bool reached;
 
+        bool positionReached() const;
+        bool yawReached() const;
+        bool targetReached() const{return(positionReached() && yawReached());}
 
 };
 

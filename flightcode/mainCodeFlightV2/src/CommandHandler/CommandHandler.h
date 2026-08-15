@@ -23,6 +23,7 @@ public:
     void setOKFeedback(const String& message) {command_feedback = "[OK] - " + message;}
     void setErrorFeedback(const String& error) {command_feedback = "[ERROR]: " + error;}
     void setFeedback(const String& feedback) {command_feedback = feedback;}
+   
 
     String command_feedback = "[CLEAR]"; // default feedback message, can be updated after processing a command
 private:

@@ -91,28 +91,19 @@ enum class CoordinateType {
 
     
 
-    constexpr bool isValidPositionNED(const Vector3& positionNED){
+constexpr bool isValidPositionNED(const Vector3& positionNED)
+{
+    return isValidCoordinate(positionNED.x, CoordinateType::North_m) &&
+           isValidCoordinate(positionNED.y, CoordinateType::East_m) &&
+           isValidCoordinate(positionNED.z, CoordinateType::Down_m);
+}
+
+
+    constexpr bool isValidPositionNED(const NED_coordinates& positionNED){
     // checks if NED positions is valid
-
-    float North_m = positionNED.x;
-    float East_m = positionNED.y;
-    float Down_m = positionNED.z;
-
-    if(!isValidCoordinate(North_m,CoordinateType::North_m)){
-        return false;
+    return isValidPositionNED(Vector3{positionNED.North_SI,positionNED.East_SI,positionNED.Down_SI});
     }
-
-    if(!isValidCoordinate(East_m,CoordinateType::East_m)){
-        return false;
-    }
-
-    if(!isValidCoordinate(Down_m,CoordinateType::Down_m)){
-        return false;
-    }
-
-    return true;
-
-    }
+    
 
     
 

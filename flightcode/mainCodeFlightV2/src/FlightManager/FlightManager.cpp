@@ -23,8 +23,13 @@ void FlightManager::begin()
     lander.begin();
     command_handler.begin(this);
     telemetry_manager.begin();
+    mission.begin(this);
+    state_machine.begin(this);
+    state_machine.setState(STATE_MACHINE_STATES::BOOTED);
    
 }
+
+
 
 
 // ============================================================
@@ -40,7 +45,11 @@ void FlightManager::update()
     // Update sensors and estimated lander state first
     // --------------------------------------------------------
     lander.update();
+    state_machine.update();
 
+    //controller.update(lander.getState(), mission.getCurrentRegimeData());
+    //mission.update(lander.getState());
+    motor_manager.update(controller.getControlCmd());
     
     telemetry_manager.update(now);
 

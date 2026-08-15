@@ -13,7 +13,7 @@ SAFETY PARAMETERS THAT CAN TOGGLE ABORT CONDITIONS
  namespace SafetyBounds {
 
     constexpr float maxAltitude_m = 3.0; // max altitude the vehicle should be allowed 
-    constexpr float minHoverAltitude_m = 0.5; // minimum flight altitude
+    constexpr float minHoverAltitude_m = 0.4; // minimum flight altitude
     constexpr float maxRadius_m = 2.0;
 
 

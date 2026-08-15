@@ -61,8 +61,8 @@ void StateEstimator::estimatePosition_NED(LanderState& state, const SensorMeasur
 {
     // Convert latitude, longitude, and altitude to NED coordinates
 
-    state.position.North_SI = -1;
-    state.position.East_SI = -1;
+    state.position.North_SI = 0;
+    state.position.East_SI = 0;
     state.position.Down_SI = - sensorMeasurements.lidar_data.altitude_M; // Use Lidar altitude for Down coordinate
 }
 

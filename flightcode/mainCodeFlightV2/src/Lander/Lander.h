@@ -34,6 +34,7 @@ public:
     OpticalFlow& getOpticalFlow() { return opticalFlow; }
 
     LanderState getState() const { return stateEstimator.getState(); }
+    LanderSolution getSolution() const { return stateEstimator.getSolution(); }
 
 private:
     VN300 vn300;

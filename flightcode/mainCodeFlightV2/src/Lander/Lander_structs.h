@@ -68,6 +68,26 @@ enum LanderError : uint16_t
     LANDER_ERROR_SOLUTION_STALE    = 1 << 7
 };
 
+struct LanderState
+{
+    // Local NED position [m]
+    NED_coordinates position;
+
+    // NED velocity [m/s]
+    NED_coordinates velocity;
+
+    // NED linear acceleration [m/s^2]
+    NED_coordinates acceleration;
+
+    // Attitude in Euler angles [deg]
+    Rotation_Euler_coordinates attitude;
+
+    // Body angular rates [deg/s]
+    Rotation_Euler_coordinates angularVelocity;
+
+};
+
+
 struct LanderSolution
 {
     LanderState state;

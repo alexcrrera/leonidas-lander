@@ -33,8 +33,8 @@ class StateEstimator
         
         void begin(Lander& lander_);
         void update(SensorMeasurements& sensorMeasurements);
-        LanderState getState() const { return state; }
-        LanderSolution getSolution() const { return solution; }
+        LanderState& getState() { return state; }
+        LanderSolution& getSolution() { return solution; }
 
     private:
 

@@ -157,7 +157,7 @@ void VN300::poll_YPR_LinearAccel_Gyro()
 }
 
 
-VN300Measurement VN300::getMeasurement() const
+VN300Measurement& VN300::getMeasurement()
 {
     return measurement_data;
 }

@@ -4,24 +4,16 @@
 #include <Wire.h>
 
 #include "../Config/SensorConfig.h"
+#include "LiDAR_utilities.h"
+#include "../Lander/Lander_structs.h"
 
 
-struct LidarMeasurement
+enum class MeasurementState
 {
-    float rawDistance_M = 0.0f;
-    float filteredDistance_M = 0.0f;
-    float offset_M = 0.0f;
-    float altitude_M = 0.0f;
+    Idle,
+    Measuring,
+    Reading
 };
-
-
-enum class LidarReadyState
-{
-    Ready,
-    Busy,
-    CommunicationError
-};
-
 
 class Lidar
 {
@@ -30,93 +22,32 @@ public:
     Lidar() = default;
 
     bool begin();
-    void update() ;
+    void update(LanderState& landerState); ;
 
-
-    LidarMeasurement getMeasurement() const;
-
-    void setFrequency(float frequencyHz);
-    void setFilterAlpha(float alpha);
-
-    float getRawDistance() const;
-    float getFilteredDistance() const;
-    float getOffset() const;
+    
+    LidarMeasurement& getMeasurement() { return measurement; }
 
 
 private:
 
-    static constexpr uint8_t regAcqCommand = 0x00;
-    static constexpr uint8_t regStatus = 0x01;
-    static constexpr uint8_t regDistance = 0x8F;
-
-    static constexpr float maxFrequencyHz = 100.0f;
-    static constexpr float maxDistanceM = 20.0f;
-
-    static constexpr unsigned long measurementTimeoutUs = 20000;
-
-
-    // ========================================
-    // Hardware configuration
-    // ========================================
-
+    void processMeasurement(LanderState& landerState);
+    bool startMeasurement();
+    bool readDistance();
+    
+    float calculateAltitude(LanderState& landerState);
     TwoWire* wire = nullptr;
 
     uint8_t address = SensorConfig::LIDAR.address;
-
-
-    // ========================================
-    // Timing
-    // ========================================
-
     float frequencyHz = SensorConfig::LIDAR.parameters.frequency;
-
-    unsigned long updatePeriodUs = 10000;
-
-    unsigned long lastUpdateUs = 0;
+    uint32_t periodUS = 1000000.0f / frequencyHz;
 
 
-    // ========================================
-    // Filtering
-    // ========================================
+    MeasurementState measurementState = MeasurementState::Idle;
+    uint32_t measurementStartTime = 0;
+    uint32_t lastMeasurementTime = 0;
+   
 
-    float filterAlpha = SensorConfig::LIDAR.parameters.EWA_alpha;
+    float EWA_alpha = SensorConfig::LIDAR.parameters.EWA_alpha;
 
-    float filteredDistance_M = 0.0f;
-
-    bool filterInitialized = false;
-
-
-    // ========================================
-    // Zero offset
-    // ========================================
-
-    float offset_M = 0.0f;
-
-
-    // ========================================
-    // Acquisition
-    // ========================================
-
-    bool measurementPending = false;
-
-    unsigned long measurementStartUs = 0;
-
-
-    // ========================================
-    // Internal functions
-    // ========================================
-
-    bool checkCommunication();
-
-    bool startMeasurement();
-
-    LidarReadyState getMeasurementState();
-
-    bool readDistance(float& distanceM);
-
-    void processMeasurement(float distanceM);
-
-    void validateMeasurement(
-        const LidarMeasurement& rawMeasurement
-    );
+    LidarMeasurement measurement;   
 };

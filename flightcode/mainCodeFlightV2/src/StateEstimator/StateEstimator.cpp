@@ -60,15 +60,10 @@ void StateEstimator::estimateVelocity_NED(LanderState& state, const SensorMeasur
 void StateEstimator::estimatePosition_NED(LanderState& state, const SensorMeasurements& sensorMeasurements)
 {
     // Convert latitude, longitude, and altitude to NED coordinates
-    double lat = sensorMeasurements.vn300_data.insSolution.PosLat;
-    double lon = sensorMeasurements.vn300_data.insSolution.PosLon;
-    double alt = sensorMeasurements.vn300_data.insSolution.PosAlt;
-
-    // Assuming a simple conversion for demonstration purposes
-    // In practice, you would use a proper geodetic to NED conversion
-    state.position.North_SI = static_cast<float>(lat);
-    state.position.East_SI = static_cast<float>(lon);
-    state.position.Down_SI = static_cast<float>(alt);
+    float positionNorth, positionEast, positionDown;
+    state.position.North_SI = -1;
+    state.position.East_SI = -1;
+    state.position.Down_SI = -sensorMeasurements.lidar_data.altitude_M; // Use Lidar altitude for Down coordinate
 }
 
 

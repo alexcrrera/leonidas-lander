@@ -28,7 +28,7 @@ public:
   
   
   
-    VN300Measurement getMeasurement() const ;
+    VN300Measurement& getMeasurement() ;
 
 private:
 

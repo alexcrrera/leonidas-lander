@@ -3,6 +3,7 @@
 
 
 #include <Arduino.h>
+
 struct StateValidity
 {
     bool positionValid = false;

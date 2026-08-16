@@ -20,7 +20,7 @@ public:
 
     void consumeIncomingCommand(String incomingText);
 
-    void setOKFeedback(const String& message) {command_feedback = "[OK]:" + message;}
+    void setOKFeedback(const String& message) {command_feedback = "[OK]: " + message;}
     void setErrorFeedback(const String& error) {command_feedback = "[ERROR]: " + error;}
     void setFeedback(const String& feedback) {command_feedback = feedback;}
     void setFeedback(const String &header, const String& message) {command_feedback = "["+ header +"]:" + message;}

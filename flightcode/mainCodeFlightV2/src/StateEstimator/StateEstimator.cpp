@@ -68,6 +68,7 @@ void StateEstimator::estimatePosition_NED(LanderState& state, const SensorMeasur
     state.position.Down_SI = -sensorMeasurements.lidar_data.altitude_M; // Use Lidar altitude for Down coordinate
     state.altitude_M = sensorMeasurements.lidar_data.altitude_M; // Store altitude in the state
     state.validity.positionValid = true; // Assuming position is valid if Lidar data is available
+    state.validity.altitudeValid = true; // Assuming altitude is valid if Lidar data is available
 }
 
 

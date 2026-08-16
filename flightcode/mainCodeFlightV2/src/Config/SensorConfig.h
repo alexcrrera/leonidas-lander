@@ -63,7 +63,7 @@ namespace SensorConfig {
         .address = 0x62,
         .parameters = {
             .frequency = 100.0f,
-            .EWA_alpha = 0.1f
+            .EWA_alpha = 0.075f
         }
     };
 

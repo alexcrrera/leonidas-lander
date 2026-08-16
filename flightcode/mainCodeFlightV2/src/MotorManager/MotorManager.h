@@ -13,18 +13,46 @@
 #include "../Config/ActuatorsConfig.h"
 #include "../Config/ControllerConfig.h"
 
+#include <Handler.h>
+
+class FlightManager; // forward declaration of FlightManager class
+
+
 
 
 class MotorManager { 
     public:
-        void begin(); // attaches all the Servos and ESC (hardware)
+        void begin(FlightManager* fm); // attaches all the Servos and ESC (hardware)
 
         void update(const ControlCommand& command); // actuates the motors and vanes based on the control command
-        void actuate(const ActuatorsCommand& command);
+        
 
-        void toggleVanes(bool enable){vanes_enabled = enable;};
-        void toggleESC(bool enable){ESC_enabled = enable;};
+        
+        
+        String EDF_arming_status() const{
+            String status = "MOTORS: ";
+            status += (ESC_enabled) ? "ARMED" : "DISABLED";
+            status += ", VANES: ";
+            status += (vanes_enabled) ? "ENABLED" : "DISABLED";
+            return(status);
+        }
+
+        float getESC_thrust_percentage() const {return ESC_thrust_percentage;};
+        
         private:
+
+
+        void actuate_EDF();
+        void actuate_vanes();
+
+
+            void toggleVanes(bool enable){vanes_enabled = enable;};
+        void toggleESC(bool enable){ESC_enabled = enable;};
+
+            Handler EDF_handler; // handler for the EDF motor
+            Handler vanes_handler; // handler for the vane X1
+
+            float ESC_thrust_percentage = 0.0f;
             ActuatorPWM ESC;
             ActuatorPWM vane_X1;
             ActuatorPWM vane_X2;
@@ -35,6 +63,9 @@ class MotorManager {
 
             bool ESC_enabled = false;
 
+            FlightManager* flight_manager = nullptr;
+
+            ActuatorsCommand current_actuator_command; // stores the current actuator command for reference
 
             ActuatorsCommand controlCmdToActuatorsCmd(const ControlCommand& command);
 };

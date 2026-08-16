@@ -1,7 +1,9 @@
 
 #include "MotorManager.h"
+#include "../FlightManager/FlightManager.h"
+void MotorManager::begin(FlightManager* fm){
 
-void MotorManager::begin(){
+    flight_manager = fm; // flight manager is not used in this implementation, but can be set if needed
     // attaches actuators to hardware pins
     ESC.attach(ActuatorsConfig::ESC);
     vane_X1.attach(ActuatorsConfig::Servo_X1);
@@ -9,28 +11,78 @@ void MotorManager::begin(){
     vane_Y1.attach(ActuatorsConfig::Servo_Y1);
     vane_Y2.attach(ActuatorsConfig::Servo_Y2);
 
+
+    EDF_handler.begin(ActuatorsConfig::ESC.frequency, this, &MotorManager::actuate_EDF);
+    vanes_handler.begin(ActuatorsConfig::Servo_frequency, this, &MotorManager::actuate_vanes);
+
 }
+
 
 
 void MotorManager::update(const ControlCommand& command){
     // converts ControlCommand into ActuatorCommand
-    ActuatorsCommand actuator_command =controlCmdToActuatorsCmd(command);
-    actuate(actuator_command);
+
+
+    if(flight_manager == nullptr){
+        // flight manager is not set, cannot proceed
+        Serial.println("MotorManager: FlightManager not set, cannot update actuators.");
+        return;
+    }
+
+    auto overrideFlags = flight_manager->getFlightGuard().overrideFlags;
+
+    toggleESC(overrideFlags.EDF_enabled);
+    toggleVanes(overrideFlags.TVC_enabled);
+
+    current_actuator_command =controlCmdToActuatorsCmd(command);
+
+    EDF_handler.handle(); // calls the update function at the specified frequency
+    vanes_handler.handle(); // calls the update function at the specified frequency
+
+
+  
 }
 
-void MotorManager::actuate(const ActuatorsCommand& command){
-    // converts ActuatorCommand into actual
-    if (vanes_enabled) {
-        vane_X1.write(command.vaneX1_deg);
-        vane_X2.write(command.vaneX2_deg);
-        vane_Y1.write(command.vaneY1_deg);
-        vane_Y2.write(command.vaneY2_deg);
-    }
+
+void MotorManager::actuate_EDF(){
     if (ESC_enabled) {
-        ESC.write(command.thrust_percentage);
+        ESC_thrust_percentage = current_actuator_command.thrust_percentage;
+        ESC.write(ESC_thrust_percentage);
+        
     }
+    else {
+        // If ESC is disabled, set thrust to 0%
+        
+        
+         
+        ESC.write(ESC_thrust_percentage );
+       
+    }
+  
     
 }
+
+
+void MotorManager::actuate_vanes(){
+
+    
+        if (vanes_enabled) {
+        vane_X1.write(current_actuator_command.vaneX1_deg);
+        vane_X2.write(current_actuator_command.vaneX2_deg);
+        vane_Y1.write(current_actuator_command.vaneY1_deg);
+        vane_Y2.write(current_actuator_command.vaneY2_deg);
+    }
+    else {
+        // If vanes are disabled, set them to neutral position (0 degrees)
+        vane_X1.write(0.0f);
+        vane_X2.write(0.0f);
+        vane_Y1.write(0.0f);
+        vane_Y2.write(0.0f);
+    }
+
+    
+}
+
 
 
 ActuatorsCommand MotorManager::controlCmdToActuatorsCmd(const ControlCommand& command){

@@ -64,7 +64,8 @@ struct ActuatorsCommand{
 
 
    // Servo and ESC HARDWARE CONFIGS
-   constexpr float Servo_frequency = 333.0;
+   constexpr float Servo_frequency =333.0; // in Hz, for the vanes
+   constexpr float ESC_frequency =50.0;
    
    constexpr uint8_t ESC_pin = 5;
 
@@ -88,7 +89,7 @@ struct ActuatorsCommand{
 
    constexpr ActuatorPWM_config ESC = {
                   .pin = ESC_pin,
-                  .frequency = 50.0,
+                  .frequency = ESC_frequency,
                   .pulseMin = 1000,
                   .pulseMax = 2000,
                   .valueMin = 0.0,

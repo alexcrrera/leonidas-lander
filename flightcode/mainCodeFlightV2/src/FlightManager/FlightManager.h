@@ -14,6 +14,8 @@
 #include "FlightManager_structs_and_more.h"
 #include "../StateMachine/StateMachine.h"
 #include "../CommandHandler/CommandHandler.h"
+#include "../FlightGuard/FlightGuard.h"
+
 // ============================================================
 // Flight states
 // ============================================================
@@ -44,6 +46,7 @@ public:
     MotorManager& getMotorManager(){return motor_manager;}
     StateMachine& getStateMachine(){return state_machine;}
     CommandHandler& getCommandHandler(){return command_handler;}
+    FlightGuard& getFlightGuard(){return flight_guard;}
     // --------------------------------------------------------
     // Status
     // --------------------------------------------------------
@@ -58,7 +61,7 @@ private:
     TelemetryManager telemetry_manager; // manages telemetry output
     StateMachine state_machine; // manages the state of the flight
     CommandHandler command_handler; // manages commands received from telemetry
-
+    FlightGuard flight_guard; // manages flight safety and overrides
 
 
     

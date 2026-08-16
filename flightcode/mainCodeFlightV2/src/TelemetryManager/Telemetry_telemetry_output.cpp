@@ -47,9 +47,12 @@ String TelemetryManager::get_telemetry_payload()
     //  Command feedback - 18
     TelemetryUtilities::addTelemetryField(payload, flightManager->getCommandHandler().command_feedback);
 
-
-
-
+    // thrust - 19
+    TelemetryUtilities::addTelemetryField(payload, flightManager->getMotorManager().getESC_thrust_percentage(), 1);
+    // 20 - motor status
+    TelemetryUtilities::addTelemetryField(payload, flightManager->getFlightGuard().motorEnabledStatus());
+    // 21 - motor safety status
+    TelemetryUtilities::addTelemetryField(payload, flightManager->getFlightGuard().motorSafetyStatus());
 
     payload += CommsConfig::outputLineEndingTelemetryFormat;
     payload += "\n";

@@ -12,36 +12,36 @@ String TelemetryManager::get_telemetry_payload()
     if (flightManager == nullptr)
         return "";
 
-    const LanderSolution& solution = flightManager->getLander().getSolution();
+    const LanderState& state = flightManager->getLander().getState();
 
     
     payload += CommsConfig::outputHeaderTelemetryFormat;
 
     // -------------------2-4--------------------------
-    //addTelemetryGroup(payload, solution.state.position);
+    //addTelemetryGroup(payload, state.position);
     // random data for testing
-    TelemetryUtilities::addTelemetryField(payload, 69);
-    TelemetryUtilities::addTelemetryField(payload, 420);
-    TelemetryUtilities::addTelemetryField(payload, 1337);
+   TelemetryUtilities::addTelemetryGroup(payload, state.position);
 
-    // -------------------5-7--------------------------
-    TelemetryUtilities::addTelemetryGroup(payload, solution.state.velocity);
+    // ------------------- 5-7 --------------------------
+       
+    TelemetryUtilities::addTelemetryGroup(payload, state.velocity);
+
 
     // -------------------8-10--------------------------
-    TelemetryUtilities::addTelemetryGroup(payload, solution.state.attitude);
+    TelemetryUtilities::addTelemetryGroup(payload, state.attitude);
 
     // -------------------11-13 ------- GPS DATA -----LATITUDE LONGITUDE ALTITUDE --------------
    // addTelemetryField(payload, solution.state.latitude, 6);
     TelemetryUtilities::addTelemetryField(payload, 48.8466, 6);
     TelemetryUtilities::addTelemetryField(payload, 2.35455, 6);
     ///addTelemetryField(payload, solution.state.longitude, 6);
-    TelemetryUtilities::addTelemetryField(payload, 11, 2);
+    TelemetryUtilities::addTelemetryField(payload, state.altitude_M, 2);
 
     // -------------------Sensor states - 14 - 17--------------------------
-    TelemetryUtilities::addTelemetryField(payload, solution.validity.positionValid);
-    TelemetryUtilities::addTelemetryField(payload, solution.validity.velocityValid);
-    TelemetryUtilities::addTelemetryField(payload, solution.validity.accelerationValid);
-    TelemetryUtilities::addTelemetryField(payload, solution.validity.altitudeValid);
+    TelemetryUtilities::addTelemetryField(payload, state.validity.positionValid);
+    TelemetryUtilities::addTelemetryField(payload, state.validity.velocityValid);
+    TelemetryUtilities::addTelemetryField(payload, state.validity.accelerationValid);
+    TelemetryUtilities::addTelemetryField(payload, state.validity.altitudeValid);
 
 
     //  Command feedback - 18

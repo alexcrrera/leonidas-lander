@@ -56,6 +56,6 @@
         return;
     }
 
-    setFeedback("UNK", " " +      header);
+    setFeedback("UNK",header);
     Serial.println("Unknown command received: " + header);
 }

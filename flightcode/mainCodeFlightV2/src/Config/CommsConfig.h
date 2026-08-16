@@ -55,7 +55,7 @@ namespace CommsConfig {
         .input_enabled = true, // enable input for USB
         .output_enabled = true,
         .periodic_output_enabled = true,
-        .frequency = 0.1f, // 10 Hz
+        .frequency = 2.0f, // 2 Hz
         .outputType = SerialOutputType::HUMAN_READABLE,
         .bufferSize = 30 // buffer size for incoming data
        

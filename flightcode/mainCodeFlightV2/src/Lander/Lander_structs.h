@@ -76,6 +76,8 @@ struct LanderState
     // Local NED position [m]
     NED_coordinates position;
 
+    float altitude_M = 0.0f; // Altitude above ground level [m]
+
     // NED velocity [m/s]
     NED_coordinates velocity;
 
@@ -90,6 +92,8 @@ struct LanderState
 
     STATE_MACHINE_STATES state = STATE_MACHINE_STATES::BOOT;
 
+    StateValidity validity;
+
     
 
 };
@@ -98,7 +102,7 @@ struct LanderState
 struct LanderSolution
 {
     LanderState state;
-    StateValidity validity;
+    
     SolutionSource source;
 
     uint16_t errors = LANDER_ERROR_NONE;

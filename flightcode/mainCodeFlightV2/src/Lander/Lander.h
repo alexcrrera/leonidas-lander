@@ -34,12 +34,14 @@ public:
     OpticalFlow& getOpticalFlow() { return opticalFlow; }
 
     LanderState& getState() { return stateEstimator.getState(); }
-    LanderSolution& getSolution() { return stateEstimator.getSolution(); }
+   
 
 private:
     VN300 vn300;
     Lidar lidar;
     OpticalFlow opticalFlow;
+
+    
 
     SensorMeasurements SensorData;
     

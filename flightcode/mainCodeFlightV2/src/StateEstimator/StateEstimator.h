@@ -33,15 +33,14 @@ class StateEstimator
         void begin(Lander& lander_);
         void update(SensorMeasurements& sensorMeasurements);
         LanderState& getState() { return state; }
-        LanderSolution& getSolution() { return solution; }
+        
 
     private:
 
         Lander*  lander = nullptr;
         LanderState state;
         SensorMeasurements sensorMeasurements;
-        LanderSolution solution;
-
+        
         void estimateAttitude_EULER(LanderState& state, const SensorMeasurements& sensorMeasurements);
        
         void estimateVelocity_EULER(LanderState& state, const SensorMeasurements& sensorMeasurements    );

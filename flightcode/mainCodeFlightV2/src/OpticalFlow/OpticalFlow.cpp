@@ -66,9 +66,10 @@ void OpticalFlow::projectOpticalFlowToNED(LanderState& landerState)
     opti_measurement.velocity_North_SI = velocity_North_SI;
     opti_measurement.velocity_East_SI = velocity_East_SI;
 
-    if (measurement.flowStatus == 0 && measurement.flowQuality > 0)
+    if (measurement.flowStatus ==1 && measurement.flowQuality > 0)
     {
         opti_measurement.velocityValid = true;
+        
     }
     else
     {

@@ -79,15 +79,15 @@ void TelemetryUtilities::addDebugField(String& payload, const String& name, bool
 
 void TelemetryUtilities::addTelemetryGroup(String& payload, const NED_coordinates& NED_payload)
 {
-    addTelemetryField(payload, NED_payload.North_SI, 3);
-    addTelemetryField(payload, NED_payload.East_SI, 3);
-    addTelemetryField(payload, NED_payload.Down_SI, 3);
+    addTelemetryField(payload, NED_payload.North_SI, 2);
+    addTelemetryField(payload, NED_payload.East_SI, 2);
+    addTelemetryField(payload, NED_payload.Down_SI, 2);
 }
 
 
 void TelemetryUtilities::addTelemetryGroup(String& payload, const Rotation_Euler_coordinates& Euler_payload)
 {
-    addTelemetryField(payload, Euler_payload.Roll_SI, 3);
-    addTelemetryField(payload, Euler_payload.Pitch_SI, 3);
-    addTelemetryField(payload, Euler_payload.Yaw_SI, 3);
+    addTelemetryField(payload, Euler_payload.Roll_SI, 2);
+    addTelemetryField(payload, Euler_payload.Pitch_SI, 2);
+    addTelemetryField(payload, Euler_payload.Yaw_SI, 2);
 }

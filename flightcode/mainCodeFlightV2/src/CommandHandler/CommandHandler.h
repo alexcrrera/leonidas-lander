@@ -20,15 +20,15 @@ public:
 
     void consumeIncomingCommand(String incomingText);
 
-    void setOKFeedback(const String& message) {command_feedback = "[OK] - " + message;}
+    void setOKFeedback(const String& message) {command_feedback = "[OK]:" + message;}
     void setErrorFeedback(const String& error) {command_feedback = "[ERROR]: " + error;}
     void setFeedback(const String& feedback) {command_feedback = feedback;}
-   
+    void setFeedback(const String &header, const String& message) {command_feedback = "["+ header +"]:" + message;}
 
     String command_feedback = "[CLEAR]"; // default feedback message, can be updated after processing a command
-private:
-    
-   
+
+
+private: 
     void parseCommand(String header, String payload);
     FlightManager* flight_manager = nullptr;
 

@@ -46,19 +46,19 @@ void Mission::defineTakeOff(){
     if(!CoordinateConfig::isValidCoordinate(landerState.position.North_SI, CoordinateType::North_m) ||
    !CoordinateConfig::isValidCoordinate(landerState.position.East_SI, CoordinateType::East_m))
 {
-    flightManager->getCommandHandler().setErrorFeedback("INV. TAO POS");
+    flightManager->getCommandHandler().setFeedback("INV", "TAO POS");
     return;
 }
 
 
     if(!CoordinateConfig::isValidCoordinate(takeOff_yaw_deg,CoordinateType::Yaw_deg)){
-        flightManager->getCommandHandler().setErrorFeedback("INV. TAO YAW");
+        flightManager->getCommandHandler().setFeedback("INV", "TAO YAW");
         return; // yaw command is too large
     }
 
 
     if(!CoordinateConfig::isValidCoordinate(altitude_m,CoordinateType::Altitude_m)){
-        flightManager->getCommandHandler().setErrorFeedback("INV. TAO ALT");
+        flightManager->getCommandHandler().setFeedback("INV", "TAO ALT");
         return; // altitude is invalid
     }
 
@@ -110,7 +110,7 @@ void Mission::defineLanding(){
     auto current_state = state_machine.getState();
     
     if(state_machine.isInFlight(current_state)){ 
-        flightManager->getCommandHandler().setErrorFeedback("INV. LND REQ");
+        flightManager->getCommandHandler().setFeedback("INV", "LND REQ");
         return; // cannot define landing while in flight
     }
     // redefines the landing position relative to the current position of the lander
@@ -118,12 +118,12 @@ void Mission::defineLanding(){
    
 
     if(isActive() || isCompleted()){
-        flightManager->getCommandHandler().setErrorFeedback("INV. LND STATE");
+        flightManager->getCommandHandler().setFeedback("INV", "LND STATE");
         return;
     }
 
     if(!takeOffDefined){
-        flightManager->getCommandHandler().setErrorFeedback("TAO NOT DEF");
+        flightManager->getCommandHandler().setFeedback("INV", "TAO NOT DEF");
         return; // cannot define landing if take off is not defined
     }
 
@@ -152,17 +152,17 @@ void Mission::defineLanding(){
     if(!CoordinateConfig::isValidCoordinate(landingAbsolutePositionNED.North_SI, CoordinateType::North_m) ||
    !CoordinateConfig::isValidCoordinate(landingAbsolutePositionNED.East_SI, CoordinateType::East_m))
     {
-        flightManager->getCommandHandler().setErrorFeedback("INV. LND POS");
+        flightManager->getCommandHandler().setFeedback("INV", "LND POS");
         return;
     }
 
     if(!CoordinateConfig::isValidCoordinate(yawDeg_landing,CoordinateType::Yaw_deg)){
-        flightManager->getCommandHandler().setErrorFeedback("INV. LND YAW");
+        flightManager->getCommandHandler().setFeedback("INV", "LND YAW");
         return;
     }
 
      if(!CoordinateConfig::isValidCoordinate(descentStartAltitude_m,CoordinateType::Altitude_m)){
-        flightManager->getCommandHandler().setErrorFeedback("INV. LND ALT");
+        flightManager->getCommandHandler().setFeedback("INV", "LND ALT");
         return;
     }
 

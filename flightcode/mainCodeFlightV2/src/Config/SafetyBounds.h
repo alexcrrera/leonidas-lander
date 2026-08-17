@@ -16,6 +16,7 @@ SAFETY PARAMETERS THAT CAN TOGGLE ABORT CONDITIONS
     constexpr float minHoverAltitude_m = 0.4; // minimum flight altitude
     constexpr float maxRadius_m = 2.0;
 
+  
 
     constexpr float max_horizontal_velocity_ms = 1.0;
     constexpr float max_vertical_velocity_ms = 1.0;

@@ -45,6 +45,12 @@ STATE_MACHINE_STATES StateMachine::getState() const{
 
 }
 
+void StateMachine::requestStateChange(STATE_MACHINE_STATES new_state){
+    // This function can be used to request a state change, but the actual state change will be handled by the flight manager based on the current state and conditions
+    // For now, we will just set the state directly
+    setState(new_state);
+}
+
 void StateMachine::setState(STATE_MACHINE_STATES new_state){
     current_state = new_state;
 }
@@ -53,12 +59,14 @@ void StateMachine::setState(STATE_MACHINE_STATES new_state){
 
 
 bool StateMachine::isInFlight(STATE_MACHINE_STATES state)const {
-    return (state == STATE_MACHINE_STATES::SPOOL_UP ||
+    return (
             state == STATE_MACHINE_STATES::LAUNCH ||
+            state == STATE_MACHINE_STATES::POST_LAUNCH_HOVER ||
+            state == STATE_MACHINE_STATES::NAVIGATION ||
+            state == STATE_MACHINE_STATES::PRE_LANDING ||
             
-            
-            state == STATE_MACHINE_STATES::LANDING ||
-            state == STATE_MACHINE_STATES::SPOOL_DOWN
+            state == STATE_MACHINE_STATES::LANDING 
+           
         );
 }
 
@@ -69,11 +77,13 @@ FlightRegimeData StateMachine::getCurrentFlightRegimeData() const {
     switch(current_state){
 
             
-        case STATE_MACHINE_STATES::SPOOL_UP:
-            return FlightRegimeConfig::TAKEOFF;
+      
 
         case STATE_MACHINE_STATES::LAUNCH:
             return FlightRegimeConfig::TAKEOFF;
+
+         case STATE_MACHINE_STATES::POST_LAUNCH_HOVER:
+            return FlightRegimeConfig::TAKEOFF; 
 
 
 
@@ -89,10 +99,7 @@ FlightRegimeData StateMachine::getCurrentFlightRegimeData() const {
         case STATE_MACHINE_STATES::LANDING:
             return FlightRegimeConfig::LANDING;
 
-        case STATE_MACHINE_STATES::SPOOL_DOWN:
-            return FlightRegimeConfig::GROUND; // after landing, the lander is grounded
-
-        
+       
 
         default:
             return FlightRegimeConfig::GROUND;

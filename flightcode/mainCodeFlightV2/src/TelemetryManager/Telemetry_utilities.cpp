@@ -91,6 +91,7 @@ String TelemetryUtilities::getFlightRegimeDataAsString(const FlightRegimeData& r
     addDebugField(payload, "Max Yaw Velocity", regime_data.max_yaw_velocity_degs);
     addDebugField(payload, "Max Pitch/Roll Acceleration", regime_data.max_pitch_roll_acceleration_degs2);
     addDebugField(payload, "Max Yaw Acceleration", regime_data.max_yaw_acceleration_degs2);
+    
 
     return payload;
 }

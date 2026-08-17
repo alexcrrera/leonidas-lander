@@ -46,9 +46,12 @@ void MotorManager::update(){
 
 
 void MotorManager::actuate_EDF(){
+
+
     if (ESC_enabled) {
-        ESC_thrust_percentage = current_actuator_command.thrust_percentage;
-        ESC.write(ESC_thrust_percentage);
+
+        ESC_thrust_percentage =constrain(current_actuator_command.thrust_percentage, ActuatorsConfig::ESC_thrust_min_percentage, ActuatorsConfig::ESC_thrust_max_percentage);
+        ESC.write(ESC_thrust_percentage); // writing also handles clamping and trimming internally, but we want the output to be clamped as well when printed
         
     }
     else {

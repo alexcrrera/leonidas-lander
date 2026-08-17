@@ -44,23 +44,15 @@ struct ActuatorsCommand{
 
    // ESC LIMITS
 
+
+
+
    constexpr float ESC_thrust_min_percentage = 20.0; // in %
    constexpr float ESC_thrust_max_percentage = 90.0; // in %
 
-   constexpr float ESC_thrust_initial_spooling_up_percentage = 65.0; // in %
 
-
-
-
-   constexpr float ESC_thrust_testing_percentage = 21.0; // in %
-
-
-
-   static_assert(TVC_YAW_AUTHORITY_BUDGET_deg <=TVC_TOTAL_AUTHORITY_BUDGET_deg, "YAW AUTHORITY BUDGET IS TOO LARGE");  
-   static_assert(ESC_thrust_min_percentage <ESC_thrust_max_percentage, "MAX THRUST SHOULD BE GREATER THAN MIN THRUST");  
-   static_assert(ESC_thrust_max_percentage <=100, "MAX THRUST SHOULD BE GEQ THAN 100%");  
-   static_assert(0 < ESC_thrust_min_percentage, "MIN THRUST SHOULD BE GREATER THAN 0%");  
-
+  
+   
 
 
    // Servo and ESC HARDWARE CONFIGS
@@ -144,9 +136,15 @@ struct ActuatorsCommand{
     
 
 
+   static_assert(TVC_YAW_AUTHORITY_BUDGET_deg <= TVC_TOTAL_AUTHORITY_BUDGET_deg, "YAW AUTHORITY BUDGET IS TOO LARGE");
 
 
- }
+   static_assert(ESC_thrust_min_percentage < ESC_thrust_max_percentage, "MIN THRUST MUST BE LESS THAN MAX THRUST");
+   static_assert(ESC_thrust_min_percentage >= 0.0f, "MIN THRUST MUST NOT BE BELOW 0%");
+   static_assert(ESC_thrust_max_percentage <= 100.0f, "MAX THRUST MUST NOT EXCEED 100%");
+
+
+}
 
  #endif
 

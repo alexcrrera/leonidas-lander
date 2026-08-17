@@ -31,6 +31,9 @@ struct FlightRegimeData
     float pitch_roll_abort_angle_deg = 0.0f;
     float yaw_abort_angle_deg = 0.0f;
 
+    float min_thrust_percentage = 0.0f;
+    float max_thrust_percentage = 0.0f;
+
     uint32_t holdTimeMs = 0;
     
     EpsilonGroup epsilon_group;
@@ -49,6 +52,9 @@ struct FlightRegimeData
     constexpr FlightRegimeData GROUND{
         .name = "GROUND",
         .isFlying = false,
+
+        .min_thrust_percentage = 0.0f,
+        .max_thrust_percentage = 0.0f,
         
         // epsilon will be used to determine if the lander is in the correct position and attitude for take off or landing. The lander will not take off or land if it is not within the epsilon bounds.
         .epsilon_group = {
@@ -60,8 +66,12 @@ struct FlightRegimeData
 
     
     constexpr FlightRegimeData TAKEOFF{
+        
         .name = "TAKEOFF",
         .isFlying = true,
+
+
+
         .max_vertical_velocity_ms = 0.2,
         .max_horizontal_velocity_ms = 0.1,
 

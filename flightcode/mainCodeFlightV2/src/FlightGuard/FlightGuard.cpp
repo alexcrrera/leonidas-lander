@@ -1,5 +1,5 @@
 #include "FlightGuard.h"
-
+#include "../FlightManager/FlightManager.h"
 void FlightGuard::begin(FlightManager* manager) {
     flight_manager = manager;
     // Initialization code for FlightGuard
@@ -7,6 +7,15 @@ void FlightGuard::begin(FlightManager* manager) {
 
 void FlightGuard::update() {
     // Update code for FlightGuard
+
+    auto regimeData = flight_manager->getStateMachine().getCurrentFlightRegimeData();
+
+    if(!regimeData.isFlying){
+        overrideFlags.EDF_enabled = false;
+        overrideFlags.TVC_enabled = false;
+       
+    }
+  
 }
 
 

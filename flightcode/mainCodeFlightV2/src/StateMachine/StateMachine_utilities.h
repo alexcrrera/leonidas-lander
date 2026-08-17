@@ -7,15 +7,15 @@ enum class STATE_MACHINE_STATES {
     
     NOGO, // sensor error or other critical error, cannot proceed with launch, grounded
     
-    SPOOL_UP,
+
     LAUNCH,
+    POST_LAUNCH_HOVER,
     
     NAVIGATION,
    
     PRE_LANDING,
     LANDING,
 
-    SPOOL_DOWN,
     LANDED
 };
 

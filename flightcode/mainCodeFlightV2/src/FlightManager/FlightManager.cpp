@@ -28,6 +28,7 @@ void FlightManager::begin()
     state_machine.setState(STATE_MACHINE_STATES::BOOTED);
     flight_guard.begin(this);
     motor_manager.begin(this);
+    controller.begin(this);
    
 }
 
@@ -51,7 +52,11 @@ void FlightManager::update()
     flight_guard.update();
     //controller.update(lander.getState(), mission.getCurrentRegimeData());
     //mission.update(lander.getState());
+    
+    mission.update(); 
+    controller.update();
     motor_manager.update();
+ 
     
     telemetry_manager.update(now);
 

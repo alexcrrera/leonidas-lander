@@ -10,6 +10,7 @@
 #include "../Utilities/Utilities.h"
 #include "../Config/MissionConfig.h"
 #include "../Lander/Lander_structs.h"
+#include <vector>
 
 class FlightManager; // forward declaration to avoid circular dependency
 
@@ -47,7 +48,7 @@ class Mission{
 
         void update();
 
-        MissionTarget getTarget();
+        MissionTarget getTarget(); // RETURNS copy of the target, not a reference to avoid dangling references
 
         MissionState getState() const;
 
@@ -77,11 +78,12 @@ class Mission{
         bool addWaypoint(
             const NED_coordinates& positionNED,
             float yaw_deg,
-            uint32_t holdTimeMs = MissionConfig::holdTimeMs.default_,
-            EpsilonGroup epsilon_group = {} // default parameters if left blank
+            uint32_t holdTimeMs,
+            EpsilonGroup epsilon_group // default parameters if left blank
         );
         
-
+        // list/ array of waypoints for the mission
+        std::vector<Waypoint> waypoints_list;
         void updateReadiness();
         Waypoint& getCurrentWaypoint();
 
@@ -97,7 +99,7 @@ class Mission{
        
 
         uint8_t navigationWaypointCount;
-        uint8_t currentWaypointIndex;
+        uint8_t currentWaypointIndex = 0; // index of the current waypoint in the mission (0 = take off, 1 = first navigation waypoint, 2 = second navigation waypoint, etc.)
 
         FlightManager* flightManager=nullptr; // pointer to the flight manager to access lander state and other modules
 

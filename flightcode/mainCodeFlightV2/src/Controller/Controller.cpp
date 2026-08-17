@@ -5,7 +5,7 @@
 #include "../Config/ControllerConfig.h"
 #include "Controller.h"
 #include "../FlightManager/FlightManager.h"
-
+#include "../Config/SystemConfig.h"
 
 
 Controller::Controller()
@@ -41,12 +41,21 @@ Controller::Controller()
 
 void Controller::update()
 {
-    if (!active)
-        return;
 
-    auto landerState = flight_manager->getLander().getState();
+    
+    if(flight_manager == nullptr){
+        //Serial.println("Controller: FlightManager pointer is null. Cannot update controller.");
+        return;
+    }
+    const auto& landerState = flight_manager->getLander().getState();
 
     NED_coordinates currentPosition = landerState.position;
+  //  Serial.print("Current Position: ");
+    // print current position and current velocity:
+  ///  Serial.print(currentPosition.North_SI, 6);
+  //  Serial.print("Current Position from lander: ");
+    // print current position and current velocity:
+    //Serial.print(flight_manager, 6);
     NED_coordinates currentVelocity = landerState.velocity;
     NED_coordinates currentAcceleration = landerState.acceleration;
 
@@ -55,30 +64,44 @@ void Controller::update()
 
     updatePIDOutputsLimits();
 
-    // Position -> Velocity
+    auto mission_target = flight_manager->getMission().getTarget();
+    float yaw_target_deg = mission_target.target.yaw_deg; // 
 
+    setPositionSetpoint(mission_target.target.positionNED);
+
+    // Position -> Velocity
     float desiredNorthVelocity = PID_position.axis_x.update(currentPosition.North_SI, currentVelocity.North_SI);
     float desiredEastVelocity = PID_position.axis_y.update(currentPosition.East_SI, currentVelocity.East_SI);
-    float desiredDownVelocity = PID_position.axis_z.update(currentPosition.Down_SI, currentVelocity.Down_SI);
+
+
+   
+   
+   // Z PID DEBUG
+
+
+float desiredDownVelocity = PID_position.axis_z.update(
+    currentPosition.Down_SI,
+    currentVelocity.Down_SI
+);
+
+
 
     setVelocitySetpoint({desiredNorthVelocity, desiredEastVelocity, desiredDownVelocity});
 
     // Velocity -> Pitch / Roll / Thrust
-
     float desiredPitch = PID_velocity.axis_x.update(currentVelocity.North_SI, currentAcceleration.North_SI);
     float desiredRoll = PID_velocity.axis_y.update(currentVelocity.East_SI, currentAcceleration.East_SI);
-    float desiredThrust = PID_velocity.axis_z.update(currentVelocity.Down_SI, currentAcceleration.Down_SI);
+    float desiredDownAcceleration    = PID_velocity.axis_z.update(currentVelocity.Down_SI, currentAcceleration.Down_SI);
 
     Rotation_Euler_coordinates attitudeTarget{
         .Roll_SI = desiredRoll,
         .Pitch_SI = desiredPitch,
-        .Yaw_SI = 0.0f
+        .Yaw_SI = yaw_target_deg
     };
 
     setAttitudeSetpoint(attitudeTarget);
 
     // Attitude -> Body Rates
-
     float desiredRollRate = PID_attitude.axis_x.update(currentAttitude.Roll_SI, currentAngularVelocity.Roll_SI);
     float desiredPitchRate = PID_attitude.axis_y.update(currentAttitude.Pitch_SI, currentAngularVelocity.Pitch_SI);
     float desiredYawRate = PID_attitude.axis_z.update(currentAttitude.Yaw_SI, currentAngularVelocity.Yaw_SI);
@@ -86,57 +109,95 @@ void Controller::update()
     setBodyRatesSetpoint({desiredRollRate, desiredPitchRate, desiredYawRate});
 
     // Body Rates -> Torques
-
     float rollTorque = PID_body_rates.axis_x.update(currentAngularVelocity.Roll_SI);
     float pitchTorque = PID_body_rates.axis_y.update(currentAngularVelocity.Pitch_SI);
     float yawTorque = PID_body_rates.axis_z.update(currentAngularVelocity.Yaw_SI);
 
-    // Final control command
+    float desiredThrust = desiredDownAccelerationToThrust(desiredDownAcceleration);
+    desiredThrust = constrain(desiredThrust, ActuatorsConfig::THRUST_EDF_min, ActuatorsConfig::THRUST_EDF_max);
+    
+
 
     ControlCommand output{
         .tau_yaw = yawTorque,
         .tau_pitch = pitchTorque,
         .tau_roll = rollTorque,
-        .thrust = desiredThrust
+        .thrust_N = desiredThrust
     };
 
     setControlCmd(output);
 }
 
 
+float Controller::desiredDownAccelerationToThrust(float accel_Down_SI){
 
+    return(SystemConfig::lander_mass*(Utilities::GRAVITY_MS2-accel_Down_SI));
 
+}
 
 
 void Controller::updatePIDOutputsLimits()
+
+
 {
-    auto currentRegime = flight_manager->getStateMachine().getCurrentFlightRegimeData();
+    const auto currentRegime =
+        flight_manager->getStateMachine().getCurrentFlightRegimeData();
 
-    // Position -> Velocity
+    // Position [m] -> Velocity [m/s]
+    PID_position.axis_x.setOutputLimits(
+        -currentRegime.max_horizontal_velocity_ms,
+         currentRegime.max_horizontal_velocity_ms);
 
-    PID_position.axis_x.setOutputLimits(-currentRegime.max_horizontal_velocity_ms, currentRegime.max_horizontal_velocity_ms);
-    PID_position.axis_y.setOutputLimits(-currentRegime.max_horizontal_velocity_ms, currentRegime.max_horizontal_velocity_ms);
-    PID_position.axis_z.setOutputLimits(-currentRegime.max_vertical_velocity_ms, currentRegime.max_vertical_velocity_ms);
+    PID_position.axis_y.setOutputLimits(
+        -currentRegime.max_horizontal_velocity_ms,
+         currentRegime.max_horizontal_velocity_ms);
 
-    // Velocity -> Attitude / Thrust
+    PID_position.axis_z.setOutputLimits(
+        -currentRegime.max_vertical_velocity_ms,
+         currentRegime.max_vertical_velocity_ms);
 
-    PID_velocity.axis_x.setOutputLimits(-currentRegime.max_horizontal_acceleration_ms2, currentRegime.max_horizontal_acceleration_ms2);
-    PID_velocity.axis_y.setOutputLimits(-currentRegime.max_horizontal_acceleration_ms2, currentRegime.max_horizontal_acceleration_ms2);
-    PID_velocity.axis_z.setOutputLimits(-currentRegime.max_vertical_acceleration_ms2, currentRegime.max_vertical_acceleration_ms2);
+    // Velocity [m/s] -> Attitude [deg] / Acceleration [m/s²]
+    PID_velocity.axis_x.setOutputLimits(
+        -currentRegime.max_pitch_roll_velocity_degs,
+         currentRegime.max_pitch_roll_velocity_degs);
 
-    // Attitude -> Body Rates
+    PID_velocity.axis_y.setOutputLimits(
+        -currentRegime.max_pitch_roll_velocity_degs,
+         currentRegime.max_pitch_roll_velocity_degs);
 
-    PID_attitude.axis_x.setOutputLimits(-currentRegime.max_pitch_roll_velocity_degs, currentRegime.max_pitch_roll_velocity_degs);
-    PID_attitude.axis_y.setOutputLimits(-currentRegime.max_pitch_roll_velocity_degs, currentRegime.max_pitch_roll_velocity_degs);
-    PID_attitude.axis_z.setOutputLimits(-currentRegime.max_yaw_velocity_degs, currentRegime.max_yaw_velocity_degs);
+    PID_velocity.axis_z.setOutputLimits(
+        -currentRegime.max_vertical_acceleration_ms2,
+         currentRegime.max_vertical_acceleration_ms2);
 
-    // Body Rates -> Actuators
 
-    PID_body_rates.axis_x.setOutputLimits(-currentRegime.max_pitch_roll_acceleration_degs2, currentRegime.max_pitch_roll_acceleration_degs2);
-    PID_body_rates.axis_y.setOutputLimits(-currentRegime.max_pitch_roll_acceleration_degs2, currentRegime.max_pitch_roll_acceleration_degs2);
-    PID_body_rates.axis_z.setOutputLimits(-currentRegime.max_yaw_acceleration_degs2, currentRegime.max_yaw_acceleration_degs2);
+   
+
+    // Attitude [deg] -> Body Rates [deg/s]
+    PID_attitude.axis_x.setOutputLimits(
+        -currentRegime.max_pitch_roll_velocity_degs,
+         currentRegime.max_pitch_roll_velocity_degs);
+
+    PID_attitude.axis_y.setOutputLimits(
+        -currentRegime.max_pitch_roll_velocity_degs,
+         currentRegime.max_pitch_roll_velocity_degs);
+
+    PID_attitude.axis_z.setOutputLimits(
+        -currentRegime.max_yaw_velocity_degs,
+         currentRegime.max_yaw_velocity_degs);
+
+    // Body Rates [deg/s] -> Angular Acceleration [deg/s²]
+    PID_body_rates.axis_x.setOutputLimits(
+        -currentRegime.max_pitch_roll_acceleration_degs2,
+         currentRegime.max_pitch_roll_acceleration_degs2);
+
+    PID_body_rates.axis_y.setOutputLimits(
+        -currentRegime.max_pitch_roll_acceleration_degs2,
+         currentRegime.max_pitch_roll_acceleration_degs2);
+
+    PID_body_rates.axis_z.setOutputLimits(
+        -currentRegime.max_yaw_acceleration_degs2,
+         currentRegime.max_yaw_acceleration_degs2);
 }
-
 
 void Controller::resetIntegralForAllPID(){
     PID_position.axis_x.reset();
@@ -183,3 +244,18 @@ void Controller::setBodyRatesSetpoint(const Rotation_Euler_coordinates& body_rat
 }
 
 
+
+
+void Controller::updatePIDIntegralLimits(){
+
+     const auto currentRegime = flight_manager->getStateMachine().getCurrentFlightRegimeData();
+
+
+     float output_limit_PID_vx = PID_velocity.axis_x.getPID_limit_integral_min();
+     float output_limit_PID_vy = PID_velocity.axis_y.getPID_limit_integral_min();
+     float output_limit_PID_vz = PID_velocity.axis_z.getPID_limit_integral_min();
+
+     PID_velocity.axis_x.setIntegralLimits(-output_limit_PID_vx, output_limit_PID_vx); // Set integral limits for PID_velocity axis_x
+     PID_velocity.axis_y.setIntegralLimits(-output_limit_PID_vy, output_limit_PID_vy);
+     PID_velocity.axis_z.setIntegralLimits(-output_limit_PID_vz, output_limit_PID_vz);
+}

@@ -2,45 +2,9 @@
     "actions": [
         {
             "eol": "\n",
-            "icon": "Accuracy",
-            "title": "RESET ANGLES",
-            "txData": "RANGLES:"
-        },
-        {
-            "eol": "\n",
-            "icon": "Restart",
-            "title": "RESET LIDAR",
-            "txData": "RLIDAR"
-        },
-        {
-            "eol": "\n",
-            "icon": "Abscissa",
-            "title": "RESET POSITION",
-            "txData": "RPOS"
-        },
-        {
-            "eol": "\n",
-            "icon": "Connected",
-            "title": "ARM MOTOR",
-            "txData": "ARM:"
-        },
-        {
-            "eol": "\n",
-            "icon": "Disconnected",
-            "title": "DISARM MOTOR",
-            "txData": "DSRM"
-        },
-        {
-            "eol": "\n",
             "icon": "Play",
-            "title": "TAKE OFF",
-            "txData": "TAO"
-        },
-        {
-            "eol": "\n",
-            "icon": "Stop",
-            "title": "FORCE LANDING",
-            "txData": "LND"
+            "title": "LAUNCH",
+            "txData": "LAUNCH:"
         },
         {
             "eol": "\n",
@@ -51,50 +15,20 @@
         {
             "eol": "\n",
             "icon": "Play Property",
-            "title": "TLM 10hz",
-            "txData": "TLM,10"
+            "title": "LINE",
+            "txData": "LINE:"
         },
         {
             "eol": "\n",
             "icon": "Play Property",
-            "title": "Change output mode",
-            "txData": "TGL_RAD_PER:"
-        },
-        {
-            "eol": "\n",
-            "icon": "Restart",
-            "title": "RECORD",
-            "txData": "SDREC"
-        },
-        {
-            "eol": "\n",
-            "icon": "Stop Property",
-            "title": "STOP RECORDING",
-            "txData": "SDSTOP"
+            "title": "USB PERIODIC",
+            "txData": "TGL_USB_PER:"
         },
         {
             "eol": "\n",
             "icon": "Home",
             "title": "Set Home",
             "txData": "SETHOME"
-        },
-        {
-            "eol": "\n",
-            "icon": "Electricity",
-            "title": "Motor Test",
-            "txData": "MTEST"
-        },
-        {
-            "eol": "\n",
-            "icon": "Services",
-            "title": "Servo Test",
-            "txData": "STEST"
-        },
-        {
-            "eol": "\n",
-            "icon": "Motion Sensor",
-            "title": "Test Buzzer",
-            "txData": "BTEST"
         }
     ],
     "decoder": 0,

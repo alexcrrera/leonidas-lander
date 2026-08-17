@@ -23,6 +23,8 @@ class PID {
         void setOutputLimits(float u_min, float  u_max);
         void setIntegralLimits(float i_min, float i_max);
 
+
+        float getPID_limit_integral_min() const {return integralMin;} // assu
         void setOffset(float offset_);
 
         void setTarget(float target); // set PID setpoint
@@ -31,9 +33,10 @@ class PID {
 
 
         float update(float measurement); // updates the PID output
-        float update(float measurement, float measurement_derivative); // updates the PID 
+        float update(float measurement, float measurement_derivative_); // updates the PID 
 
-
+        String getPID_data_as_string() const;
+        float getMeasurement() const{return measurement;}
 
     private:
 

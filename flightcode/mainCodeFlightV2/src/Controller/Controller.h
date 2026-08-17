@@ -21,6 +21,7 @@ class Controller{
     public: 
 
         Controller();
+        void begin(FlightManager* flight_manager_){flight_manager = flight_manager_;} // pass pointer to FlightManager class to access the lander state
 
         void resetIntegralForAllPID(); // resets all PID's - integral term
 
@@ -38,22 +39,25 @@ class Controller{
         void activate(){active = true;} // activate the controller
         void deactivate(){active = false;} // deactivate the controller
         bool isActive(){return(active);} // check if the controller is active
+
         
-    private:
-
-       
-
-        void updatePIDOutputsLimits();// ensures that the control command is within the limits of the current regime's parameters
-
         PID_3D PID_position; // group of 3 PID's for position control
         PID_3D PID_velocity; // group of 3 PID's for velocity control
         PID_3D PID_attitude;
         PID_3D PID_body_rates;
+ 
+        
+    private:
 
+       float desiredDownAccelerationToThrust(float accel_Down_SI);
+
+        void updatePIDOutputsLimits();// ensures that the control command is within the limits of the current regime's parameters
+
+        void updatePIDIntegralLimits();
        
 
         FlightRegimeData current_regime = FlightRegimeConfig::GROUND; // default is GROUNDed
-        bool active = false; // indicates if the controller is active or not
+        bool active = true; // indicates if the controller is active or not
 
         ControlCommand ctrl_cmd;
 

@@ -6,6 +6,7 @@
 #include "../Utilities/Utilities.h"
 
 #include "../Config/FlightRegimeConfig.h"
+#include "../Config/ControllerConfig.h"
 
 
 namespace TelemetryUtilities
@@ -38,7 +39,9 @@ namespace TelemetryUtilities
 
     void addTelemetryGroup(String& payload, const NED_coordinates& NED_payload);
     void addTelemetryGroup(String& payload, const Rotation_Euler_coordinates& Euler_payload);
-    void addDebugGroup(String& payload, const EpsilonGroup& epsilon_group);
+    void addDebugGroup  (String& payload, const EpsilonGroup& epsilon_group);
+    void addDebugGroup(String& payload ,const ControlCommand);
+
 
     String getFlightRegimeDataAsString(const FlightRegimeData& regime_data);
 }

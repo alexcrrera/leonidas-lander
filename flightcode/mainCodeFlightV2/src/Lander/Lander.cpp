@@ -25,6 +25,17 @@ void Lander::update()
 
     stateEstimator.update(SensorData);
 
+
+    auto state = stateEstimator.getState();
+
+    // print position here:
+    // Serial.print("Lander Position: ");
+    // Serial.print(state.position.North_SI, 6);
+    // Serial.print(", ");
+    // Serial.print(state.position.East_SI, 6);
+    // Serial.print(", ");
+    // Serial.println(state.position.Down_SI, 6);
+
    
     
 }

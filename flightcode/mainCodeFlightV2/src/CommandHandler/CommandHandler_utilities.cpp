@@ -16,6 +16,15 @@
         return;
     }
 
+    
+    if (header == "TGL_USB_PER") // Toggle RADIO output periodic
+    {
+        setOKFeedback(header);
+        Serial.println("Toggle USB output periodic command received");
+        flight_manager->getTelemetryManager().toggle_USB_periodic();
+        return;
+    }
+
 
 
     if (header == "ARM")
@@ -42,8 +51,10 @@
 
     if (header == "LAUNCH")
     {
-        setOKFeedback(header);
+        flight_manager->getStateMachine().requestStateChange(STATE_MACHINE_STATES::LAUNCH);
         Serial.println("Launch command received");
+        setOKFeedback(header);
+        flight_manager->getTelemetryManager().send_USB_debug_payload();
         return;
     }
 

@@ -1,5 +1,6 @@
 #include "FlightGuard.h"
 #include "../FlightManager/FlightManager.h"
+    
 void FlightGuard::begin(FlightManager* manager) {
     flight_manager = manager;
     // Initialization code for FlightGuard

@@ -1,4 +1,5 @@
 #include "StateMachine.h"
+#include "../FlightManager/FlightManager.h"
 
 
 String StateMachine::getStateAsString() const{
@@ -37,7 +38,14 @@ void StateMachine::begin(FlightManager* flight_manager_){
 
 void StateMachine::update(){
 
-
+    if(isInFlight(current_state)){
+        flight_manager->getFlightGuard().overrideFlags.EDF_enabled = true;
+        flight_manager->getFlightGuard().overrideFlags.TVC_enabled = true;
+    }
+    else{
+        flight_manager->getFlightGuard().overrideFlags.EDF_enabled = false;
+        flight_manager->getFlightGuard().overrideFlags.TVC_enabled = false;
+    }
 }
 
 STATE_MACHINE_STATES StateMachine::getState() const{
@@ -61,8 +69,11 @@ void StateMachine::setState(STATE_MACHINE_STATES new_state){
 bool StateMachine::isInFlight(STATE_MACHINE_STATES state)const {
     return (
             state == STATE_MACHINE_STATES::LAUNCH ||
+
             state == STATE_MACHINE_STATES::POST_LAUNCH_HOVER ||
+
             state == STATE_MACHINE_STATES::NAVIGATION ||
+
             state == STATE_MACHINE_STATES::PRE_LANDING ||
             
             state == STATE_MACHINE_STATES::LANDING 
@@ -85,6 +96,11 @@ FlightRegimeData StateMachine::getCurrentFlightRegimeData() const {
          case STATE_MACHINE_STATES::POST_LAUNCH_HOVER:
             return FlightRegimeConfig::TAKEOFF; 
 
+    
+            
+            case STATE_MACHINE_STATES::NOGO:
+            return FlightRegimeConfig::GROUND;
+
 
 
 
@@ -105,4 +121,6 @@ FlightRegimeData StateMachine::getCurrentFlightRegimeData() const {
             return FlightRegimeConfig::GROUND;
     }
 }
+
+
 

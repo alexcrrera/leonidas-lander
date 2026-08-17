@@ -1,6 +1,10 @@
 
 #include "MotorManager.h"
 #include "../FlightManager/FlightManager.h"
+#include "../Config/ActuatorsConfig.h"
+
+#include "../Config/SystemConfig.h"
+
 void MotorManager::begin(FlightManager* fm){
 
     flight_manager = fm; // flight manager is not used in this implementation, but can be set if needed
@@ -49,8 +53,8 @@ void MotorManager::actuate_EDF(){
 
 
     if (ESC_enabled) {
-
-        ESC_thrust_percentage =constrain(current_actuator_command.thrust_percentage, ActuatorsConfig::ESC_thrust_min_percentage, ActuatorsConfig::ESC_thrust_max_percentage);
+        float thrust_in_percentage = current_actuator_command.thrust_percentage;
+        ESC_thrust_percentage =constrain(thrust_in_percentage, ActuatorsConfig::ESC_thrust_min_percentage, ActuatorsConfig::ESC_thrust_max_percentage);
         ESC.write(ESC_thrust_percentage); // writing also handles clamping and trimming internally, but we want the output to be clamped as well when printed
         
     }
@@ -98,14 +102,15 @@ ActuatorsCommand MotorManager::controlCmdToActuatorsCmd(const ControlCommand& co
         float yaw_cmd =    Utilities::clamping(command.tau_yaw,ActuatorsConfig::TVC_YAW_AUTHORITY_BUDGET_deg );
         float pitch_cmd =  Utilities::clamping(command.tau_pitch,ActuatorsConfig::TVC_PITCH_ROLL_AUTHORITY_BUDGET_deg );
         float roll_cmd =   Utilities::clamping(command.tau_roll,ActuatorsConfig::TVC_PITCH_ROLL_AUTHORITY_BUDGET_deg );
-        float thrust_cmd = constrain(command.thrust, ActuatorsConfig::ESC_thrust_min_percentage, ActuatorsConfig::ESC_thrust_max_percentage);
-
-        ActuatorsCommand cmd_output = {
+        float thrust_percentage = 100.0* command.thrust_N/ActuatorsConfig::THRUST_EDF_max;
+            thrust_percentage = constrain(thrust_percentage, ActuatorsConfig::ESC_thrust_min_percentage,ActuatorsConfig::ESC_thrust_max_percentage);
+        
+            ActuatorsCommand cmd_output = {
             .vaneX1_deg = yaw_cmd + pitch_cmd,
             .vaneX2_deg = - yaw_cmd + pitch_cmd,
             .vaneY1_deg = yaw_cmd + roll_cmd,
             .vaneY2_deg = yaw_cmd + roll_cmd,
-            .thrust_percentage = thrust_cmd
+            .thrust_percentage = thrust_percentage
         };
         
 

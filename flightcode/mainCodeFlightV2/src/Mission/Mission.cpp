@@ -211,6 +211,23 @@ void Mission::updateReadiness(){
 }
 
 
+MissionTarget Mission::getTarget(){
+    MissionTarget target;
+    Waypoint& current_waypoint = getCurrentWaypoint();
+    target.target = current_waypoint.getTarget();
+    target.type = current_waypoint.getType();
+    // Serial.print("Current Waypoint Index: ");
+    // Serial.println(currentWaypointIndex);
+    // // type skippedd for now, but can be added later if needed
+    // Serial.print("Mission Target: North: ");
+    // Serial.print(target.target.positionNED.North_SI);
+    // Serial.print(", East: ");
+    // Serial.print(target.target.positionNED.East_SI);
+    // Serial.print(", Down: ");
+    // Serial.println(target.target.positionNED.Down_SI);
+    return(target);
+}
+
 void Mission::update(){
     
     updateReadiness();
@@ -285,7 +302,7 @@ Waypoint& Mission::getCurrentWaypoint(){
         return(takeOffWaypoint);
     }
     if(currentWaypointIndex>0 && currentWaypointIndex<=navigationWaypointCount){
-        return(navigationWaypoints[currentWaypointIndex-1]);
+        return(navigationWaypoints[currentWaypointIndex-1]); // -1 because the first navigation waypoint is at index 0
     }
     if(currentWaypointIndex==navigationWaypointCount+1){
         return(landingTransitionWaypoint);
@@ -298,3 +315,43 @@ Waypoint& Mission::getCurrentWaypoint(){
     // we will return a default waypoint (take off waypoint) to avoid returning a reference to an invalid object
     return(takeOffWaypoint);    
 }
+
+
+
+
+void Mission::advanceWaypoint(){
+    if(currentWaypointIndex==0){
+        currentWaypointIndex++;
+        state = MissionState::ACTIVE;
+        return;
+    }
+    if(currentWaypointIndex>0 && currentWaypointIndex<navigationWaypointCount+2){
+        currentWaypointIndex++;
+        return;
+    }
+    if(currentWaypointIndex==navigationWaypointCount+2){
+        currentWaypointIndex++;
+        state = MissionState::COMPLETED;
+        return;
+    }
+}
+
+
+bool Mission::addWaypoint( const NED_coordinates& positionNED,
+            float yaw_deg,
+            uint32_t holdTimeMs = MissionConfig::holdTimeMs.default_,
+            EpsilonGroup epsilon_group = {} // default parameters if left blank
+        ){
+
+            waypoints_list.push_back(Waypoint(
+                WaypointType::NAVIGATION,
+                positionNED,
+                yaw_deg,
+                holdTimeMs,
+                epsilon_group
+
+            ));
+
+
+            return true;
+        }

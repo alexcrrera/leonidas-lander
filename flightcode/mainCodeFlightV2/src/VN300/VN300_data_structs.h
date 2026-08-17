@@ -25,33 +25,33 @@ struct InsStatus
 
 
 struct INS_Solution_LLA {
-    double GpsTow;
-    uint16_t GpsWeek;
-    uint16_t InsStatus;
-    float Yaw;
-    float Pitch;
-    float Roll;
-    double PosLat;
-    double PosLon;
-    double PosAlt;
-    float VelN;
-    float VelE;
-    float VelD;
-    float AttUncertainty;
-    float PosUncertainty;
-    float VelUncertainty;
+    double GpsTow = 0.0;
+    uint16_t GpsWeek = 0;
+    uint16_t InsStatus = 0;
+    float Yaw = 0.0f;
+    float Pitch = 0.0f;
+    float Roll = 0.0f;
+    double PosLat = 0.0;
+    double PosLon = 0.0;
+    double PosAlt = 0.0;
+    float VelN = 0.0f;
+    float VelE = 0.0f;
+    float VelD = 0.0f;
+    float AttUncertainty = 0.0f;
+    float PosUncertainty = 0.0f;
+    float VelUncertainty = 0.0f;
 };
 
 struct YPR_LinearAccel_Gyro {
-    float Yaw;
-    float Pitch;
-    float Roll;
-    float LinAccelN;
-    float LinAccelE;
-    float LinAccelD;
-    float GyroX;
-    float GyroY;
-    float GyroZ;
+    float Yaw = 0.0f;
+    float Pitch = 0.0f;
+    float Roll = 0.0f;
+    float LinAccelN = 0.0f;
+    float LinAccelE = 0.0f;
+    float LinAccelD = 0.0f;
+    float GyroX = 0.0f;
+    float GyroY = 0.0f;
+    float GyroZ = 0.0f;
 };
 
 
@@ -59,22 +59,22 @@ struct YPR_LinearAccel_Gyro {
 
 
 struct GNSS_Solution_LLA {
-    double GpsTow;
-    uint16_t GpsWeek;
-    uint8_t GnssFix;
-    uint8_t NumSats;
-    uint8_t Pad[4];
-    double Lat;
-    double Lon;
-    double Alt;
-    float VelN;
-    float VelE;
-    float VelD;
-    float PosUncertaintyN;
-    float PosUncertaintyE;
-    float PosUncertaintyD;
-    float GnssVelUncertainty;
-    float GnssTimeUncertainty;
+    double GpsTow = 0.0;
+    uint16_t GpsWeek = 0;
+    uint8_t GnssFix = 0;
+    uint8_t NumSats = 0;
+    uint8_t Pad[4] = {0, 0, 0, 0};
+    double Lat = 0.0;
+    double Lon = 0.0;
+    double Alt = 0.0;
+    float VelN = 0.0f;
+    float VelE = 0.0f;
+    float VelD = 0.0f;
+    float PosUncertaintyN = 0.0f;
+    float PosUncertaintyE = 0.0f;
+    float PosUncertaintyD = 0.0f;
+    float GnssVelUncertainty = 0.0f;
+    float GnssTimeUncertainty = 0.0f;
 };
 
 

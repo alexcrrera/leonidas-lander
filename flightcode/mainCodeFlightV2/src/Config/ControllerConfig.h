@@ -9,7 +9,7 @@ struct ControlCommand
     float tau_yaw;
     float tau_pitch;
     float tau_roll;
-    float thrust;
+    float thrust_N;
 };
 
 
@@ -39,8 +39,8 @@ namespace ControllerPID {
 
 
     constexpr PID_Gains PID_gains_position_Down = {.kp = 1.0,
-                                        .ki = 0.0,
-                                        .kd = 0.5};
+                                        .ki = 0.05,
+                                        .kd = 0.05};
 
     constexpr PID_Gains PID_gains_position_East = {.kp = 1.0,
                                         .ki = 0.0,
@@ -54,9 +54,9 @@ namespace ControllerPID {
     constexpr PID_Gains PID_gains_velocity_East = {.kp = 1.0,
                                         .ki = 0.0,
                                         .kd = 0.5}; 
-    constexpr PID_Gains PID_gains_velocity_Down = {.kp = 1.0,
+    constexpr PID_Gains PID_gains_velocity_Down = {.kp = 2.0,
                                         .ki = 0.0,
-                                        .kd = 0.5};
+                                        .kd = 0.2};
     constexpr PID_Gains PID_gains_attitude_roll = {.kp = 1.0,
                                         .ki = 0.0,
                                         .kd = 0.5};

@@ -25,9 +25,9 @@ struct Vector3
 struct NED_coordinates {
     // Position -> units are meters
     // velocity -> units are m/s ...
-    float North_SI;
-    float East_SI; 
-    float Down_SI;
+    float North_SI = 0.0f;
+    float East_SI = 0.0f;
+    float Down_SI = 0.0f;
 };
 
 
@@ -75,6 +75,7 @@ enum class OutputType{
 
 namespace Utilities{
 
+    constexpr float GRAVITY_MS2 = 9.80665;  
     
     float clamping(float u, float u_max);
     

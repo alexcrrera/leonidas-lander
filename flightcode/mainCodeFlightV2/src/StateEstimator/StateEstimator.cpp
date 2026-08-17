@@ -47,12 +47,12 @@ void StateEstimator::estimateVelocity_NED(LanderState& state, const SensorMeasur
     
     float VelN = sensorMeasurements.opticalFlow_data.velocity_North_SI;
     float VelE = sensorMeasurements.opticalFlow_data.velocity_East_SI;
-    float VelD = sensorMeasurements.vn300_data.insSolution.VelD;
+   
 
     
     state.velocity.North_SI = VelN;
     state.velocity.East_SI = VelE;
-    state.velocity.Down_SI = VelD;
+    state.velocity.Down_SI = 0.0;
 
      state.validity.velocityValid = sensorMeasurements.opticalFlow_data.velocityValid; // set velocity validity based on optical flow data
 }
@@ -63,8 +63,8 @@ void StateEstimator::estimatePosition_NED(LanderState& state, const SensorMeasur
 {
     // Convert latitude, longitude, and altitude to NED coordinates
 
-    state.position.North_SI = 0;
-    state.position.East_SI = 0;
+    state.position.North_SI = 0.0;
+    state.position.East_SI = 0.0;
     state.position.Down_SI = -sensorMeasurements.lidar_data.altitude_M; // Use Lidar altitude for Down coordinate
     state.altitude_M = sensorMeasurements.lidar_data.altitude_M; // Store altitude in the state
     state.validity.positionValid = true; // Assuming position is valid if Lidar data is available

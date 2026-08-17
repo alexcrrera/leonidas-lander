@@ -86,7 +86,7 @@ String TelemetryUtilities::getFlightRegimeDataAsString(const FlightRegimeData& r
     addDebugGroup(payload, "Flight Regime Data : " + String(regime_data.name));
     addDebugGroup(payload, regime_data.epsilon_group);
     addDebugField(payload, "Is Flying", regime_data.isFlying);
-    addDebugField(payload, "Name", regime_data.name);
+    
     addDebugField(payload, "Max Pitch/Roll Velocity", regime_data.max_pitch_roll_velocity_degs);
     addDebugField(payload, "Max Yaw Velocity", regime_data.max_yaw_velocity_degs);
     addDebugField(payload, "Max Pitch/Roll Acceleration", regime_data.max_pitch_roll_acceleration_degs2);
@@ -123,3 +123,12 @@ void TelemetryUtilities::addTelemetryGroup(String& payload, const Rotation_Euler
     addTelemetryField(payload, Euler_payload.Yaw_SI, 2);
 }
 
+
+
+void TelemetryUtilities::addDebugGroup(String& payload ,const ControlCommand cmd){
+     addDebugField(payload, "tau_yaw", cmd.tau_yaw);
+    addDebugField(payload, "tau_pitch", cmd.tau_pitch);
+    addDebugField(payload, "tau_roll", cmd.tau_roll);
+    addDebugField(payload, "thrust", cmd.thrust_N);
+
+}

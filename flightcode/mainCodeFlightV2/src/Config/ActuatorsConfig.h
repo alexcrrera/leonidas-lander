@@ -5,7 +5,7 @@
 //#include "Arduino.h"
 /*
 ACTUATORS PARAMETERS AND CONFIG
-
+#
 */
 
 struct ActuatorPWM_config{
@@ -52,7 +52,8 @@ struct ActuatorsCommand{
 
 
   
-   
+   constexpr float THRUST_EDF_min = 0.0; // 0 newton
+   constexpr float THRUST_EDF_max = 3.5*Utilities::GRAVITY_MS2;
 
 
    // Servo and ESC HARDWARE CONFIGS

@@ -10,36 +10,36 @@
 /*
 FILE CONTAINING PARAMETERS FOR TAKE OFF AND LANDING - PARAMATERS ARE VERIFIED (BOUNDS)
 */
-struct FlightRegimeData
-{
-    char name[20]; // name of the flight regime
-    bool isFlying; // if false (grounded), the max rates should be set to 0, and the lander should hold position and attitude. If false, the lander can move and rotate within the bounds of the max rates.
-    float max_vertical_velocity_ms = 0.0f;
-    float max_horizontal_velocity_ms = 0.0f;
+    struct FlightRegimeData
+    {
+        char name[20]; // name of the flight regime
+        bool isFlying; // if false (grounded), the max rates should be set to 0, and the lander should hold position and attitude. If false, the lander can move and rotate within the bounds of the max rates.
+        float max_vertical_velocity_ms = 0.0f;
+        float max_horizontal_velocity_ms = 0.0f;
 
-    float max_vertical_acceleration_ms2 = 0.0f;
-    float max_horizontal_acceleration_ms2 = 0.0f;
+        float max_vertical_acceleration_ms2 = 0.0f;
+        float max_horizontal_acceleration_ms2 = 0.0f;
 
-    float max_yaw_velocity_degs = 0.0f;
-    float max_pitch_roll_velocity_degs = 0.0f;
+        float max_yaw_velocity_degs = 0.0f;
+        float max_pitch_roll_velocity_degs = 0.0f;
 
 
 
-    float max_yaw_acceleration_degs2 = 0.0f;
-    float max_pitch_roll_acceleration_degs2 = 0.0f;
+        float max_yaw_acceleration_degs2 = 0.0f;
+        float max_pitch_roll_acceleration_degs2 = 0.0f;
 
-    float pitch_roll_abort_angle_deg = 0.0f;
-    float yaw_abort_angle_deg = 0.0f;
+        float pitch_roll_abort_angle_deg = 0.0f;
+        float yaw_abort_angle_deg = 0.0f;
 
-    float min_thrust_percentage = 0.0f;
-    float max_thrust_percentage = 0.0f;
+        float min_thrust_percentage = 0.0f;
+        float max_thrust_percentage = 0.0f;
 
-    uint32_t holdTimeMs = 0;
+        uint32_t holdTimeMs = 0;
+        
+        EpsilonGroup epsilon_group;
+
+    };
     
-    EpsilonGroup epsilon_group;
-
-};
- 
 
 
  namespace FlightRegimeConfig {
@@ -72,8 +72,8 @@ struct FlightRegimeData
 
 
 
-        .max_vertical_velocity_ms = 0.2,
-        .max_horizontal_velocity_ms = 0.1,
+        .max_vertical_velocity_ms = 0.75,
+        .max_horizontal_velocity_ms = 0.3,
 
         .max_vertical_acceleration_ms2 = 1,
         .max_horizontal_acceleration_ms2 = 0.1,

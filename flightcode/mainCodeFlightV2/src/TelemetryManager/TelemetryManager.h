@@ -7,8 +7,9 @@
 #include "../Config/CommsConfig.h"
 #include "Telemetry_utilities.h"
 
+
 #include <Handler.h>
-#define TELEMETRY_MAX_CMD_HISTORY 15
+
 
 
 class FlightManager;
@@ -43,10 +44,14 @@ public:
     void send_RADIO_String(const String& content,bool jumpToNextLine = false    );
 
 
+    void send_USB_debug_payload(){send_USB_String(get_debug_payload(),true);}
+    
+
+
    
 
 
-
+    
 
 
 private:

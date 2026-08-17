@@ -24,7 +24,7 @@ class MotorManager {
     public:
         void begin(FlightManager* fm); // attaches all the Servos and ESC (hardware)
 
-        void update(const ControlCommand& command); // actuates the motors and vanes based on the control command
+        void update(); // actuates the motors and vanes based on the control command
         
 
         

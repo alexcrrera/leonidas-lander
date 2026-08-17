@@ -61,7 +61,7 @@ class Mission{
         String getStateAsString() const;
 
 
-         Waypoint takeOffWaypoint;
+        Waypoint takeOffWaypoint;
         Waypoint navigationWaypoints[MAX_MISSION_WAYPOINTS];
         Waypoint landingWaypoint;
         Waypoint landingTransitionWaypoint; 

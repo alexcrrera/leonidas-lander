@@ -10,9 +10,9 @@
 
 
 struct PID_Gains{
-    float kp;
-    float ki;
-    float kd;
+    float kp = 0.0f;
+    float ki = 0.0f;
+    float kd = 0.0f;
 };
 
 struct Vector3

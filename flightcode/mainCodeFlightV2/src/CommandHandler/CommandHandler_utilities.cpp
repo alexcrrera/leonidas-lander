@@ -6,6 +6,18 @@
 
     void CommandHandler::parseCommand(String header, String payload)
 {
+
+
+    if (header == "LINE")
+    {
+        setOKFeedback(header);
+        flight_manager->getTelemetryManager().send_USB_debug_payload();
+        
+        return;
+    }
+
+
+
     if (header == "ARM")
     {
         setOKFeedback(header);

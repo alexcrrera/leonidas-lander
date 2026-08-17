@@ -26,7 +26,6 @@ public:
     void begin();
     void update();
 
-    
 
     //  getters for the lander state and sensors
     VN300& getVN300() { return vn300; }
@@ -37,6 +36,7 @@ public:
    
 
 private:
+
     VN300 vn300;
     Lidar lidar;
     OpticalFlow opticalFlow;

@@ -13,6 +13,8 @@
 #include "../Config/FlightRegimeConfig.h"
 #include "../Config/ActuatorsConfig.h"
 
+class FlightManager; // forward declaration of FlightManager class
+
 class Controller{
 
     // owns all the PID objects
@@ -22,7 +24,7 @@ class Controller{
 
         void resetIntegralForAllPID(); // resets all PID's - integral term
 
-        void update(float dt, const LanderState& lander_state, FlightRegimeData current_regime); // updates the control command based on the current state of the lander
+        void update(); // updates the control command based on the current state of the lander
 
         void setPositionSetpoint(const NED_coordinates& position_target);
         void setVelocitySetpoint(const NED_coordinates& velocity_target);
@@ -41,9 +43,7 @@ class Controller{
 
        
 
-        void updatePIDOutputsLimits(
-    const FlightRegimeData& current_regime
-);// ensures that the control command is within the limits of the current regime's parameters
+        void updatePIDOutputsLimits();// ensures that the control command is within the limits of the current regime's parameters
 
         PID_3D PID_position; // group of 3 PID's for position control
         PID_3D PID_velocity; // group of 3 PID's for velocity control
@@ -52,10 +52,12 @@ class Controller{
 
        
 
-        FlightRegimeData current_regime = FlightRegimeConfig::STANDBY; // current flight regime
+        FlightRegimeData current_regime = FlightRegimeConfig::GROUND; // default is GROUNDed
         bool active = false; // indicates if the controller is active or not
 
         ControlCommand ctrl_cmd;
+
+        FlightManager* flight_manager; // pointer to the FlightManager class to access the lander state
 
 
 

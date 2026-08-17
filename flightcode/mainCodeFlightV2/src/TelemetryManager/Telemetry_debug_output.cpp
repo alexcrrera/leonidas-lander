@@ -19,7 +19,9 @@ String TelemetryManager::get_debug_payload()
     // take off point
   
     
+// flight regime data
 
+TelemetryUtilities::addDebugField(payload, "Current Flight Regime", TelemetryUtilities::getFlightRegimeDataAsString(flightManager->getStateMachine().getCurrentFlightRegimeData()));
 
 // take off point
 TelemetryUtilities::addDebugGroup(payload, "TAKE OFF POINT");

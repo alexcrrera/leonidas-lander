@@ -17,6 +17,19 @@ struct ControlCommand
 
 namespace ControllerPID {
 
+    constexpr ParameterConfig<float> frequency_control = {
+    .min = 1,
+    .max = 500,
+    .default_ = 50
+    };
+
+    constexpr float position_NED_update_frequency = 20.0f; // Hz
+    constexpr float velocity_NED_update_frequency = 50.0f; // Hz
+    constexpr float attitude_update_frequency = 100.0f; // Hz
+    constexpr float body_rates_update_frequency = 200.0f; // Hz
+    
+
+
 
     constexpr PID_Gains PID_gains_position_North = {.kp = 1.0,
                                         .ki = 0.0,

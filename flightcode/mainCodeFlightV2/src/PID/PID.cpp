@@ -1,80 +1,103 @@
 #include "PID.h"
 
-
-
-
-
-void PID::setOutputLimits(float u_min,  float  u_max){
-    outputMin = u_min;
-    outputMax = u_max;
+PID::PID(PID_Gains gains, float frequency)
+    : kp(gains.kp), ki(gains.ki), kd(gains.kd), frequency(frequency)
+{
+    handler.begin(frequency, this, &PID::compute);
 }
 
+float PID::update(float measurement_, float measurementDerivative_)
+{
+    derivativePassed = true;
+    measurement = measurement_;
+    measurementDerivative = measurementDerivative_;
 
- void PID::setIntegralLimits(float i_min, float i_max){
-    integralMin = i_min;
-    integralMax = i_max;
+    handler.handle();
+
+    return output;
 }
 
+float PID::update(float measurement_)
+{
+    derivativePassed = false;
+    measurement = measurement_;
 
-void PID::setGains(float kp_, float ki_, float kd_){
+    handler.handle();
+
+    return output;
+}
+
+void PID::compute(float dt)
+{
+    float error = desiredTarget - measurement;
+
+    integral = updateIntegral(dt, error);
+
+    float errorDerivative;
+
+    if (derivativePassed)
+    {
+        errorDerivative = -measurementDerivative;
+    }
+    else
+    {
+        errorDerivative = (error - previousError) / dt;
+    }
+
+    previousError = error;
+
+    output = kp * error + integral + kd * errorDerivative;
+
+    output = constrain(output, outputMin, outputMax);
+}
+
+void PID::setOutputLimits(float uMin, float uMax)
+{
+    outputMin = uMin;
+    outputMax = uMax;
+}
+
+void PID::setIntegralLimits(float iMin, float iMax)
+{
+    integralMin = iMin;
+    integralMax = iMax;
+}
+
+void PID::setGains(PID_Gains gains)
+{
+    kp = gains.kp;
+    ki = gains.ki;
+    kd = gains.kd;
+}
+
+void PID::setGains(float kp_, float ki_, float kd_)
+{
     kp = kp_;
     ki = ki_;
     kd = kd_;
 }
 
-
-void PID::reset(){
-    integral = 0.0;
+void PID::reset()
+{
+    integral = 0.0f;
+    previousError = 0.0f;
+    output = 0.0f;
 }
 
-void PID::setOffset(float offset_){
-    offset = offset;
+void PID::setOffset(float offset_)
+{
+    offset = offset_;
 }
 
-
-float  PID::compute(float dt, float measurement){
-
-    float error = desiredTarget - measurement;
-
-    integral = updateIntegral(dt,error);
-
-    float error_derivative = (error - previousError)/dt;
-
-    
-    // ki is included in the integral term calculation
-
-    previousError = error;
-
-
-    return(kp * error + integral + kd*error_derivative);
-}
-
-
-float  PID::compute(float dt, float measurement, float measurement_derivative){
-    // overwriting of the function to allow direct injection of the derivative of the error 
-    float error = desiredTarget - measurement;
-
-    integral = updateIntegral(dt,error);
-    
-    // ki is included in the integral term calculation
-
-    previousError = error;
-
-    return(kp * error + integral + kd*measurement_derivative);
-}
-
-
-void PID::setTarget(float target){
-    // sets target 
+void PID::setTarget(float target)
+{
     desiredTarget = target;
 }
 
-float PID::updateIntegral(float dt, float error){
-    // simple update that bounds the output
+float PID::updateIntegral(float dt, float error)
+{
+    integral += ki * error * dt;
+    integral = constrain(integral, integralMin, integralMax);
 
-    integral += ki*error*dt;
-
-    integral = constrain(integral, integralMin,integralMax); // limits the integral output
-
-    return(integral);
+    return integral;
 }

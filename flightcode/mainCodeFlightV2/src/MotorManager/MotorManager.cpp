@@ -19,7 +19,7 @@ void MotorManager::begin(FlightManager* fm){
 
 
 
-void MotorManager::update(const ControlCommand& command){
+void MotorManager::update(){
     // converts ControlCommand into ActuatorCommand
 
 
@@ -29,6 +29,7 @@ void MotorManager::update(const ControlCommand& command){
         return;
     }
 
+    auto command = flight_manager->getController().getControlCmd();
     auto overrideFlags = flight_manager->getFlightGuard().overrideFlags;
 
     toggleESC(overrideFlags.EDF_enabled);

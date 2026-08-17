@@ -3,17 +3,18 @@
 
 #define PID_H
 #include "../Utilities/Utilities.h"
-
+#include <Handler.h>
 
 class PID {
 
 
     public:
-        PID(PID_Gains gains)
-            : kp(gains.kp), ki(gains.ki), kd(gains.kd) {}
+        PID(PID_Gains gains, float frequency);
+          
 
-        float compute(float dt, float measurement); // outputs PID correction term
-        float compute(float dt, float measurement, float measurement_derivative); // outputs PID correction term
+        void compute(float dt); // outputs PID correction term
+        
+       
 
         void reset(); // resets the PID - integral term
 
@@ -29,10 +30,22 @@ class PID {
         float updateIntegral(float dt, float error); // updates  integral term within bounds
 
 
+        float update(float measurement); // updates the PID output
+        float update(float measurement, float measurement_derivative); // updates the PID 
+
 
 
     private:
 
+        float output = 0.0;
+
+        Handler handler; // handler for PID update frequency
+        bool derivativePassed = false;
+        float measurement = 0.0;
+        float measurementDerivative = 0.0;
+
+        float frequency;
+        
         float offset = 0.0;
 
         float kp;

@@ -51,7 +51,7 @@ void FlightManager::update()
     flight_guard.update();
     //controller.update(lander.getState(), mission.getCurrentRegimeData());
     //mission.update(lander.getState());
-    motor_manager.update(controller.getControlCmd());
+    motor_manager.update();
     
     telemetry_manager.update(now);
 

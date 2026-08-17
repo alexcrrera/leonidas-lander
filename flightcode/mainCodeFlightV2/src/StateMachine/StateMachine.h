@@ -2,6 +2,7 @@
 
 #include "StateMachine_utilities.h"
 #include "Arduino.h"
+#include "../Config/FlightRegimeConfig.h"
 
 class FlightManager;
 
@@ -17,6 +18,8 @@ class StateMachine {
         String getStateAsString() const;
 
         bool isInFlight(STATE_MACHINE_STATES state) const;
+        FlightRegimeData getCurrentFlightRegimeData() const;
+
 
     private:
         STATE_MACHINE_STATES current_state;

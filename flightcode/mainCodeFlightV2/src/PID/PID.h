@@ -24,7 +24,8 @@ class PID {
         void setIntegralLimits(float i_min, float i_max);
 
 
-        float getPID_limit_integral_min() const {return integralMin;} // assu
+        float get_u_min() const {return outputMin;} // assu
+        float get_u_max() const {return outputMax;} 
         void setOffset(float offset_);
 
         void setTarget(float target); // set PID setpoint

@@ -49,5 +49,12 @@ private:
 
     float EWA_alpha = SensorConfig::LIDAR.parameters.EWA_alpha;
 
-    LidarMeasurement measurement;   
+    LidarMeasurement measurement; 
+    
+    
+  
+
+    float previousAltitude_M = 0.0f;
+    uint32_t previousAltitudeTimeUS = 0;
+    bool hasPreviousAltitude = false;
 };

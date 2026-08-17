@@ -63,6 +63,7 @@ void Controller::update()
     Rotation_Euler_coordinates currentAngularVelocity = landerState.angularVelocity;
 
     updatePIDOutputsLimits();
+    updatePIDIntegralLimits();
 
     auto mission_target = flight_manager->getMission().getTarget();
     float yaw_target_deg = mission_target.target.yaw_deg; // 
@@ -248,14 +249,8 @@ void Controller::setBodyRatesSetpoint(const Rotation_Euler_coordinates& body_rat
 
 void Controller::updatePIDIntegralLimits(){
 
-     const auto currentRegime = flight_manager->getStateMachine().getCurrentFlightRegimeData();
 
-
-     float output_limit_PID_vx = PID_velocity.axis_x.getPID_limit_integral_min();
-     float output_limit_PID_vy = PID_velocity.axis_y.getPID_limit_integral_min();
-     float output_limit_PID_vz = PID_velocity.axis_z.getPID_limit_integral_min();
-
-     PID_velocity.axis_x.setIntegralLimits(-output_limit_PID_vx, output_limit_PID_vx); // Set integral limits for PID_velocity axis_x
-     PID_velocity.axis_y.setIntegralLimits(-output_limit_PID_vy, output_limit_PID_vy);
-     PID_velocity.axis_z.setIntegralLimits(-output_limit_PID_vz, output_limit_PID_vz);
+     PID_velocity.axis_x.setIntegralLimits(PID_velocity.axis_x.get_u_min(), PID_velocity.axis_x.get_u_max()); // Set integral limits for PID_velocity axis_x
+     PID_velocity.axis_y.setIntegralLimits(PID_velocity.axis_y.get_u_min(), PID_velocity.axis_y.get_u_max());
+     PID_velocity.axis_z.setIntegralLimits(PID_velocity.axis_z.get_u_min(), PID_velocity.axis_z.get_u_max());
 }

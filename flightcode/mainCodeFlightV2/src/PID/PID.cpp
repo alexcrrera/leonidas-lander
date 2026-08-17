@@ -52,7 +52,7 @@ void PID::compute(float dt)
 
     previousError = error;
 
-    output = kp * error + integral + kd * errorDerivative;
+    output = kp * error + ki*integral + kd * errorDerivative;
 
     output = constrain(output, outputMin, outputMax);
 }

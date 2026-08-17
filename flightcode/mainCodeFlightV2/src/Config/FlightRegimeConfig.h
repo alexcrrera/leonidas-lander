@@ -72,7 +72,7 @@ FILE CONTAINING PARAMETERS FOR TAKE OFF AND LANDING - PARAMATERS ARE VERIFIED (B
 
 
 
-        .max_vertical_velocity_ms = 0.75,
+        .max_vertical_velocity_ms = 1.0,
         .max_horizontal_velocity_ms = 0.3,
 
         .max_vertical_acceleration_ms2 = 1,

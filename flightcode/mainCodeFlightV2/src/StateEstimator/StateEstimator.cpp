@@ -49,10 +49,11 @@ void StateEstimator::estimateVelocity_NED(LanderState& state, const SensorMeasur
     float VelE = sensorMeasurements.opticalFlow_data.velocity_East_SI;
    
 
+
     
     state.velocity.North_SI = VelN;
     state.velocity.East_SI = VelE;
-    state.velocity.Down_SI = 0.0;
+    state.velocity.Down_SI = sensorMeasurements.lidar_data.velocity_Down_SI;
 
      state.validity.velocityValid = sensorMeasurements.opticalFlow_data.velocityValid; // set velocity validity based on optical flow data
 }

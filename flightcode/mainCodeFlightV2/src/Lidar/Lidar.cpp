@@ -102,15 +102,35 @@ bool Lidar::readDistance()
 
 void Lidar::processMeasurement(LanderState& landerState)
 {
-
     measurement.filtered_distance_M = Utilities::EWA(
         EWA_alpha,
         measurement.filtered_distance_M,
-        measurement.raw_distance_M);
+        measurement.raw_distance_M
+    );
 
-   
-    measurement.altitude_M =calculateAltitude(landerState);
+    measurement.altitude_M = calculateAltitude(landerState);
 
+    const uint32_t nowUS = micros();
+
+    if (hasPreviousAltitude)
+    {
+        const float dt = (nowUS - previousAltitudeTimeUS) * 1e-6f;
+
+        if (dt > 0.0f)
+        {
+            const float altitudeVelocity_MS =
+                (measurement.altitude_M - previousAltitude_M) / dt;
+
+            // LiDAR altitude is positive upward.
+            // NED Down velocity is positive downward.
+
+            measurement.velocity_Down_SI = Utilities::EWA(0.2,measurement.velocity_Down_SI,-altitudeVelocity_MS);
+        }
+    }
+
+    previousAltitude_M = measurement.altitude_M;
+    previousAltitudeTimeUS = nowUS;
+    hasPreviousAltitude = true;
 }
 
 

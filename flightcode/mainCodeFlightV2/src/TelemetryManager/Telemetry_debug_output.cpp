@@ -18,8 +18,7 @@ String TelemetryManager::get_debug_payload()
 
     // flightmanager debug text
     // control command ouput:
-    auto cmd = flightManager->getController().getControlCmd();
-    TelemetryUtilities::addDebugGroup(payload,cmd );
+  
     TelemetryUtilities::addDebugGroup(payload, "FLIGHT MANAGER DEBUG");
     payload += flightManager->debug_text;
 
@@ -38,8 +37,18 @@ String TelemetryManager::get_debug_payload()
 
     // altitude Controller PID data
 
-    TelemetryUtilities::addDebugGroup(payload, "ALTITUDE PID");
+    TelemetryUtilities::addDebugGroup(payload, "DOWN POS PID");
     payload += flightManager->getController().PID_position.axis_z.getPID_data_as_string();
+
+    // velocity Controller PID data
+    TelemetryUtilities::addDebugGroup(payload, "DOWN VELOCITY PID");
+    payload += flightManager->getController().PID_velocity.axis_z.getPID_data_as_string();
+
+
+        
+    TelemetryUtilities::addDebugGroup(payload, "CMD");
+      auto cmd = flightManager->getController().getControlCmd();
+        TelemetryUtilities::addDebugGroup(payload,cmd );
 
 
     // TelemetryUtilities::addDebugGroup(payload, "STATUS");

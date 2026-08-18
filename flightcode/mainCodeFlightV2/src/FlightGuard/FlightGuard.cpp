@@ -36,7 +36,7 @@ void FlightGuard::checkFlightConditions() {
     auto& state = flight_manager->getLander().getState();
     FlightGuardUtilities::resetOverrideFlags(overrideFlags);
     
-    auto& stateMachine = flight_manager->getStateMachine();
+   // auto& stateMachine = flight_manager->getStateMachine();
 
     overrideFlags.roll_pitch_ok =
         FlightGuardUtilities::isRollPitchWithinBounds(state.attitude.Pitch_SI,state.attitude.Roll_SI);

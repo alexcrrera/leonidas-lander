@@ -45,7 +45,22 @@ class Waypoint{
 
     bool isActive();
 
+    void updatePosition(const NED_coordinates& positionNED, float yaw_deg);
 
+    String getStateAsString() const{
+        switch (state) {
+            case WaypointState::INACTIVE:
+                return "INACTIVE";
+            case WaypointState::APPROACHING:
+                return "APPROACHING";
+            case WaypointState::HOLDING:
+                return "HOLDING";
+            case WaypointState::COMPLETED:
+                return "COMPLETED";
+            default:
+                return "UNKNOWN STATE";
+        }
+    }
     private:
         bool constructed = false; // indicates if the waypoint has been constructed or not
         WaypointType type;

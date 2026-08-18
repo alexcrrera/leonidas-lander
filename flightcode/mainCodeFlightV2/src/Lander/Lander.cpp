@@ -26,7 +26,7 @@ void Lander::update()
     stateEstimator.update(SensorData);
 
 
-    auto state = stateEstimator.getState();
+    
 
     // print position here:
     // Serial.print("Lander Position: ");

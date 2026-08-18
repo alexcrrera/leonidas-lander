@@ -39,37 +39,42 @@ enum class MissionStatus {
 class Mission{
 
     public:
-        Mission(); // no params yet
+        Mission(); 
 
         void begin(FlightManager* flightManager_);
         
         
-         void start();
+        void start();
 
-        void update();
+        void update(); // gets called via the FlightManager update() function, which is called in the main loop
 
         MissionTarget getTarget(); // RETURNS copy of the target, not a reference to avoid dangling references
+       // MissionState getState() const;
 
-        MissionState getState() const;
 
+        // getters
         bool isReady() const;
         bool isActive() const;
         bool isCompleted() const;
 
 
-        void defineTakeOff_and_Landing();
+        
 
         String getStateAsString() const;
+        String getMissionDataAsString() const;
 
-
+// TEMP PUBLIC FOR TESTING
         Waypoint takeOffWaypoint;
         Waypoint navigationWaypoints[MAX_MISSION_WAYPOINTS];
         Waypoint landingWaypoint;
         Waypoint landingTransitionWaypoint; 
+
+
+
     private:
 
 
-
+        void defineTakeOff_and_Landing();
         void defineTakeOff();
         void defineLanding();
 
@@ -95,14 +100,15 @@ class Mission{
         bool landingDefined;
 
         
-
-       
-
+        
+        void getCurrentPositionAsWaypoint();
         uint8_t navigationWaypointCount;
-        uint8_t currentWaypointIndex = 0; // index of the current waypoint in the mission (0 = take off, 1 = first navigation waypoint, 2 = second navigation waypoint, etc.)
+        int currentWaypointIndex = -1; // index of the current waypoint in the mission (0 = take off, 1 = first navigation waypoint, 2 = second navigation waypoint, etc.)
 
         FlightManager* flightManager=nullptr; // pointer to the flight manager to access lander state and other modules
 
+
+        Waypoint currentPositionWaypoint; // waypoint that represents the current position of the lander, used when the mission is not active to avoid showing an unactive waypoint as the target
 };
 
 

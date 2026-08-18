@@ -15,6 +15,7 @@ enum class WaypointState{
     COMPLETED
 };
 enum class WaypointType{
+    GROUND,
     TAKEOFF,
     NAVIGATION,
     PRE_LANDING,

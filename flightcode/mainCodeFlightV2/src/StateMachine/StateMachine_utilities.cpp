@@ -33,6 +33,9 @@ bool StateMachine::handleTakeOff_request(){
     }
     Serial.println("StateMachine: Flight conditions valid, can take off");
 
+
+    auto& mission = flight_manager->getMission();
+    mission.start(); // start the mission, which will set the first waypoint as active and ready for take off
     return true;
 
 

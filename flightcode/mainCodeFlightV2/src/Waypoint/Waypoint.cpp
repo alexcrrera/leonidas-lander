@@ -47,6 +47,10 @@ WaypointState Waypoint::getState() const{
     return(state);
 }
 
+void Waypoint::updatePosition(const NED_coordinates& positionNED, float yaw_deg){
+    target.positionNED = positionNED;
+    target.yaw_deg = yaw_deg;
+}
 
 
 void Waypoint::update(  const NED_coordinates& currentPositionNED,float yaw_deg){

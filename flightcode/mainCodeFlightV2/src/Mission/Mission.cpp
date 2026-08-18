@@ -7,7 +7,7 @@
 #include "../FlightManager/FlightManager.h"
 
 Mission::Mission(){
-    currentWaypointIndex = 0; // index 0 means that we are dealing with the TAKEOFF scenario
+    currentWaypointIndex = -1; // index -1 means that we are not dealing with any specific waypoint
     navigationWaypointCount = 0; // no waypoints have been added so far
     state = MissionState::NOT_READY_TO_AND_LND_UNDEFINED;
 }
@@ -19,6 +19,16 @@ void Mission::begin(FlightManager* flightManager_){
     landingDefined = false;
    
     defineTakeOff_and_Landing(); // defines the take off and landing points based on the current position of the lander
+
+    currentPositionWaypoint = Waypoint(
+        WaypointType::GROUND,
+        flightManager->getLander().getState().position, // current position of the lander
+        flightManager->getLander().getState().attitude.Yaw_SI, // current yaw of the lander
+        0, // hold time is 0 because we are not holding at this point
+        {} // default epsilon group
+    );
+
+    
 }
 
 
@@ -189,6 +199,8 @@ void Mission::defineLanding(){
         epsilon_group);
 
 
+    landingDefined = true; // the important flag that is actually used. 
+                            // Return value is only for the user
     flightManager->getCommandHandler().setOKFeedback("LND DEF");
 
 }
@@ -228,6 +240,21 @@ MissionTarget Mission::getTarget(){
     return(target);
 }
 
+
+
+
+
+void Mission::start(){
+    if(!isReady()){
+        flightManager->getCommandHandler().setFeedback("INV", "MISSION NOT READY");
+        return;
+    }
+    state = MissionState::ACTIVE;
+    currentWaypointIndex = 0; // start with the take off waypoint
+    flightManager->getCommandHandler().setOKFeedback("MISSION STARTED");
+}
+
+
 void Mission::update(){
     
     updateReadiness();
@@ -244,8 +271,11 @@ void Mission::update(){
    
     current_waypoint.update(currentWaypointPositionNED,currentWaypointYawDeg);
 
-    if((current_waypoint.getState()==WaypointState::COMPLETED)){advanceWaypoint();}
+    if((current_waypoint.getState()==WaypointState::COMPLETED)){
+        advanceWaypoint();
+        current_waypoint.activate(); // update the current waypoint after advancing}
         
+}
 }
 
 
@@ -293,11 +323,26 @@ String Mission::getStateAsString() const{
 
 
 
+void Mission::getCurrentPositionAsWaypoint(){
 
+        
+        currentPositionWaypoint.updatePosition(
+            flightManager->getLander().getState().position,
+            flightManager->getLander().getState().attitude.Yaw_SI
+        );
+        
+    
+}
 
 
 
 Waypoint& Mission::getCurrentWaypoint(){
+
+    if(currentWaypointIndex == -1){
+        
+        getCurrentPositionAsWaypoint(); // updates the current position waypoint to the current position of the lander
+        return(currentPositionWaypoint); // if the current waypoint index is -1, it means that we are not in a mission, so we return the current position as a waypoint
+    }
     if(currentWaypointIndex==0){
         return(takeOffWaypoint);
     }
@@ -320,6 +365,7 @@ Waypoint& Mission::getCurrentWaypoint(){
 
 
 void Mission::advanceWaypoint(){
+    // activates the next waypoint in the mission sequence, and updates the mission state accordingly
     if(currentWaypointIndex==0){
         currentWaypointIndex++;
         state = MissionState::ACTIVE;
@@ -341,7 +387,7 @@ bool Mission::addWaypoint( const NED_coordinates& positionNED,
             float yaw_deg,
             uint32_t holdTimeMs = MissionConfig::holdTimeMs.default_,
             EpsilonGroup epsilon_group = {} // default parameters if left blank
-        ){
+            ){
 
             waypoints_list.push_back(Waypoint(
                 WaypointType::NAVIGATION,
@@ -355,3 +401,18 @@ bool Mission::addWaypoint( const NED_coordinates& positionNED,
 
             return true;
         }
+
+
+
+String Mission::getMissionDataAsString() const{
+    auto current_waypoint = getCurrentWaypoint();
+    String data = "Mission State: " + getStateAsString() + "\n";
+    data += "Waypoint States:\n";
+    data += "Current Waypoint State: " + current_waypoint.getStateAsString() + "\n";
+    data += "Current Waypoint Index: " + String(currentWaypointIndex) + "\n";
+    data += "Takeoff Defined: " + String(takeOffDefined) + "\n";
+    data += "Landing Defined: " + String(landingDefined) + "\n";
+    data += "Navigation Waypoint Count: " + String(navigationWaypointCount) + "\n";
+    
+    return data;
+}

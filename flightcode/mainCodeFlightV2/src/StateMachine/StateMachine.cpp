@@ -56,6 +56,10 @@ STATE_MACHINE_STATES StateMachine::getState() const{
 void StateMachine::requestStateChange(STATE_MACHINE_STATES new_state){
     // This function can be used to request a state change, but the actual state change will be handled by the flight manager based on the current state and conditions
     // For now, we will just set the state directly
+    if(new_state == STATE_MACHINE_STATES::ABORT){
+        return;
+    }
+    
     setState(new_state);
 }
 

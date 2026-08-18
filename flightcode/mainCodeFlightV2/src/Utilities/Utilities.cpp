@@ -3,6 +3,10 @@
 
 
 
+bool Utilities::isSimpleBouded(float u, float u_max)
+{
+    return (fabsf(u) <= u_max);
+}
 float Utilities::clamping(float u, float u_max){
     return constrain(u,-u_max,u_max); // 1D constraining
 }

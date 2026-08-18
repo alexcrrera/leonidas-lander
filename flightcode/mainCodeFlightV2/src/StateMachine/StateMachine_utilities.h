@@ -16,7 +16,8 @@ enum class STATE_MACHINE_STATES {
     PRE_LANDING,
     LANDING,
 
-    LANDED
+    LANDED,
+    ABORT
 };
 
 

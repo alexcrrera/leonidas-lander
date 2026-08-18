@@ -27,8 +27,8 @@ SAFETY PARAMETERS THAT CAN TOGGLE ABORT CONDITIONS
 
     // rates
 
-    constexpr float max_vertical_acceleration_ms2 = 1.0;
-    constexpr float max_horizontal_acceleration_ms2 = 1.0;
+    constexpr float max_vertical_acceleration_ms2 = 7.0;
+    constexpr float max_horizontal_acceleration_ms2 = 7.0;
 
 
     constexpr float max_yaw_velocity_degs = 20;

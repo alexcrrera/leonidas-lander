@@ -5,6 +5,10 @@
 #include "../Utilities/Utilities.h"
 #include "FlightGuard_utilities.h"
 #include "../Lander/Lander_structs.h"
+#include "../Utilities/Utilities.h"
+#include "../StateMachine/StateMachine.h"
+#include "../FlightGuard/FlightGuard_utilities.h"
+
 class FlightManager; // forward declaration of FlightManager class
 
 class FlightGuard {
@@ -20,7 +24,15 @@ class FlightGuard {
     
     String motorEnabledStatus() const;
     String motorSafetyStatus() const;
+
+    void checkFlightConditions();
+
+
+
+    
      private:
+
+       
 
         FlightManager* flight_manager = nullptr;
        

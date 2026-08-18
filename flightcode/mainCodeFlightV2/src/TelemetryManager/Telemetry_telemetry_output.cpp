@@ -53,6 +53,17 @@ String TelemetryManager::get_telemetry_payload()
     TelemetryUtilities::addTelemetryField(payload, flightManager->getFlightGuard().motorEnabledStatus());
     // 21 - motor safety status
     TelemetryUtilities::addTelemetryField(payload, flightManager->getFlightGuard().motorSafetyStatus());
+    // overspeed status - 22
+    TelemetryUtilities::addTelemetryField(payload, flightManager->getFlightGuard().overrideFlags.vertical_overspeed_ok);
+    
+    // horizontal overspeed status - 23
+    TelemetryUtilities::addTelemetryField(payload, flightManager->getFlightGuard().overrideFlags.horizontal_overspeed_ok);
+    // roll/pitch abort status - 24
+    TelemetryUtilities::addTelemetryField(payload, flightManager->getFlightGuard().overrideFlags.roll_pitch_ok);
+    // yaw abort status - 25
+    TelemetryUtilities::addTelemetryField(payload, flightManager->getFlightGuard().overrideFlags.yaw_ok);
+
+
 
     payload += CommsConfig::outputLineEndingTelemetryFormat;
     payload += "\n";

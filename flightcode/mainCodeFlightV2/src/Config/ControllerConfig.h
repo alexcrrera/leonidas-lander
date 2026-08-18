@@ -38,7 +38,7 @@ namespace ControllerPID {
   
 
 
-    constexpr PID_Gains PID_gains_position_Down = {.kp = 5.0,
+    constexpr PID_Gains PID_gains_position_Down = {.kp = 2.0,
                                         .ki = 0.0,
                                         .kd = 0.05};
 

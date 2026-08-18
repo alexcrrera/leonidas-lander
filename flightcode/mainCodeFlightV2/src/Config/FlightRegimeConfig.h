@@ -75,8 +75,8 @@ FILE CONTAINING PARAMETERS FOR TAKE OFF AND LANDING - PARAMATERS ARE VERIFIED (B
         .max_vertical_velocity_ms = 1.0,
         .max_horizontal_velocity_ms = 0.3,
 
-        .max_vertical_acceleration_ms2 = 1,
-        .max_horizontal_acceleration_ms2 = 0.1,
+        .max_vertical_acceleration_ms2 = 3.0,
+        .max_horizontal_acceleration_ms2 = 2.0,
 
         .max_yaw_velocity_degs = 15.0,
         .max_pitch_roll_velocity_degs = 10.0,
@@ -102,8 +102,8 @@ FILE CONTAINING PARAMETERS FOR TAKE OFF AND LANDING - PARAMATERS ARE VERIFIED (B
         .max_vertical_velocity_ms = 0.2,
         .max_horizontal_velocity_ms = 0.1,
 
-        .max_vertical_acceleration_ms2 = 1,
-        .max_horizontal_acceleration_ms2 = 0.1,
+        .max_vertical_acceleration_ms2 = 3.0,
+        .max_horizontal_acceleration_ms2 = 2.0,
 
         .max_yaw_velocity_degs = 20.0,
         .max_pitch_roll_velocity_degs = 10.0,
@@ -131,8 +131,8 @@ FILE CONTAINING PARAMETERS FOR TAKE OFF AND LANDING - PARAMATERS ARE VERIFIED (B
         .max_vertical_velocity_ms = 0.2,
         .max_horizontal_velocity_ms = 0.1,
 
-        .max_vertical_acceleration_ms2 = 1,
-        .max_horizontal_acceleration_ms2 = 0.1,
+        .max_vertical_acceleration_ms2 = 3.0,
+        .max_horizontal_acceleration_ms2 = 2.0,
 
         .max_yaw_velocity_degs = 20.0,
         .max_pitch_roll_velocity_degs = 10.0,
@@ -157,8 +157,8 @@ FILE CONTAINING PARAMETERS FOR TAKE OFF AND LANDING - PARAMATERS ARE VERIFIED (B
         .max_vertical_velocity_ms = 0.3,
         .max_horizontal_velocity_ms = 0.1,
 
-        .max_vertical_acceleration_ms2 = 1,
-        .max_horizontal_acceleration_ms2 = 0.1,
+        .max_vertical_acceleration_ms2 = 3.0,
+        .max_horizontal_acceleration_ms2 = 2.0,
 
         .max_yaw_velocity_degs = 20.0,
         .max_pitch_roll_velocity_degs = 10.0,

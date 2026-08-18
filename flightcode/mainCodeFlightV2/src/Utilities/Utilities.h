@@ -90,7 +90,7 @@ namespace Utilities{
     bool isWithinEps_NED(float epsH, float epsV, const NED_coordinates& p, const NED_coordinates& p_ref);
     //bool isBounded(float u, float u_min, float u_max);
     constexpr bool isBounded(float value,float minValue,float maxValue){return value >= minValue &&value <= maxValue;}
-
+    bool isSimpleBouded(float u, float u_max);
 
     float distance1D(float u, float u_ref);
     float distance2D(float x, float y, float x_ref, float y_ref);

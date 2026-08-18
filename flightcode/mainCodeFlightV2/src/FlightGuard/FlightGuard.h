@@ -25,13 +25,16 @@ class FlightGuard {
     String motorEnabledStatus() const;
     String motorSafetyStatus() const;
 
-    void checkFlightConditions();
-
+    bool isFlightConditionValid();
 
 
     
      private:
 
+        //bool isFlightConditionValid();
+        void checkFlightConditions();
+
+       
        
 
         FlightManager* flight_manager = nullptr;

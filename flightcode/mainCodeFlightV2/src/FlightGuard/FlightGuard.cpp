@@ -23,6 +23,12 @@ void FlightGuard::update() {
 }
 
 
+bool FlightGuard::isFlightConditionValid(){
+    return true;
+    
+}
+
+
 
 
 void FlightGuard::checkFlightConditions() {
@@ -42,8 +48,8 @@ void FlightGuard::checkFlightConditions() {
         FlightGuardUtilities::isVerticalVelocityWithinBounds(state.velocity.Down_SI);
 
     overrideFlags.horizontal_overspeed_ok =
-        FlightGuardUtilities::isHorizontalVelocityWithinBounds(state.velocity.East_SI,state.velocity.North_SI);
 
+    FlightGuardUtilities::isHorizontalVelocityWithinBounds(state.velocity.East_SI,state.velocity.North_SI);
 
 
 

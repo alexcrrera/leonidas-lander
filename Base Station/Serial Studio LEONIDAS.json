@@ -27,8 +27,8 @@
         {
             "eol": "\n",
             "icon": "Home",
-            "title": "Set Home",
-            "txData": "SETHOME"
+            "title": "SET HOME",
+            "txData": "SET_HOME:"
         }
     ],
     "decoder": 0,
@@ -312,13 +312,13 @@
                     "fftSamples": 256,
                     "fftSamplingRate": 100,
                     "graph": false,
-                    "index": 18,
+                    "index": 26,
                     "led": false,
                     "ledHigh": 1,
                     "log": false,
                     "max": 0,
                     "min": 0,
-                    "title": "MODE",
+                    "title": "STATUS",
                     "units": "",
                     "value": "--.--",
                     "widget": ""
@@ -403,7 +403,7 @@
                     "log": false,
                     "max": 0,
                     "min": 0,
-                    "title": "CMD FEEDBACK",
+                    "title": "CMD ACK",
                     "units": "",
                     "value": "--.--",
                     "widget": ""

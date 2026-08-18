@@ -3,7 +3,13 @@
 
 
 String StateMachine::getStateAsString() const{
-    switch (current_state) {
+    return getStateAsString(current_state);
+}
+
+
+
+String StateMachine::getStateAsString(STATE_MACHINE_STATES state) const{
+    switch (state) {
         case STATE_MACHINE_STATES::BOOTED:
             return "BOOTED";
         
@@ -27,6 +33,9 @@ String StateMachine::getStateAsString() const{
             return "UNKNOWN STATE";
     }
 }
+
+
+
 
 
 
@@ -54,14 +63,40 @@ STATE_MACHINE_STATES StateMachine::getState() const{
 }
 
 void StateMachine::requestStateChange(STATE_MACHINE_STATES new_state){
-    // This function can be used to request a state change, but the actual state change will be handled by the flight manager based on the current state and conditions
-    // For now, we will just set the state directly
-    if(new_state == STATE_MACHINE_STATES::ABORT){
+    
+    if(verifyChange(new_state)){
+        setState(new_state);
+        auto& command_handler = flight_manager->getCommandHandler();
+        command_handler.setOKFeedback(getStateAsString());
         return;
     }
-    
-    setState(new_state);
+
+    else{
+        auto& command_handler = flight_manager->getCommandHandler();
+        command_handler.setErrorFeedback("NO: " + getStateAsString(new_state));
+        return;
+    }
 }
+
+
+bool StateMachine::verifyChange(STATE_MACHINE_STATES new_state){
+
+// This function can be used to request a state change, but the actual state change will be handled by the flight manager based on the current state and conditions
+    // For now, we will just set the state directly
+    if(new_state == STATE_MACHINE_STATES::ABORT){
+        return true;
+    }
+
+    if(new_state == STATE_MACHINE_STATES::LAUNCH){
+        if(!handleTakeOff_request()){
+            return false;
+        }
+    }
+
+    return true;
+
+}
+
 
 void StateMachine::setState(STATE_MACHINE_STATES new_state){
     current_state = new_state;

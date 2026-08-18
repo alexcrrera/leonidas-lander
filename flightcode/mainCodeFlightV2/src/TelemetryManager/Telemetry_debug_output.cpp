@@ -37,13 +37,6 @@ String TelemetryManager::get_debug_payload()
 
     // altitude Controller PID data
 
-    TelemetryUtilities::addDebugGroup(payload, "DOWN POS PID");
-    payload += flightManager->getController().PID_position.axis_z.getPID_data_as_string();
-
-    // velocity Controller PID data
-    TelemetryUtilities::addDebugGroup(payload, "DOWN VELOCITY PID");
-    payload += flightManager->getController().PID_velocity.axis_z.getPID_data_as_string();
-
 
         
     TelemetryUtilities::addDebugGroup(payload, "CMD");

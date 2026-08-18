@@ -6,10 +6,22 @@
 
     void CommandHandler::parseCommand(String header, String payload)
 {
+    Serial.println("Command received: " + header + " with payload: " + payload + "|");
+    if(header == "SET_HOME"){
+        
+        setOKFeedback(header);
+        Serial.println("Set home command received");
+        auto& state_estimator = flight_manager->getLander().getStateEstimator();
+        NED_coordinates home_position;
+        home_position.North_SI = 0.0f;
+        home_position.East_SI = 0.0f;
+        home_position.Down_SI = 0.0f;
+        state_estimator.setHomePosition(home_position);
+        return;
+    }
 
 
-    if (header == "LINE")
-    {
+    if (header == "LINE"){
         setOKFeedback(header);
         flight_manager->getTelemetryManager().send_USB_debug_payload();
         
@@ -51,9 +63,10 @@
 
     if (header == "LAUNCH")
     {
+        setOKFeedback(header);
         flight_manager->getStateMachine().requestStateChange(STATE_MACHINE_STATES::LAUNCH);
         Serial.println("Launch command received");
-        setOKFeedback(header);
+        
         flight_manager->getTelemetryManager().send_USB_debug_payload();
         return;
     }

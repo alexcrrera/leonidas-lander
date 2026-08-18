@@ -14,6 +14,15 @@ void StateEstimator::begin(Lander& lander_)
     
 }
 
+void StateEstimator::setHomePosition(const NED_coordinates& home_position)
+{
+    home_position_NED = home_position;
+    home_position_set = true;
+}
+
+bool StateEstimator::isFlightConditionValid(){
+    return true; // placeholder for actual flight condition validation logic
+}
 
 void StateEstimator::update(SensorMeasurements& sensorMeasurements)
 {

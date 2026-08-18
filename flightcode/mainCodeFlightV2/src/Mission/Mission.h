@@ -44,7 +44,7 @@ class Mission{
         void begin(FlightManager* flightManager_);
         
         
-
+         void start();
 
         void update();
 

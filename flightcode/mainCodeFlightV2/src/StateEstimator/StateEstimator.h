@@ -34,7 +34,11 @@ class StateEstimator
         void update(SensorMeasurements& sensorMeasurements);
         LanderState& getState() { return state; }
         
+        bool isFlightConditionValid();
 
+        void setHomePosition(const NED_coordinates& home_position);
+
+        bool isHomePositionSet() const { return home_position_set; }
     private:
 
         Lander*  lander = nullptr;
@@ -49,6 +53,9 @@ class StateEstimator
         void estimateAcceleration_NED(LanderState& state, const SensorMeasurements& sensorMeasurements);
         void estimateVelocity_NED(LanderState& state, const SensorMeasurements& sensorMeasurements);
         void estimatePosition_NED(LanderState& state, const SensorMeasurements& sensorMeasurements);
-};
+
+        bool home_position_set = false;
+        NED_coordinates home_position_NED;
+    };
 
 #endif // STATE_ESTIMATOR_H

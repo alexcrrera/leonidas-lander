@@ -33,7 +33,7 @@ public:
     OpticalFlow& getOpticalFlow() { return opticalFlow; }
 
     LanderState& getState() { return stateEstimator.getState(); }
-   
+    StateEstimator& getStateEstimator() { return stateEstimator; }
 
 private:
 

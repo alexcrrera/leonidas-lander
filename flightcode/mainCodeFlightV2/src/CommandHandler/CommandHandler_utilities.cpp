@@ -12,11 +12,7 @@
         setOKFeedback(header);
         Serial.println("Set home command received");
         auto& state_estimator = flight_manager->getLander().getStateEstimator();
-        NED_coordinates home_position;
-        home_position.North_SI = 0.0f;
-        home_position.East_SI = 0.0f;
-        home_position.Down_SI = 0.0f;
-        state_estimator.setHomePosition(home_position);
+        state_estimator.request_setHomePosition();
         return;
     }
 

@@ -20,11 +20,12 @@ void FlightManager::begin()
 {
    
 
-    lander.begin();
+    lander.begin(this);
     command_handler.begin(this);
     telemetry_manager.begin();
     mission.begin(this);
     state_machine.begin(this);
+    
     state_machine.setState(STATE_MACHINE_STATES::BOOTED);
     flight_guard.begin(this);
     motor_manager.begin(this);

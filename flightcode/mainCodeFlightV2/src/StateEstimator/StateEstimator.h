@@ -12,7 +12,7 @@
 #include "../OpticalFlow/OpticalFlow.h"
 #include "../Lander/Lander_structs.h"
 
-class Lander;
+class FlightManager; // forward declaration to avoid circular dependency
 
 struct SensorMeasurements
 { 
@@ -30,18 +30,20 @@ class StateEstimator
     public:
         StateEstimator() = default;
         
-        void begin(Lander& lander_);
+        void begin(FlightManager* flightManager_);
         void update(SensorMeasurements& sensorMeasurements);
         LanderState& getState() { return state; }
         
         bool isFlightConditionValid();
 
-        void setHomePosition(const NED_coordinates& home_position);
+        void request_setHomePosition();
 
         bool isHomePositionSet() const { return home_position_set; }
     private:
 
-        Lander*  lander = nullptr;
+
+
+        FlightManager* flight_manager = nullptr;
         LanderState state;
         SensorMeasurements sensorMeasurements;
         

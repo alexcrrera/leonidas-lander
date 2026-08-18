@@ -3,20 +3,32 @@
 
 #include "StateEstimator.h"
 #include "../Lander/Lander.h"
+#include"../FlightManager/FlightManager.h"
 
 
 
-
-void StateEstimator::begin(Lander& lander_)
+void StateEstimator::begin(FlightManager* flightManager_)
 {
-    lander = &lander_; // pass lander object to state estimator
+    flight_manager = flightManager_; // pass flight manager object to state estimator
     //Serial.println("STATE ESTIMATOR: BEGIN");
     
 }
 
-void StateEstimator::setHomePosition(const NED_coordinates& home_position)
+void StateEstimator::request_setHomePosition()
 {
-    home_position_NED = home_position;
+
+    
+    auto& state_machine = flight_manager->getStateMachine();
+    // send error feedback if not in BOOTED state
+
+    if(state_machine.isInFlight(state_machine.getState())){
+        auto& command_handler = flight_manager->getCommandHandler();
+        command_handler.setErrorFeedback("FLYING");
+        return; // do not set home position if in flight
+    }
+
+    auto& current_position = state.position;
+    home_position_NED = current_position; // set home position to current position
     home_position_set = true;
 }
 

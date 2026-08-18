@@ -13,6 +13,7 @@
 
 #include "Lander_structs.h"
 
+class FlightManager; // forward declaration to avoid circular dependency
 // ============================================================
 // Lander owns the sensors and the state estimator &
 // exposes the lander state to the flight manager
@@ -23,7 +24,7 @@ class Lander
 public:
     Lander()=default;
 
-    void begin();
+    void begin(FlightManager* flightManager);
     void update();
 
 
@@ -46,6 +47,8 @@ private:
     SensorMeasurements SensorData;
     
     StateEstimator stateEstimator;
+
+    FlightManager* flight_manager = nullptr; // pointer to the flight manager, set in begin()
     
 
 

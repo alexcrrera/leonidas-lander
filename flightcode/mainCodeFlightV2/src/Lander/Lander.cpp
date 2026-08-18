@@ -1,14 +1,14 @@
 #include "Lander.h"
 
 #include <math.h>
+#include "../FlightManager/FlightManager.h"
 
-void Lander::begin()
-
+void Lander::begin(FlightManager* flightManager)
 {
     vn300.begin();
     opticalFlow.begin();
     lidar.begin();
-    stateEstimator.begin(*this);
+    stateEstimator.begin(flightManager);
 }
 
 void Lander::update()

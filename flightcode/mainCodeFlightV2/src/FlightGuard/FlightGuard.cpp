@@ -12,13 +12,15 @@ void FlightGuard::update() {
     auto regimeData = flight_manager->getStateMachine().getCurrentFlightRegimeData();
 
 
+
+       checkFlightConditions(); 
     if(!regimeData.isFlying){
         overrideFlags.EDF_enabled = false;
         overrideFlags.TVC_enabled = false;
        
     }
 
-    checkFlightConditions();
+ 
   
 }
 

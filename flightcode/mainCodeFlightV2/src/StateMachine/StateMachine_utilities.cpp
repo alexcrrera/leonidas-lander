@@ -35,6 +35,8 @@ bool StateMachine::handleTakeOff_request(){
 
 
     auto& mission = flight_manager->getMission();
+
+
     mission.start(); // start the mission, which will set the first waypoint as active and ready for take off
     return true;
 

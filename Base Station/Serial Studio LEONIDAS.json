@@ -8,9 +8,9 @@
         },
         {
             "eol": "\n",
-            "icon": "Close",
-            "title": "KILL MOTOR (WARNING)",
-            "txData": "MOFF"
+            "icon": "Data Transfer",
+            "title": "NEXT_WP",
+            "txData": "NEXT_WP:"
         },
         {
             "eol": "\n",
@@ -438,6 +438,23 @@
                     "max": 0,
                     "min": 0,
                     "title": "OVSPEED V STATUS",
+                    "units": "",
+                    "value": "--.--",
+                    "widget": ""
+                },
+                {
+                    "alarm": 0,
+                    "fft": false,
+                    "fftSamples": 256,
+                    "fftSamplingRate": 100,
+                    "graph": false,
+                    "index": 27,
+                    "led": false,
+                    "ledHigh": 1,
+                    "log": false,
+                    "max": 0,
+                    "min": 0,
+                    "title": "MISSION STATE",
                     "units": "",
                     "value": "--.--",
                     "widget": ""

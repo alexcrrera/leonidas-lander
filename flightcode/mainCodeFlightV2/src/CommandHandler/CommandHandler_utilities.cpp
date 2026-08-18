@@ -16,6 +16,13 @@
         return;
     }
 
+    if(header == "NEXT_WP"){
+        setOKFeedback(header);
+        Serial.println("Next waypoint command received");
+        flight_manager->getMission().advanceWaypoint();
+        return;
+    }
+
 
     if (header == "LINE"){
         setOKFeedback(header);

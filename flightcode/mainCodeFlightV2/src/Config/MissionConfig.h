@@ -39,7 +39,7 @@ struct MissionTarget{
 
     constexpr MissionTarget landingTarget_relative_NED = {
         .target = {
-            .positionNED = {0.67f, 0.420f, 0.0f}, // landing at the take off point
+            .positionNED = {0.0f, 0.0f, 0.0f}, // landing at the take off point
             .yaw_deg = 0.0f
         },
        

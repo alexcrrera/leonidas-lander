@@ -29,9 +29,7 @@ bool FlightGuardUtilities::isHorizontalVelocityWithinBounds(float velocity_N, fl
 
 
 void FlightGuardUtilities::resetOverrideFlags(FlightGuardOverrideFlags& flags){
-    flags.EDF_enabled = true;
-    flags.EDF_armed = false;
-    flags.TVC_enabled = true;
+
     flags.vertical_overspeed_ok = true;
     flags.horizontal_overspeed_ok = true;
     flags.altitude_limit_ok = true;

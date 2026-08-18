@@ -22,6 +22,8 @@ enum class MissionState {
     NOT_READY_LND_UNDEFINED, // landing not defined
     READY, // ready to begin
     ACTIVE, // currently outputting targets
+    MOVING,
+    HOLDING,
     COMPLETED // mission done
 };
 
@@ -48,7 +50,7 @@ class Mission{
 
         void update(); // gets called via the FlightManager update() function, which is called in the main loop
 
-        MissionTarget getTarget(); // RETURNS copy of the target, not a reference to avoid dangling references
+        MissionTarget getTarget(); // RETURNS a copy of the target, not a reference to avoid dangling references
        // MissionState getState() const;
 
 
@@ -65,15 +67,17 @@ class Mission{
 
 // TEMP PUBLIC FOR TESTING
         Waypoint takeOffWaypoint;
-        Waypoint navigationWaypoints[MAX_MISSION_WAYPOINTS];
         Waypoint landingWaypoint;
         Waypoint landingTransitionWaypoint; 
+
+    int getNavigationWaypointCount();
+
+void advanceWaypoint();
 
 
 
     private:
-
-
+       
         void defineTakeOff_and_Landing();
         void defineTakeOff();
         void defineLanding();
@@ -88,22 +92,26 @@ class Mission{
         );
         
         // list/ array of waypoints for the mission
-        std::vector<Waypoint> waypoints_list;
+        std::vector<Waypoint> waypoints_list_nav_only;
         void updateReadiness();
         Waypoint& getCurrentWaypoint();
 
-        void advanceWaypoint();
-
+        
         MissionState state;
 
         bool takeOffDefined;
         bool landingDefined;
 
+        bool isTargetReached();
+
+
+        
+
         
         
         void getCurrentPositionAsWaypoint();
-        uint8_t navigationWaypointCount;
-        int currentWaypointIndex = -1; // index of the current waypoint in the mission (0 = take off, 1 = first navigation waypoint, 2 = second navigation waypoint, etc.)
+ 
+        int currentWaypointIndex = -2; // index of the current waypoint in the mission (0 = take off, 1 = first navigation waypoint, 2 = second navigation waypoint, etc.)
 
         FlightManager* flightManager=nullptr; // pointer to the flight manager to access lander state and other modules
 

@@ -35,7 +35,13 @@ class Waypoint{
     void updatePosition(const NED_coordinates& positionNED, float yaw_deg);
     
     String getDataAsString() const;
- 
+
+    uint32_t getHoldTimeMs() const { return holdTimeMs; }
+    uint32_t getHoldStartTimeMs() const { return holdStartTimeMs; }
+    void setHoldStartTimeMs(uint32_t timeMs) { holdStartTimeMs = timeMs; }
+    uint32_t getEntryTimeMs() const { return entryTimeMs; }
+    
+    EpsilonGroup getEpsilonGroup() const { return epsilon_group; }
     private:
 
      

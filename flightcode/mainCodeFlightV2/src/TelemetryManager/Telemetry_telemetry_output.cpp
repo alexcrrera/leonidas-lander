@@ -65,7 +65,7 @@ String TelemetryManager::get_telemetry_payload()
 
 
     // 26 - current state
-    TelemetryUtilities::addTelemetryField(payload, flightManager->getStateMachine().getStateAsString());
+    TelemetryUtilities::addTelemetryField(payload, flightManager->getStateMachine().getStateAsString());    
 
 
     payload += CommsConfig::outputLineEndingTelemetryFormat;

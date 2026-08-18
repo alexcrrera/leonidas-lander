@@ -21,7 +21,6 @@ void Mission::begin(FlightManager* flightManager_){
     defineTakeOff_and_Landing(); // defines the take off and landing points based on the current position of the lander
 
     currentPositionWaypoint = Waypoint(
-        WaypointType::GROUND,
         flightManager->getLander().getState().position, // current position of the lander
         flightManager->getLander().getState().attitude.Yaw_SI, // current yaw of the lander
         0, // hold time is 0 because we are not holding at this point
@@ -89,7 +88,6 @@ void Mission::defineTakeOff(){
 
 
     takeOffWaypoint = Waypoint(
-        WaypointType::TAKEOFF,
         hoverPositionNED, // NED convention
         takeOff_yaw_deg,
         holdTimeMs,
@@ -111,6 +109,7 @@ void Mission::defineLanding(){
     auto landerState = flightManager->getLander().getState();
     
     NED_coordinates currentPositionNED = landerState.position;
+
     NED_coordinates landingRelativePositionNED = MissionConfig::landingTarget_relative_NED.target.positionNED;
     float yawDeg_landing = MissionConfig::landingTarget_relative_NED.target.yaw_deg;
 
@@ -184,7 +183,6 @@ void Mission::defineLanding(){
     };
 
     landingTransitionWaypoint = Waypoint(
-        WaypointType::PRE_LANDING,
         landingDescentStartPositionNED, // NED convention
         yawDeg_landing,
         holdTimeMs,
@@ -192,7 +190,6 @@ void Mission::defineLanding(){
 
 
     landingWaypoint = Waypoint(
-        WaypointType::LANDING,
         landingAbsolutePositionNED, // NED convention
         yawDeg_landing,
         holdTimeMs,
@@ -227,16 +224,7 @@ MissionTarget Mission::getTarget(){
     MissionTarget target;
     Waypoint& current_waypoint = getCurrentWaypoint();
     target.target = current_waypoint.getTarget();
-    target.type = current_waypoint.getType();
-    // Serial.print("Current Waypoint Index: ");
-    // Serial.println(currentWaypointIndex);
-    // // type skippedd for now, but can be added later if needed
-    // Serial.print("Mission Target: North: ");
-    // Serial.print(target.target.positionNED.North_SI);
-    // Serial.print(", East: ");
-    // Serial.print(target.target.positionNED.East_SI);
-    // Serial.print(", Down: ");
-    // Serial.println(target.target.positionNED.Down_SI);
+   
     return(target);
 }
 
@@ -269,13 +257,8 @@ void Mission::update(){
     float currentWaypointYawDeg = current_waypoint.getTarget().yaw_deg;
    
    
-    current_waypoint.update(currentWaypointPositionNED,currentWaypointYawDeg);
+   
 
-    if((current_waypoint.getState()==WaypointState::COMPLETED)){
-        advanceWaypoint();
-        current_waypoint.activate(); // update the current waypoint after advancing}
-        
-}
 }
 
 
@@ -324,8 +307,6 @@ String Mission::getStateAsString() const{
 
 
 void Mission::getCurrentPositionAsWaypoint(){
-
-        
         currentPositionWaypoint.updatePosition(
             flightManager->getLander().getState().position,
             flightManager->getLander().getState().attitude.Yaw_SI
@@ -390,7 +371,6 @@ bool Mission::addWaypoint( const NED_coordinates& positionNED,
             ){
 
             waypoints_list.push_back(Waypoint(
-                WaypointType::NAVIGATION,
                 positionNED,
                 yaw_deg,
                 holdTimeMs,
@@ -407,12 +387,9 @@ bool Mission::addWaypoint( const NED_coordinates& positionNED,
 String Mission::getMissionDataAsString() const{
     auto current_waypoint = getCurrentWaypoint();
     String data = "Mission State: " + getStateAsString() + "\n";
-    data += "Waypoint States:\n";
-    data += "Current Waypoint State: " + current_waypoint.getStateAsString() + "\n";
     data += "Current Waypoint Index: " + String(currentWaypointIndex) + "\n";
-    data += "Takeoff Defined: " + String(takeOffDefined) + "\n";
-    data += "Landing Defined: " + String(landingDefined) + "\n";
-    data += "Navigation Waypoint Count: " + String(navigationWaypointCount) + "\n";
+    data += "Current Waypoint Data:\n";
+    data += current_waypoint.getDataAsString();
     
     return data;
 }

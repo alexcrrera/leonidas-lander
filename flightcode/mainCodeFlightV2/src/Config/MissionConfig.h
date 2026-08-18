@@ -8,27 +8,16 @@
 #include "Arduino.h"
 
 
-enum class WaypointState{
-    INACTIVE,
-    APPROACHING,
-    HOLDING,
-    COMPLETED
-};
-enum class WaypointType{
-    GROUND,
-    TAKEOFF,
-    NAVIGATION,
-    PRE_LANDING,
-    LANDING
+
+struct MissionTarget{
+    WaypointTarget target;
+    // constant string
+  
 };
 
 
 
 
-struct MissionTarget {
-    WaypointTarget target; // position in NED and YAW
-    WaypointType type; // take off, landing, navig..
-};
 
  namespace MissionConfig {
 
@@ -53,7 +42,7 @@ struct MissionTarget {
             .positionNED = {0.67f, 0.420f, 0.0f}, // landing at the take off point
             .yaw_deg = 0.0f
         },
-        .type = WaypointType::LANDING
+       
     };
     
 

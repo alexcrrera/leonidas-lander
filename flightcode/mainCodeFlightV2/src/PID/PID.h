@@ -41,6 +41,11 @@ class PID {
 
     private:
 
+        
+        float kp;
+        float ki;
+        float kd;
+
         float output = 0.0;
 
         Handler handler; // handler for PID update frequency
@@ -52,9 +57,6 @@ class PID {
         
         float offset = 0.0;
 
-        float kp;
-        float ki;
-        float kd;
         float integral = 0.0;
 
         float outputMin=0.0;

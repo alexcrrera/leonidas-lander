@@ -53,3 +53,9 @@ String Waypoint::getDataAsString() const{
     data += "Epsilon Group: epsH: " + String(epsilon_group.epsH) + ", epsV: " + String(epsilon_group.epsV) + ", epsYaw: " + String(epsilon_group.epsYaw) + "\n";
     return(data);
 }
+
+
+bool Waypoint::isReached(const NED_coordinates& currentPositionNED, float currentYaw_deg) const {
+    return Utilities::isWithinEps_NED(epsilon_group.epsH, epsilon_group.epsV, currentPositionNED, target.positionNED) &&
+           Utilities::isWithinEps_Yaw(epsilon_group.epsYaw, currentYaw_deg, target.yaw_deg);
+}

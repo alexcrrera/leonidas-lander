@@ -60,8 +60,7 @@ void MotorManager::actuate_EDF(){
     }
     else {
         // If ESC is disabled, set thrust to 0%
-        
-        
+        ESC_thrust_percentage = 0.0f; 
          
         ESC.write(ESC_thrust_percentage );
        

@@ -31,7 +31,7 @@ struct MissionTarget{
     constexpr float takeOff_altitude_m = 0.15; // altitude above ground for take off
     constexpr float takeOff_yaw_deg = 0.0; // yaw angle for take off
     constexpr float landing_yaw_deg = 0.0; // yaw angle for landing
-    constexpr float landing_descentStart_altitude_m = 0.5; // altitude above ground for landing descent start
+    constexpr float landing_descentStart_altitude_m = 0.25; // altitude above ground for landing descent start
 
 
 

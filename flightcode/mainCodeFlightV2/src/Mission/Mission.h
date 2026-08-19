@@ -22,8 +22,8 @@ enum class MissionState {
     NOT_READY_LND_UNDEFINED, // landing not defined
     READY, // ready to begin
     ACTIVE, // currently outputting targets
-    MOVING,
     HOLDING,
+    ABORTED, // mission aborted
     COMPLETED // mission done
 };
 
@@ -50,6 +50,7 @@ class Mission{
 
         void update(); // gets called via the FlightManager update() function, which is called in the main loop
 
+        
         MissionTarget getTarget(); // RETURNS a copy of the target, not a reference to avoid dangling references
        // MissionState getState() const;
 

@@ -60,7 +60,7 @@ FILE CONTAINING PARAMETERS FOR TAKE OFF AND LANDING - PARAMATERS ARE VERIFIED (B
         .epsilon_group = {
             .epsH = 1.0, // large tolerance as we do not care about horizontal position
             .epsV = 1.0,
-            .epsYaw = 5, // alignment is not a priority
+            .epsYaw = 999, // alignment is not a priority
         }
         
     };
@@ -87,12 +87,12 @@ FILE CONTAINING PARAMETERS FOR TAKE OFF AND LANDING - PARAMATERS ARE VERIFIED (B
         .pitch_roll_abort_angle_deg = 15.0,
         .yaw_abort_angle_deg = 15.0,
 
-        .holdTimeMs = 3000 , // ms
+        .holdTimeMs = 1000 , // ms
 
         .epsilon_group = {
             .epsH = 0.25, // large tolerance as we do not care about horizontal position
-            .epsV = 0.03,
-            .epsYaw = 10, // alignment is not a priority
+            .epsV = 0.05,
+            .epsYaw = 999, // alignment is not a priority
         }
     };
 
@@ -114,12 +114,12 @@ FILE CONTAINING PARAMETERS FOR TAKE OFF AND LANDING - PARAMATERS ARE VERIFIED (B
          .pitch_roll_abort_angle_deg = 15.0,
         .yaw_abort_angle_deg = 15.0,
 
-        .holdTimeMs =   2000, // ms will be overriden by the mission waypoint hold time if the lander is in a waypoint
+        .holdTimeMs =   1000, // ms will be overriden by the mission waypoint hold time if the lander is in a waypoint
 
         .epsilon_group = {
             .epsH = 0.25, // larger tolerance as we do not care about horizontal position
-            .epsV = 0.2,
-            .epsYaw = 10, // alignment is not a priority
+            .epsV = 0.05,
+            .epsYaw = 999, // alignment is not a priority
         } 
     };
 
@@ -147,8 +147,8 @@ FILE CONTAINING PARAMETERS FOR TAKE OFF AND LANDING - PARAMATERS ARE VERIFIED (B
 
         .epsilon_group = {
             .epsH = 0.25, // large tolerance as we do not care about horizontal position
-            .epsV = 0.1,
-            .epsYaw = 25, // alignment is not a priority
+            .epsV = 0.07,
+            .epsYaw = 999, // alignment is not a priority
         } 
     };
 
@@ -170,12 +170,12 @@ FILE CONTAINING PARAMETERS FOR TAKE OFF AND LANDING - PARAMATERS ARE VERIFIED (B
          .pitch_roll_abort_angle_deg = 15.0,
         .yaw_abort_angle_deg = 15.0,
 
-        .holdTimeMs =   1000, // ms
+        .holdTimeMs =   1, // ms
 
         .epsilon_group = {
             .epsH = 0.35, // large tolerance as we do not care about horizontal position
-            .epsV = 0.15,
-            .epsYaw = 15, // alignment is not a priority
+            .epsV = 0.07,
+            .epsYaw = 999, // alignment is not a priority
         }
     };
 

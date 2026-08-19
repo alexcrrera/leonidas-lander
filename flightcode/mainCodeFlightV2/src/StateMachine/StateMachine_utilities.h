@@ -3,8 +3,8 @@
 
 enum class STATE_MACHINE_STATES {
     BOOT,
-    BOOTED,
-    
+    AWAIT,
+    GO,
     NOGO, // sensor error or other critical error, cannot proceed with launch, grounded
     
 

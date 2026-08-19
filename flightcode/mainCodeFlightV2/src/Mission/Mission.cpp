@@ -26,10 +26,6 @@ void Mission::begin(FlightManager* flightManager_){
         0, // hold time is 0 because we are not holding at this point
         {} // default epsilon group
     );
-
-
-
-   
 }
 
 
@@ -45,39 +41,44 @@ void Mission::start(){
 
 
 
-
-
 void Mission::updateReadiness(){
     // checks wether the mission is ready to go.
     // Requires TAKEOFF and LANDING positions to be defined
     //
 
+
     if(state == MissionState::ACTIVE || state == MissionState::COMPLETED){
         return; // if the mission is active or completed, we don't need to check readiness
     }
 
-    if(takeOffDefined || !landingDefined){
+    if(state == MissionState::HOLDING){
+        return; // if the mission is holding, we don't need to check readiness
+    }
+
+    // else
+
+    if(takeOffDefined && !landingDefined){
         
         state = MissionState::NOT_READY_LND_UNDEFINED;
         return;
     }
-    if(!takeOffDefined || landingDefined){
+    if(!takeOffDefined && landingDefined){
         state = MissionState::NOT_READY_TO_UNDEFINED;
         return;
     }
 
+    if(!takeOffDefined && !landingDefined){
+        state = MissionState::NOT_READY_TO_AND_LND_UNDEFINED;
+        return;
+    }
+
+    if(takeOffDefined && landingDefined){
+        state = MissionState::READY;
+        return;
+    }
+
+
 }
-
-
-MissionTarget Mission::getTarget(){
-    MissionTarget target;
-    Waypoint& current_waypoint = getCurrentWaypoint();
-    target.target = current_waypoint.getTarget();
-   
-    return(target);
-}
-
-
 
 
 
@@ -85,91 +86,103 @@ MissionTarget Mission::getTarget(){
 
 
 void Mission::update(){
+
+    auto navigationWaypointCount = getNavigationWaypointCount();
+    if(currentWaypointIndex>navigationWaypointCount+2){ // if we have completed the landing waypoint, we are done with the mission
+        state = MissionState::COMPLETED;
+    return;
+    }
+
     
     updateReadiness();
 
-    if(!isActive()){return;}
+    if(!isActive()){return;} // mission is not active, do nothing
 
     if(currentWaypointIndex>=MAX_MISSION_WAYPOINTS){return;} // overflow protection}
 
-     Waypoint& waypt = getCurrentWaypoint();
+    Waypoint& waypt = getCurrentWaypoint();
 
-    if(isTargetReached()){
-        
-       
-    if(waypt.getHoldStartTimeMs()==0){
-
-        flightManager->debug_text = "Mission: Target reached, starting hold timer for waypoint " + String(currentWaypointIndex);
-        Serial.println("Mission: Target reached, starting hold timer for waypoint " + String(currentWaypointIndex));
-        waypt.setHoldStartTimeMs(millis()); // start the hold timer
-        state = MissionState::HOLDING;
-        return;
-    }
+    auto landerState = flightManager->getLander().getState();
 
 
-    if(millis() - waypt.getHoldStartTimeMs() >= waypt.getHoldTimeMs()){
-            advanceWaypoint();
-            flightManager->debug_text = "Mission: Hold time completed, advancing to next waypoint " + String(currentWaypointIndex);
-            Serial.println("Mission: Hold time completed, advancing to next waypoint " );
-            state = MissionState::MOVING;
+    // if active then we chcek if we've reached the target
+    if(state == MissionState::ACTIVE){
+        if(waypt.isReached(landerState.position, landerState.attitude.Yaw_SI)){
+            flightManager->debug_text = "Mission: Target reached, starting hold timer for waypoint " + String(currentWaypointIndex);
+            Serial.println("Mission: Target reached, starting hold timer for waypoint " + String(currentWaypointIndex));
+            waypt.setHoldStartTimeMs(millis()); // start the hold timer
+            state = MissionState::HOLDING;
             return;
         }
+        return; // if we are active and haven't reached the target, do nothing
     }
+
+
+    // if we are holding, we check if the hold time has elapsed, regardless of current attitude and position, we will advance to the next waypoint after the hold time has elapsed
+    
+    if(state == MissionState::HOLDING){
+            if(millis() - waypt.getHoldStartTimeMs() >= waypt.getHoldTimeMs()){
+                advanceWaypoint();
+                flightManager->debug_text = "Mission: Hold time completed, advancing to next waypoint " + String(currentWaypointIndex);
+                Serial.println("Mission: Hold time completed, advancing to next waypoint " );
+                state = MissionState::ACTIVE;
+                return;
+            }
+        
+        }
+    
+
+   
     
    
-
 }
-
-
-
-
-
-bool Mission::isTargetReached(){
-    // checks if the current waypoint has been reached based on the current position and yaw of the lander
-    Waypoint& waypt = getCurrentWaypoint();
-    NED_coordinates target_positionNED = waypt.getTarget().positionNED;
-    float target_yaw_deg = waypt.getTarget().yaw_deg;
-
-    NED_coordinates currentPositionNED = flightManager->getLander().getState().position;
-    float currentYawDeg = flightManager->getLander().getState().attitude.Yaw_SI;
-
-    if(Utilities::isWithinEps_NED(waypt.getEpsilonGroup().epsH, waypt.getEpsilonGroup().epsV, currentPositionNED, target_positionNED) &&
-       Utilities::isWithinEps_Yaw(waypt.getEpsilonGroup().epsYaw, currentYawDeg, target_yaw_deg)) {
-        return true;
-    }
-    return false;
-}
-
-
-
-
 
 
 
 
 Waypoint& Mission::getCurrentWaypoint(){
 
+    auto& state_machine = flightManager->getStateMachine();
+
     if(currentWaypointIndex<-1 ){
+
+        state_machine.requestStateChange(STATE_MACHINE_STATES::AWAIT); // if the current waypoint index is less than -1, we are in an invalid state, so we request a state change to NOGO
         return(currentPositionWaypoint); // if the current waypoint index is -2 or less , return the current position waypoint
     }
 
-
     if(currentWaypointIndex==-1){
+        state_machine.requestStateChange(STATE_MACHINE_STATES::LAUNCH); // if the current waypoint index is -1, we are in the take off phase, so we request a state change to LAUNCH
         return(takeOffWaypoint); // if the current waypoint index is -1, return the take off waypoint
     }
 
-    if(currentWaypointIndex < getNavigationWaypointCount()){
+
+    if(currentWaypointIndex > -1 && currentWaypointIndex < getNavigationWaypointCount()){
+        state_machine.requestStateChange(STATE_MACHINE_STATES::NAVIGATION); // if the current waypoint index is 0 or more, we are in the navigation phase, so we request a state change to NAVIGATION
+
         return(waypoints_list_nav_only[currentWaypointIndex]); // if the current waypoint index is 0 or more, return the corresponding navigation waypoint
     }
 
-    if(currentWaypointIndex == getNavigationWaypointCount()){
-        return(landingTransitionWaypoint); // if the current waypoint index is equal to the number of navigation waypoints, return the landing waypoint
+
+    
+    if(currentWaypointIndex== getNavigationWaypointCount() ){
+        state_machine.requestStateChange(STATE_MACHINE_STATES::PRE_LANDING); // if the current waypoint index is 0 and there are no navigation waypoints, we are in the pre-landing phase, so we request a state change to PRE_LANDING
+        return(landingTransitionWaypoint); // if the current waypoint index is 0 and there are no navigation waypoints, return the landing transition waypoint
     }
 
-    // if we reach here, it means that the nav waypoints have been completed, and we are now at the landing waypoint
 
+
+    if(currentWaypointIndex == getNavigationWaypointCount()+1){
+            // if we reach here, it means that the nav waypoints have been completed, and we are now at the landing waypoint
+
+        state_machine.requestStateChange(STATE_MACHINE_STATES::LANDING); // if the current waypoint index is greater than the number of navigation waypoints, we are in the landing phase, so we request a state change to LANDING
+        return(landingWaypoint); // if the current waypoint index is greater than the number of navigation waypoints, return the landing waypoint
+    }
+
+    state_machine.requestStateChange(STATE_MACHINE_STATES::AWAIT); // if the current waypoint index is greater than the number of navigation waypoints, we are in an invalid state, so we request a state change to GROUND
+
+    state = MissionState::COMPLETED;
     // we will return a default waypoint (take off waypoint) to avoid returning a reference to an invalid object
-    return(landingWaypoint); // if the current waypoint index is greater than the number of navigation waypoints, return the landing waypoint
+    return(currentPositionWaypoint); // if the current waypoint index is greater than the number of navigation waypoints, return the landing waypoint
 }
 
 
@@ -180,7 +193,8 @@ void Mission::advanceWaypoint(){
     if(!isActive()){return;} // if the mission is not active, do nothing
     currentWaypointIndex++;
     auto navigationWaypointCount = getNavigationWaypointCount();
-    if(currentWaypointIndex>navigationWaypointCount+1){ // if we have completed the landing waypoint, we are done with the mission
+
+    if(currentWaypointIndex>navigationWaypointCount+1){ // if we have completed the pre_landing, landing waypoints, we are done with the mission
         state = MissionState::COMPLETED;
         return;
     }
@@ -188,5 +202,10 @@ void Mission::advanceWaypoint(){
 
 
 
-
-
+MissionTarget Mission::getTarget(){
+    MissionTarget target;
+    Waypoint& current_waypoint = getCurrentWaypoint();
+    target.target = current_waypoint.getTarget();
+   
+    return(target);
+}

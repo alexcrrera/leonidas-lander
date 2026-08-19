@@ -24,7 +24,7 @@ constexpr ParameterConfig<float> epsV = {
 
 constexpr ParameterConfig<float> epsYaw = {
     .min = 0.5,
-    .max = 25.0,
+    .max = 999,
     .default_ = 1.0
 };
 

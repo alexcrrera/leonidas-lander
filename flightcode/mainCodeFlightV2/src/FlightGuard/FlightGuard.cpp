@@ -20,6 +20,13 @@ void FlightGuard::update() {
        
     }
 
+    auto mission = flight_manager->getMission();
+
+    if(mission.isCompleted() || !mission.isActive()){
+        overrideFlags.EDF_enabled = false;
+        overrideFlags.TVC_enabled = false;
+    }
+
  
   
 }

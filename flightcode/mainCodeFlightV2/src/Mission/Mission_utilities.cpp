@@ -89,9 +89,6 @@ bool Mission::isActive() const{
         return(true);
     }
 
-    if(state == MissionState::MOVING){
-        return(true);
-    }
 
     if(state == MissionState::HOLDING){
         return(true);

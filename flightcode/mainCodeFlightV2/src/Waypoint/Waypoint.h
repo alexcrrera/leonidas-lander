@@ -29,6 +29,7 @@ class Waypoint{
 
 
 
+    bool isReached(const NED_coordinates& currentPositionNED, float currentYaw_deg) const;
 
     const WaypointTarget& getTarget() const;
 

@@ -26,7 +26,7 @@ void FlightManager::begin()
     mission.begin(this);
     state_machine.begin(this);
     
-    state_machine.setState(STATE_MACHINE_STATES::BOOTED);
+    state_machine.setState(STATE_MACHINE_STATES::AWAIT); // set the initial state to AWAIT, which is the state where the lander is waiting for a command to take off
     flight_guard.begin(this);
     motor_manager.begin(this);
     controller.begin(this);

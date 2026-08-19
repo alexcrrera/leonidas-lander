@@ -10,8 +10,8 @@ String StateMachine::getStateAsString() const{
 
 String StateMachine::getStateAsString(STATE_MACHINE_STATES state) const{
     switch (state) {
-        case STATE_MACHINE_STATES::BOOTED:
-            return "BOOTED";
+        case STATE_MACHINE_STATES::AWAIT:
+            return "AWAIT";
         
 
         case STATE_MACHINE_STATES::LAUNCH:
@@ -23,7 +23,7 @@ String StateMachine::getStateAsString(STATE_MACHINE_STATES state) const{
 
         case STATE_MACHINE_STATES::BOOT:
             return "BOOTING";
-;
+
 
         case STATE_MACHINE_STATES::LANDING:
             return "LANDING";
@@ -57,12 +57,24 @@ void StateMachine::update(){
     }
 }
 
+
+
+
+
+
+
+
 STATE_MACHINE_STATES StateMachine::getState() const{
     return(current_state);
 
 }
 
 void StateMachine::requestStateChange(STATE_MACHINE_STATES new_state){
+
+    if(new_state == current_state){
+
+        return;
+    }
     
     if(verifyChange(new_state)){
         setState(new_state);
@@ -155,6 +167,7 @@ FlightRegimeData StateMachine::getCurrentFlightRegimeData() const {
             return FlightRegimeConfig::LANDING;
 
        
+        
 
         default:
             return FlightRegimeConfig::GROUND;

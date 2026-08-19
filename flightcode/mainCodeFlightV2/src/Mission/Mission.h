@@ -73,6 +73,9 @@ class Mission{
 
     int getNavigationWaypointCount();
 
+
+    void forceLand();
+    void descendNow(); // forces the mission to go down
 void advanceWaypoint();
 
 

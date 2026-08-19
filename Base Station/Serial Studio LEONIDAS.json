@@ -29,6 +29,12 @@
             "icon": "Home",
             "title": "SET HOME",
             "txData": "SET_HOME:"
+        },
+        {
+            "eol": "\n",
+            "icon": "Close",
+            "title": "ABORT LAUNCH",
+            "txData": "ABORT_LAUNCH:"
         }
     ],
     "decoder": 0,

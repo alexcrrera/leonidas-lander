@@ -26,6 +26,15 @@ void Mission::begin(FlightManager* flightManager_){
         0, // hold time is 0 because we are not holding at this point
         {} // default epsilon group
     );
+
+    addWaypoint(
+    MissionConfig::NAV_WAYPOINT_1.target.positionNED,
+        MissionConfig::NAV_WAYPOINT_1.target.yaw_deg,
+        FlightRegimeConfig::NAVIGATION.holdTimeMs,
+        FlightRegimeConfig::NAVIGATION.epsilon_group
+    );
+
+
 }
 
 
@@ -208,4 +217,47 @@ MissionTarget Mission::getTarget(){
     target.target = current_waypoint.getTarget();
    
     return(target);
+}
+
+
+
+
+void Mission::forceLand(){
+    if(!isActive()){return;} // if the mission is not active, do nothing
+    // forces the mission to go to the landing waypoint, regardless of the current state
+    currentWaypointIndex = getNavigationWaypointCount()+1; // set the current waypoint index to the landing waypoint
+    state = MissionState::ACTIVE; // set the mission state to active
+   // flightManager->getStateMachine().requestStateChange(STATE_MACHINE_STATES::FORCE_LANDING); // request a state change to FORCE_LANDING
+}
+
+
+
+void Mission::descendNow(){
+    // forces the lander to descend immediately, regardless of the current state of the mission and position
+    if(!isActive()){return;} // if the mission is not active, do nothing
+    // forces the mission to go to the landing transition waypoint, regardless of the current state
+    currentWaypointIndex = getNavigationWaypointCount(); // set the current waypoint index to the landing transition waypoint
+    state = MissionState::ACTIVE; // set the mission state to active
+   
+    // flightManager->getStateMachine().requestStateChange(STATE_MACHINE_STATES::PRE_LANDING); // request a state change to PRE_LANDING
+
+    auto& state = flightManager->getLander().getState();
+
+    auto position_landing_config = MissionConfig::landingTarget_relative_NED.target.positionNED;
+    
+    
+        // land aat 0
+    auto landing_position_z = takeOffWaypoint.getTarget().positionNED.Down_SI;
+
+    // we will set the landing waypoint to the current horizontal position of the lander, but with the landing altitude defined in the config file
+    auto landing_position_x = state.position.North_SI;
+    auto landing_position_y = state.position.East_SI;
+
+    auto yaw_deg = state.attitude.Yaw_SI; // keep the current yaw of the lander
+
+    NED_coordinates landing_position = {landing_position_x, landing_position_y, landing_position_z};
+    landingWaypoint.updatePosition(landing_position, yaw_deg);
+
+    flightManager->debug_text = "Mission: Descend Now command received, advancing to landing transition waypoint";
+    Serial.println("Mission: Descend Now command received, advancing to landing transition waypoint");
 }

@@ -15,7 +15,6 @@ void MotorManager::begin(FlightManager* fm){
     vane_Y1.attach(ActuatorsConfig::Servo_Y1);
     vane_Y2.attach(ActuatorsConfig::Servo_Y2);
 
-
     EDF_handler.begin(ActuatorsConfig::ESC.frequency, this, &MotorManager::actuate_EDF);
     vanes_handler.begin(ActuatorsConfig::Servo_frequency, this, &MotorManager::actuate_vanes);
 
@@ -25,7 +24,6 @@ void MotorManager::begin(FlightManager* fm){
 
 void MotorManager::update(){
     // converts ControlCommand into ActuatorCommand
-
 
     if(flight_manager == nullptr){
         // flight manager is not set, cannot proceed
@@ -51,7 +49,6 @@ void MotorManager::update(){
 
 void MotorManager::actuate_EDF(){
 
-
     if (ESC_enabled) {
         float thrust_in_percentage = current_actuator_command.thrust_percentage;
         ESC_thrust_percentage =constrain(thrust_in_percentage, ActuatorsConfig::ESC_thrust_min_percentage, ActuatorsConfig::ESC_thrust_max_percentage);
@@ -61,19 +58,15 @@ void MotorManager::actuate_EDF(){
     else {
         // If ESC is disabled, set thrust to 0%
         ESC_thrust_percentage = 0.0f; 
-         
         ESC.write(ESC_thrust_percentage );
        
     }
-  
-    
 }
 
 
 void MotorManager::actuate_vanes(){
 
-    
-        if (vanes_enabled) {
+    if (vanes_enabled) {
         vane_X1.write(current_actuator_command.vaneX1_deg);
         vane_X2.write(current_actuator_command.vaneX2_deg);
         vane_Y1.write(current_actuator_command.vaneY1_deg);
@@ -86,25 +79,19 @@ void MotorManager::actuate_vanes(){
         vane_Y1.write(0.0f);
         vane_Y2.write(0.0f);
     }
-
-    
 }
 
 
 
 ActuatorsCommand MotorManager::controlCmdToActuatorsCmd(const ControlCommand& command){
 
-        // converts torques into servo and ESC commands
-        // clamping is handled internally
-
-        
         float yaw_cmd =    Utilities::clamping(command.tau_yaw,ActuatorsConfig::TVC_YAW_AUTHORITY_BUDGET_deg );
         float pitch_cmd =  Utilities::clamping(command.tau_pitch,ActuatorsConfig::TVC_PITCH_ROLL_AUTHORITY_BUDGET_deg );
         float roll_cmd =   Utilities::clamping(command.tau_roll,ActuatorsConfig::TVC_PITCH_ROLL_AUTHORITY_BUDGET_deg );
         float thrust_percentage = 100.0* command.thrust_N/ActuatorsConfig::THRUST_EDF_max;
             thrust_percentage = constrain(thrust_percentage, ActuatorsConfig::ESC_thrust_min_percentage,ActuatorsConfig::ESC_thrust_max_percentage);
         
-            ActuatorsCommand cmd_output = {
+        ActuatorsCommand cmd_output = {
             .vaneX1_deg = yaw_cmd + pitch_cmd,
             .vaneX2_deg = - yaw_cmd + pitch_cmd,
             .vaneY1_deg = yaw_cmd + roll_cmd,

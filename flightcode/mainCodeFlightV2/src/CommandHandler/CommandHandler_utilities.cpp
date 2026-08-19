@@ -74,6 +74,17 @@
         return;
     }
 
+
+    if(header == "ABORT_LAUNCH")
+    {
+        setOKFeedback(header);
+        auto& mission = flight_manager->getMission();
+        
+        mission.forceLand(); // force the mission to go to the landing waypoint, regardless of the current state
+        Serial.println("Abort launch command received");
+        return;
+    }
+
     if (header == "ABORT")
     {
         setOKFeedback(header);

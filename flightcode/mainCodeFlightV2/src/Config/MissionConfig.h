@@ -44,6 +44,14 @@ struct MissionTarget{
         },
        
     };
+
+    constexpr MissionTarget NAV_WAYPOINT_1 = {
+        .target = {
+            .positionNED = {0.5f, 0.0f, 1.0f}, // 0.5 m north of the take off point
+            .yaw_deg = 0.0f
+        },
+       
+    };
     
 
 

@@ -85,6 +85,7 @@ bool Mission::isCompleted() const{
 }
 
 bool Mission::isActive() const{
+    
     if(state == MissionState::ACTIVE){
         return(true);
     }

@@ -66,13 +66,12 @@ void StateMachine::update(){
 
 STATE_MACHINE_STATES StateMachine::getState() const{
     return(current_state);
-
 }
+
 
 void StateMachine::requestStateChange(STATE_MACHINE_STATES new_state){
 
     if(new_state == current_state){
-
         return;
     }
     
@@ -104,9 +103,7 @@ bool StateMachine::verifyChange(STATE_MACHINE_STATES new_state){
             return false;
         }
     }
-
     return true;
-
 }
 
 
@@ -135,12 +132,7 @@ bool StateMachine::isInFlight(STATE_MACHINE_STATES state)const {
 
 FlightRegimeData StateMachine::getCurrentFlightRegimeData() const {
     
-
     switch(current_state){
-
-            
-      
-
         case STATE_MACHINE_STATES::LAUNCH:
             return FlightRegimeConfig::TAKEOFF;
 

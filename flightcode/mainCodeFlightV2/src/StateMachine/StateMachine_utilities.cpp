@@ -54,7 +54,13 @@ bool StateMachine::handleTakeOff_request(){
 
 
 
-
+bool StateMachine::handleAbort_request(){
+    auto& flight_guard = flight_manager->getFlightGuard();
+    // disables the EDF and TVC, and sets the state to NOGO
+    flight_guard.overrideFlags.EDF_enabled = false;
+    flight_guard.overrideFlags.TVC_enabled = false;
+   
+}
 
 
 

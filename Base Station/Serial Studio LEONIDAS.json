@@ -35,6 +35,12 @@
             "icon": "Close",
             "title": "ABORT LAUNCH",
             "txData": "ABORT_LAUNCH:"
+        },
+        {
+            "eol": "\n",
+            "icon": "Disconnected",
+            "title": "ARM MOTORS",
+            "txData": "ARM_MOTORS:"
         }
     ],
     "decoder": 0,

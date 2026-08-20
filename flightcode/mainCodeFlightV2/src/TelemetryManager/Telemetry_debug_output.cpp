@@ -16,8 +16,6 @@ String TelemetryManager::get_debug_payload()
 
     TelemetryUtilities::addDebugTitle(payload, "FLIGHT STATUS");
 
-    // flightmanager debug text
-    // control command ouput:
   
     TelemetryUtilities::addDebugGroup(payload, "FLIGHT MANAGER DEBUG");
     payload += flightManager->debug_text;
@@ -33,18 +31,23 @@ String TelemetryManager::get_debug_payload()
     TelemetryUtilities::addDebugGroup(payload, "MISSION DEBUG");
     payload += flightManager->getMission().getMissionDataAsString();
 
-    // target data:
-    TelemetryUtilities::addDebugGroup(payload, "MISSION TARGET");
-    auto target = flightManager->getMission().getTarget();
-    TelemetryUtilities::addDebugGroup(payload, target.target.positionNED, "POSITION NED");
-    TelemetryUtilities::addDebugField(payload,"Yaw", String(target.target.yaw_deg));
+
+    // FlightGuard debug text
+    TelemetryUtilities::addDebugGroup(payload, "FLIGHT GUARD STATUS");
+    TelemetryUtilities::addDebugGroup(payload, flightManager->getFlightGuard().getFlightGuardStatus());
+
+    // // target data:
+    // TelemetryUtilities::addDebugGroup(payload, "MISSION TARGET");
+    // auto target = flightManager->getMission().getTarget();
+    // TelemetryUtilities::addDebugGroup(payload, target.target.positionNED, "POSITION NED");
+    // TelemetryUtilities::addDebugField(payload,"Yaw", String(target.target.yaw_deg));
     
-    auto state = lander.getState();
-    TelemetryUtilities::addDebugGroup(payload, state.position, "POSITION NED");
+    // auto state = lander.getState();
+    // TelemetryUtilities::addDebugGroup(payload, state.position, "POSITION NED");
         
-    TelemetryUtilities::addDebugGroup(payload, "CMD");
-      auto cmd = flightManager->getController().getControlCmd();
-        TelemetryUtilities::addDebugGroup(payload,cmd );
+    // TelemetryUtilities::addDebugGroup(payload, "CMD");
+    //   auto cmd = flightManager->getController().getControlCmd();
+    //     TelemetryUtilities::addDebugGroup(payload,cmd );
 
 
     // TelemetryUtilities::addDebugGroup(payload, "STATUS");

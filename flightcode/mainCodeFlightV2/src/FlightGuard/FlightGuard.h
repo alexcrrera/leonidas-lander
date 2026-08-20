@@ -28,6 +28,7 @@ class FlightGuard {
     bool isFlightConditionValid();
 
 
+    String getFlightGuardStatus() const;
     
      private:
 

@@ -40,7 +40,7 @@ bool StateMachine::handleTakeOff_request(){
     mission.start(); // start the mission, which will set the first waypoint as active and ready for take off
     return true;
 
-
+}
 
 
     // auto& mission = flight_manager->getMission();
@@ -59,10 +59,10 @@ bool StateMachine::handleAbort_request(){
     // disables the EDF and TVC, and sets the state to NOGO
     flight_guard.overrideFlags.EDF_enabled = false;
     flight_guard.overrideFlags.TVC_enabled = false;
+    return true;
    
 }
 
 
 
 
-}

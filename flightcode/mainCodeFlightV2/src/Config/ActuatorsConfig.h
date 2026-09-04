@@ -8,17 +8,19 @@ ACTUATORS PARAMETERS AND CONFIG
 #
 */
 
-struct ActuatorPWM_config{
-   uint8_t pin;
-   float frequency;
-   uint16_t pulseMin;
-   uint16_t pulseMax;
+struct ActuatorPWM_config {
 
-   float valueMin; // associated to pulseMin
-   float valueMax; // associated to pulseMin
+    uint8_t pin;
 
-   float trim;
+    float frequency;
 
+    uint16_t pulseMin;
+    uint16_t pulseMax;
+
+    float valueMin; // associated to pulseMin
+    float valueMax; // associated to pulseMax
+
+    float trim_deg; // trim in degrees, to adjust for mechanical misalignment of the actuator
 };
 
 

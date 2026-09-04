@@ -29,6 +29,21 @@ String StateMachine::getStateAsString(STATE_MACHINE_STATES state) const{
             return "LANDING";
         case STATE_MACHINE_STATES::LANDED:
             return "LANDED";
+
+        case STATE_MACHINE_STATES::NAVIGATION:
+            return "NAVIGATION";
+
+        case STATE_MACHINE_STATES::POST_LAUNCH_HOVER:
+            return "POST LAUNCH HOVER";
+
+        case STATE_MACHINE_STATES::PRE_LANDING:
+            return "PRE LANDING";
+        case STATE_MACHINE_STATES::FORCE_LANDING:
+            return "FORCE LANDING";
+        case STATE_MACHINE_STATES::ABORT:
+            return "ABORT";
+
+       
         default:
             return "UNKNOWN STATE";
     }

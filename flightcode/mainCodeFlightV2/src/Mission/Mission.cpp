@@ -39,11 +39,16 @@ void Mission::begin(FlightManager* flightManager_){
 
 
 void Mission::start(){
+    auto isEDF_armed = flightManager->getFlightGuard().overrideFlags.EDF_armed;
+    if(!isEDF_armed){
+        flightManager->getCommandHandler().setFeedback("INV", "MTR DISARMED");
+        return;
+    }
     if(!isReady()){
         flightManager->getCommandHandler().setFeedback("INV", "MISSION NOT READY");
         return;
     }
-    state = MissionState::ACTIVE;
+    state = MissionState::MOVING;
     currentWaypointIndex = -1; // start with the take off waypoint
     flightManager->getCommandHandler().setOKFeedback("MISSION STARTED");
 }
@@ -56,12 +61,12 @@ void Mission::updateReadiness(){
     //
 
 
-    if(state == MissionState::ACTIVE || state == MissionState::COMPLETED){
+    if(state == MissionState::COMPLETED){
         return; // if the mission is active or completed, we don't need to check readiness
     }
 
-    if(state == MissionState::HOLDING){
-        return; // if the mission is holding, we don't need to check readiness
+    if(isActive()){
+        return; // if the mission is active, we don't need to check readiness
     }
 
     // else
@@ -105,7 +110,9 @@ void Mission::update(){
     
     updateReadiness();
 
-    if(!isActive()){return;} // mission is not active, do nothing
+        if(!isActive()){return;} // mission is not active, do nothing
+
+    
 
     if(currentWaypointIndex>=MAX_MISSION_WAYPOINTS){return;} // overflow protection}
 
@@ -115,10 +122,10 @@ void Mission::update(){
 
 
     // if active then we chcek if we've reached the target
-    if(state == MissionState::ACTIVE){
+    if(isActive() && state != MissionState::HOLDING){
         if(waypt.isReached(landerState.position, landerState.attitude.Yaw_SI)){
             flightManager->debug_text = "Mission: Target reached, starting hold timer for waypoint " + String(currentWaypointIndex);
-            Serial.println("Mission: Target reached, starting hold timer for waypoint " + String(currentWaypointIndex));
+           // Serial.println("Mission: Target reached, starting hold timer for waypoint " + String(currentWaypointIndex));
             waypt.setHoldStartTimeMs(millis()); // start the hold timer
             state = MissionState::HOLDING;
             return;
@@ -134,7 +141,7 @@ void Mission::update(){
                 advanceWaypoint();
                 flightManager->debug_text = "Mission: Hold time completed, advancing to next waypoint " + String(currentWaypointIndex);
                 Serial.println("Mission: Hold time completed, advancing to next waypoint " );
-                state = MissionState::ACTIVE;
+                state = MissionState::MOVING;
                 return;
             }
         
@@ -226,7 +233,7 @@ void Mission::forceLand(){
     if(!isActive()){return;} // if the mission is not active, do nothing
     // forces the mission to go to the landing waypoint, regardless of the current state
     currentWaypointIndex = getNavigationWaypointCount()+1; // set the current waypoint index to the landing waypoint
-    state = MissionState::ACTIVE; // set the mission state to active
+    state = MissionState::MOVING; // set the mission state to active
    // flightManager->getStateMachine().requestStateChange(STATE_MACHINE_STATES::FORCE_LANDING); // request a state change to FORCE_LANDING
 }
 
@@ -237,7 +244,7 @@ void Mission::descendNow(){
     if(!isActive()){return;} // if the mission is not active, do nothing
     // forces the mission to go to the landing transition waypoint, regardless of the current state
     currentWaypointIndex = getNavigationWaypointCount(); // set the current waypoint index to the landing transition waypoint
-    state = MissionState::ACTIVE; // set the mission state to active
+    state = MissionState::MOVING; // set the mission state to active
    
     // flightManager->getStateMachine().requestStateChange(STATE_MACHINE_STATES::PRE_LANDING); // request a state change to PRE_LANDING
 

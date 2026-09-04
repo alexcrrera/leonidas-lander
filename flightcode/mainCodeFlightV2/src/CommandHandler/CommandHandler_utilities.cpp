@@ -16,12 +16,21 @@
         return;
     }
 
+    if(header == "DISARM_MOTORS"){
+        setOKFeedback(header);
+        Serial.println("Disarm motors command received");
+        flight_manager->getFlightGuard().overrideFlags.EDF_armed = false;
+        return;
+    }
+    
+
     if(header == "ARM_MOTORS"){
         setOKFeedback(header);
         Serial.println("Arm motors command received");
         flight_manager->getFlightGuard().overrideFlags.EDF_armed = true;
         return;
     }
+    
 
     if(header == "NEXT_WP"){
         setOKFeedback(header);

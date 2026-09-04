@@ -21,8 +21,8 @@ enum class MissionState {
     NOT_READY_TO_UNDEFINED, // take off params not defined
     NOT_READY_LND_UNDEFINED, // landing not defined
     READY, // ready to begin
-    ACTIVE, // currently outputting targets
     HOLDING,
+    MOVING, // moving to next waypoint
     ABORTED, // mission aborted
     COMPLETED // mission done
 };

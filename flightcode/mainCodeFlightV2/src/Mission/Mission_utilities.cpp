@@ -57,14 +57,22 @@ String Mission::getStateAsString() const{
             return "NOT READY: TAKEOFF UNDEFINED";
         case MissionState::NOT_READY_LND_UNDEFINED:
             return "NOT READY: LANDING UNDEFINED";
+
+        case MissionState::HOLDING:
+            return "HOLDING";
         case MissionState::READY:
             return "READY";
-        case MissionState::ACTIVE:
-            return "ACTIVE";
+   
         case MissionState::COMPLETED:
             return "COMPLETED";
+
+        case MissionState::ABORTED:
+            return "ABORTED";
+
+        case MissionState::MOVING:
+            return "MOVING";
         default:
-            return "UNKNOWN STATE";
+            return "UNKNOWN";
     }
 }
 
@@ -86,7 +94,9 @@ bool Mission::isCompleted() const{
 
 bool Mission::isActive() const{
     
-    if(state == MissionState::ACTIVE){
+
+
+    if(state == MissionState::MOVING){
         return(true);
     }
 

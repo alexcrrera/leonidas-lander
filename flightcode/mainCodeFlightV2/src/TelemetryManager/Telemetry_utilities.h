@@ -7,6 +7,7 @@
 
 #include "../Config/FlightRegimeConfig.h"
 #include "../Config/ControllerConfig.h"
+#include "../Config/CommsConfig.h"
 
 
 namespace TelemetryUtilities
@@ -34,7 +35,7 @@ namespace TelemetryUtilities
     else if (decimals >= 0)
         payload += String(value, decimals);
     else
-        payload += String(value);
+        payload += String(value, CommsConfig::decimalsAllowed_telemetry);
     }
 
     void addTelemetryGroup(String& payload, const NED_coordinates& NED_payload);

@@ -69,6 +69,29 @@ String TelemetryManager::get_telemetry_payload()
 
     // 27 mission state
     TelemetryUtilities::addTelemetryField(payload, flightManager->getMission().getStateAsString());
+
+    // 28- 30 Accelereation - X, Y, Z
+    //TelemetryUtilities::addTelemetryGroup(payload, state.acceleration);
+
+
+
+    // desired position of controller - 31-33
+    auto desired_position_z = -flightManager->getController().PID_position.axis_z.getTarget(); // float 
+    auto desired_position_y = flightManager->getController().PID_position.axis_y.getTarget(); // float
+    auto desired_position_x = flightManager->getController().PID_position.axis_x.getTarget(); // float
+    NED_coordinates desired_position{desired_position_x, desired_position_y, desired_position_z};
+    //TelemetryUtilities::addTelemetryGroup(payload, desired_position);
+
+
+
+
+
+
+
+
+
+
+
     payload += CommsConfig::outputLineEndingTelemetryFormat;
     payload += "\n";
 

@@ -39,6 +39,8 @@ class PID {
         String getPID_data_as_string() const;
         float getMeasurement() const{return measurement;}
 
+        float getTarget() const{return desiredTarget;}
+
     private:
 
         

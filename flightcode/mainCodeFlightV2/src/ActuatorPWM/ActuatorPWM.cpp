@@ -15,7 +15,7 @@ ActuatorPWM_config ActuatorPWM::getConfig() const {
         .pulseMax = pulseMax,
         .valueMin = valueMin,
         .valueMax = valueMax,
-        .trim = trim
+        .trim_deg = trim
     };
 }
 
@@ -26,7 +26,7 @@ void ActuatorPWM::attach(ActuatorPWM_config config) {
     pulseMax = config.pulseMax;
     valueMin = config.valueMin;
     valueMax = config.valueMax;
-    trim = config.trim;
+    trim = config.trim_deg;
 
     // Additional hardware attachment logic can be added here
 }   

@@ -81,7 +81,13 @@ namespace CommsConfig {
         1000000
     };
 
+    // maximum number of decimal places allowed in telemetry output
+    constexpr int decimalsAllowed_telemetry = 1;
+
+
 }
+
+
 
 
 constexpr ParameterConfig<float> frequencyConfig = {

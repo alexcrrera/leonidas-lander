@@ -45,6 +45,10 @@ class Controller{
         PID_3D PID_velocity; // group of 3 PID's for velocity control
         PID_3D PID_attitude;
         PID_3D PID_body_rates;
+
+
+
+
  
         
     private:

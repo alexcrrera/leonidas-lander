@@ -12,7 +12,7 @@ namespace SystemConfig {
    
 
 
-
+    
    constexpr float rho_air = 1.225; // kg/m^3, density of air at sea level
    constexpr float gravity = 9.81; // m/s^2
    constexpr float dynamic_pressure = 0.5 * rho_air * internal_air_speed * internal_air_speed; // Pa, dynamic pressure
@@ -32,7 +32,7 @@ namespace SystemConfig {
    constexpr int N_vanes_yaw = 4; // number of vanes for yaw
    // levers 
    constexpr float lever_arm_pitch_roll = 0.17; // m, distance from the center of mass to the EDF thrust line
-   constexpr float lever_arm_yaw = 0.17; // m, distance from the center of mass to the EDF thrust line
+   constexpr float lever_arm_yaw = 0.04; // m, distance from the center of mass to the EDF thrust line
 
 
    constexpr float vane_area_M2 = (vane_perimeter_CM/100.0f) * (vane_width_CM/100.0f); // m^2, area of a single vane

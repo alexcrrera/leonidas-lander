@@ -53,9 +53,11 @@ struct ActuatorsCommand{
    constexpr float ESC_thrust_max_percentage = 90.0; // in %
 
 
-  
+
+   constexpr float EDF_kgf_datasheet_max = 3.4; // in newtons, from the EDF data sheet, at 12V and 35k RPM
+   constexpr float EDF_thrust_factor = 0.8; // to account for any discrepancies between the data sheet and actual performance
    constexpr float THRUST_EDF_min = 0.0; // 0 newton
-   constexpr float THRUST_EDF_max = 2.5*Utilities::GRAVITY_MS2;
+   constexpr float THRUST_EDF_max = EDF_kgf_datasheet_max*Utilities::GRAVITY_MS2*EDF_thrust_factor;
 
 
    // Servo and ESC HARDWARE CONFIGS
@@ -89,7 +91,7 @@ struct ActuatorsCommand{
                   .pulseMax = 2000,
                   .valueMin = 0.0,
                   .valueMax = 100.0,
-                  .trim_deg = 0.0
+                  .trim_deg = 50.0
     };
 
 
@@ -98,10 +100,10 @@ struct ActuatorsCommand{
     constexpr ActuatorPWM_config Servo_X1 = {
                   .pin = Servo_X1_pin,
                   .frequency = Servo_frequency,
-                  .pulseMin = 2000,
-                  .pulseMax = 2800,
-                  .valueMin = -90,
-                  .valueMax = 90,
+                  .pulseMin = 1000,
+                  .pulseMax = 2000,
+                  .valueMin = 0.0,
+                  .valueMax = 100.0,
                   .trim_deg = Servo_X1_trim_deg
     };
 

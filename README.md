@@ -4,6 +4,7 @@
 
 # UPDATE PENDING THIS IS OUTDATED!!!!!!!!!!!!
 
+![alt text](https://github.com/alexcrrera/leonidas-lander/blob/main/side%20view.jpeg)
 
 ## Latest Test - Altitude Hold Only - No GPS/2D Hold:
 

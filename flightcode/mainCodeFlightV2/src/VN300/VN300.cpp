@@ -15,28 +15,30 @@ VN300::VN300()
 
 
 bool VN300::begin()
-{
-    Serial.println("INITIALIZING VECTORNAV");
 
+
+    {
+    Serial.println("INITIALIZING VECTORNAV");
+    delay(100); // wait for the serial port to initialize
     vectornav = SensorConfig::VN300.port;
 
    
 
     vectornav->begin(SensorConfig::VN300.baudrate);
-
+      delay(400); // wait for the serial port to initialize    
     // Register 240:
     // Yaw / Pitch / Roll
     // Linear acceleration NED
     // Compensated angular rates
     vectornav->println(VN300Utilities::configureAsynchOutputType(17));
-
+         delay(200); // wait for the serial port to initialize
     // Asynchronous output frequency
     vectornav->println(VN300Utilities::configureAsynchOutputFrequency(SensorConfig::YPR_LinearAccel_Gyro_poll_frequency));
 
 
     dataIndex = 0;
     
-
+         delay(400); // wait for the serial port to initialize
   
     // polls solutions at the specified rates
     //YPR_LinearAccel_Gyro_poll_handler.begin(SensorConfig::YPR_LinearAccel_Gyro_poll_frequency,[this]() { poll_YPR_LinearAccel_Gyro(); }); // set to automatic output from VN300, no need to poll

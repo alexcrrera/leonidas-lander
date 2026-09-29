@@ -27,3 +27,13 @@ float MotorManager::tau_yaw_to_gamma_deg(float tau_yaw) {
             SystemConfig::linear_CL_fn_AOA *
             SystemConfig::lever_arm_yaw);
 }
+
+String MotorManager::actuatorsCmdToString() {
+
+    auto cmd = current_actuator_command;
+    return "VaneX1: " + String(cmd.vaneX1_deg, 2) + " deg, " +
+           "VaneX2: " + String(cmd.vaneX2_deg, 2) + " deg, " +
+           "VaneY1: " + String(cmd.vaneY1_deg, 2) + " deg, " +
+           "VaneY2: " + String(cmd.vaneY2_deg, 2) + " deg, " +
+           "Thrust: " + String(cmd.thrust_percentage, 2) + "%";
+}

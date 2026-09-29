@@ -94,6 +94,13 @@ float desiredDownVelocity = PID_position.axis_z.update(
     float desiredRoll = PID_velocity.axis_y.update(currentVelocity.East_SI, currentAcceleration.East_SI);
     float desiredDownAcceleration    = PID_velocity.axis_z.update(currentVelocity.Down_SI, currentAcceleration.Down_SI);
 
+
+
+
+    // override the desired pitch and roll if the override flags are set
+    desiredPitch = 0.0f;
+    desiredRoll = 0.0f;
+    
     Rotation_Euler_coordinates attitudeTarget{
         .Roll_SI = desiredRoll,
         .Pitch_SI = desiredPitch,

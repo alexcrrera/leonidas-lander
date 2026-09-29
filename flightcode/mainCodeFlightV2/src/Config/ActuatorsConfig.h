@@ -36,7 +36,7 @@ struct ActuatorsCommand{
 
    // TVC  LIMITS
    constexpr float TVC_TOTAL_AUTHORITY_BUDGET_deg = 12.0; // absolute max value before stalling of the VANES
-   constexpr float TVC_YAW_AUTHORITY_BUDGET_deg = 5.0;  // YAW (Z) authority budget
+   constexpr float TVC_YAW_AUTHORITY_BUDGET_deg = 6.0;  // YAW (Z) authority budget
 
 
    
@@ -61,22 +61,24 @@ struct ActuatorsCommand{
 
 
    // Servo and ESC HARDWARE CONFIGS
-   constexpr float Servo_frequency =333.0; // in Hz, for the vanes
+   constexpr float Servo_frequency =50.0; // in Hz, for the vanes
    constexpr float ESC_frequency =50.0;
    
-   constexpr uint8_t ESC_pin = 5;
+   constexpr uint8_t ESC_pin = 10;
 
-   constexpr uint8_t Servo_X1_pin = 6;
-   constexpr uint8_t Servo_X2_pin = 7;
-   constexpr uint8_t Servo_Y1_pin = 8;
-   constexpr uint8_t Servo_Y2_pin = 9;
+   constexpr uint8_t Servo_X1_pin = 2;
+   constexpr uint8_t Servo_X2_pin = 3;
+   constexpr uint8_t Servo_Y1_pin = 4;
+   constexpr uint8_t Servo_Y2_pin = 5;
 
    // Trim for servos
 
+   
+   constexpr float Servo_base_trim_deg = 50.0;
    constexpr float Servo_X1_trim_deg = 0.0;
-   constexpr float Servo_X2_trim_deg = 0.0;
-   constexpr float Servo_Y1_trim_deg = 0.0;
-   constexpr float Servo_Y2_trim_deg = 0.0;
+   constexpr float Servo_X2_trim_deg = -2.0;
+   constexpr float Servo_Y1_trim_deg = -1.0;
+   constexpr float Servo_Y2_trim_deg = -7.0;
 
 
 
@@ -91,7 +93,7 @@ struct ActuatorsCommand{
                   .pulseMax = 2000,
                   .valueMin = 0.0,
                   .valueMax = 100.0,
-                  .trim_deg = 50.0
+                  .trim_deg = 0.0
     };
 
 
@@ -104,7 +106,7 @@ struct ActuatorsCommand{
                   .pulseMax = 2000,
                   .valueMin = 0.0,
                   .valueMax = 100.0,
-                  .trim_deg = Servo_X1_trim_deg
+                  .trim_deg = Servo_X1_trim_deg + Servo_base_trim_deg
     };
 
         constexpr ActuatorPWM_config Servo_X2 = {
@@ -114,7 +116,7 @@ struct ActuatorsCommand{
                   .pulseMax = Servo_X1.pulseMax,
                   .valueMin = Servo_X1.valueMin,
                   .valueMax = Servo_X1.valueMax,
-                  .trim_deg = Servo_X2_trim_deg
+                  .trim_deg = Servo_X2_trim_deg + Servo_base_trim_deg
     };
 
     
@@ -125,7 +127,7 @@ struct ActuatorsCommand{
                   .pulseMax = Servo_X1.pulseMax,
                   .valueMin = Servo_X1.valueMin,
                   .valueMax = Servo_X1.valueMax,
-                  .trim_deg = Servo_Y1_trim_deg
+                  .trim_deg = Servo_Y1_trim_deg + Servo_base_trim_deg
     };
 
     
@@ -136,7 +138,7 @@ struct ActuatorsCommand{
                   .pulseMax = Servo_X1.pulseMax,
                   .valueMin = Servo_X1.valueMin,
                   .valueMax = Servo_X1.valueMax,
-                  .trim_deg = Servo_Y2_trim_deg
+                  .trim_deg = Servo_Y2_trim_deg + Servo_base_trim_deg
     };
     
 

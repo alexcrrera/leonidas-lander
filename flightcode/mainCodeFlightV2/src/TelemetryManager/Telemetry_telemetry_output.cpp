@@ -71,7 +71,7 @@ String TelemetryManager::get_telemetry_payload()
     TelemetryUtilities::addTelemetryField(payload, flightManager->getMission().getStateAsString());
 
     // 28- 30 Accelereation - X, Y, Z
-    //TelemetryUtilities::addTelemetryGroup(payload, state.acceleration);
+    TelemetryUtilities::addTelemetryGroup(payload, state.acceleration);
 
 
 

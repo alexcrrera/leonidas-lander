@@ -8,7 +8,7 @@
 namespace SystemConfig {
 
    constexpr float lander_mass = 2.0; // 
-      constexpr float internal_air_speed = 35.0; // m/s, internal air speed for testing purposes
+      constexpr float internal_air_speed = 40.0; // m/s, internal air speed for testing purposes
    
 
 
@@ -31,7 +31,7 @@ namespace SystemConfig {
    constexpr int N_vanes_roll = 2; // number of vanes for roll
    constexpr int N_vanes_yaw = 4; // number of vanes for yaw
    // levers 
-   constexpr float lever_arm_pitch_roll = 0.17; // m, distance from the center of mass to the EDF thrust line
+   constexpr float lever_arm_pitch_roll = 0.13; // m, distance from the center of mass to the EDF thrust line
    constexpr float lever_arm_yaw = 0.04; // m, distance from the center of mass to the EDF thrust line
 
 

@@ -14,9 +14,8 @@ String TelemetryManager::get_debug_payload()
     Lander& lander = flightManager->getLander();
    // const LanderState& state  = lander.getState();
 
-    TelemetryUtilities::addDebugTitle(payload, "FLIGHT STATUS");
-
-  
+    TelemetryUtilities::addDebugTitle(payload, "MOTORMANAGER DEBUG");
+    payload += flightManager->getMotorManager().actuatorsCmdToString();
     TelemetryUtilities::addDebugGroup(payload, "FLIGHT MANAGER DEBUG");
     payload += flightManager->debug_text;
 

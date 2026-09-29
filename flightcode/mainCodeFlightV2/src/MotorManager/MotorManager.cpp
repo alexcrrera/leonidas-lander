@@ -99,13 +99,13 @@ ActuatorsCommand MotorManager::controlCmdToActuatorsCmd(const ControlCommand& co
         float alpha_deg = constrain(tau_pitch_to_alpha_deg(pitch_cmd), -ActuatorsConfig::TVC_PITCH_ROLL_AUTHORITY_BUDGET_deg, ActuatorsConfig::TVC_PITCH_ROLL_AUTHORITY_BUDGET_deg);    
         float beta_deg = constrain(tau_roll_to_beta_deg(roll_cmd), -ActuatorsConfig::TVC_PITCH_ROLL_AUTHORITY_BUDGET_deg, ActuatorsConfig::TVC_PITCH_ROLL_AUTHORITY_BUDGET_deg );
         float gamma_deg = constrain(tau_yaw_to_gamma_deg(yaw_cmd), -ActuatorsConfig::TVC_YAW_AUTHORITY_BUDGET_deg, ActuatorsConfig::TVC_YAW_AUTHORITY_BUDGET_deg);
-
+        gamma_deg = 0.0; // temporarily disable yaw control for testing, since it is not working properly yet
         ActuatorsCommand cmd_output = {
             // check mapping of alpha, beta, gamma to vane angles
-            .vaneX1_deg = alpha_deg - gamma_deg,
-            .vaneX2_deg = alpha_deg + gamma_deg,
-            .vaneY1_deg = beta_deg - gamma_deg,
-            .vaneY2_deg = beta_deg + gamma_deg,
+            .vaneX1_deg = round(alpha_deg - gamma_deg),
+            .vaneX2_deg = round(alpha_deg + gamma_deg), // probelm
+            .vaneY1_deg = round(beta_deg - gamma_deg),
+            .vaneY2_deg = round(beta_deg + gamma_deg), // probelm
             .thrust_percentage = thrust_percentage
         };
         

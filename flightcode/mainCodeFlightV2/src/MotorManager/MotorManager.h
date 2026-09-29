@@ -38,6 +38,8 @@ class MotorManager {
             return(status);
         }
 
+        String actuatorsCmdToString();
+      
         float getESC_thrust_percentage() const {return ESC_thrust_percentage;};
         
         private:

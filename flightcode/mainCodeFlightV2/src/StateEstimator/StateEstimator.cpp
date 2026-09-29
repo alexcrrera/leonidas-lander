@@ -60,6 +60,8 @@ void StateEstimator::estimateAcceleration_NED(LanderState& state, const SensorMe
     state.acceleration.East_SI = LinAccelE;
     state.acceleration.Down_SI = LinAccelD;
 
+    state.validity.accelerationValid = true; // Assuming acceleration is valid if VN300 data is available
+
 }
 
 
@@ -110,7 +112,7 @@ void StateEstimator::estimateVelocity_EULER(LanderState& state, const SensorMeas
 void StateEstimator::estimateAttitude_EULER(LanderState& state, const SensorMeasurements& sensorMeasurements)
 {
     // use VN300 data to estimate attitude in Euler angles
-    float Yaw = sensorMeasurements.vn300_data.yprLinearAccelGyro.Yaw;
+    float Yaw = sensorMeasurements.vn300_data.yprLinearAccelGyro.Yaw + yawZeroOffset; // apply yaw zero offset
     float Pitch = sensorMeasurements.vn300_data.yprLinearAccelGyro.Pitch;
     float Roll = sensorMeasurements.vn300_data.yprLinearAccelGyro.Roll;
     state.attitude.Roll_SI = Roll;

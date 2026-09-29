@@ -39,6 +39,8 @@ class StateEstimator
         void request_setHomePosition();
 
         bool isHomePositionSet() const { return home_position_set; }
+
+        float yawZeroOffset = 0.0f; // offset to apply to the yaw angle to set it to zero
     private:
 
 

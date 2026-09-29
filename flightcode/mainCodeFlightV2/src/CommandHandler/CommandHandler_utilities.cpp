@@ -16,6 +16,24 @@
         return;
     }
 
+    if(header == "YAW_ZERO"){
+        setOKFeedback(header);
+        Serial.println("Yaw zero command received");
+        auto& state_estimator = flight_manager->getLander().getStateEstimator();
+        auto& state = state_estimator.getState();
+       
+        state_estimator.yawZeroOffset = -state.attitude.Yaw_SI; // set yaw zero offset to current yaw
+        return;
+    }
+
+    if(header == "DISARM_SERVOS"){
+        setOKFeedback(header);
+      
+        flight_manager->getFlightGuard().overrideFlags.TVC_enabled = !flight_manager->getFlightGuard().overrideFlags.TVC_enabled;
+        
+        return;
+    }
+
     if(header == "DISARM_MOTORS"){
         setOKFeedback(header);
         Serial.println("Disarm motors command received");

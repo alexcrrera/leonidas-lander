@@ -46,7 +46,19 @@
             "eol": "\n",
             "icon": "Disconnected",
             "title": "DISARM MOTORS",
-            "txData": "DISARM_MOTORS:"
+            "txData": "DISARM_SERVOS:"
+        },
+        {
+            "eol": "\n",
+            "icon": "LED Diode",
+            "title": "SERVOS",
+            "txData": "DISARM_SERVOS:"
+        },
+        {
+            "eol": "\n",
+            "icon": "Restart",
+            "title": "YAW ZERO",
+            "txData": "YAW_ZERO:"
         }
     ],
     "decoder": 0,

@@ -93,7 +93,10 @@ ActuatorsCommand MotorManager::controlCmdToActuatorsCmd(const ControlCommand& co
 
     float gamma_deg = constrain(tau_yaw_to_gamma_deg(command.tau_yaw),-ActuatorsConfig::TVC_YAW_AUTHORITY_BUDGET_deg,ActuatorsConfig::TVC_YAW_AUTHORITY_BUDGET_deg);
 
-    gamma_deg = 0.0f; // temporarily disable yaw control
+    
+
+    // temporarily disable yaw control
+    //gamma_deg = 0.0f; // temporarily disable yaw control
 
     float thrust_percentage = 100.0f * command.thrust_N / ActuatorsConfig::THRUST_EDF_max;
     thrust_percentage = constrain(thrust_percentage, ActuatorsConfig::ESC_thrust_min_percentage, ActuatorsConfig::ESC_thrust_max_percentage);
@@ -108,3 +111,5 @@ ActuatorsCommand MotorManager::controlCmdToActuatorsCmd(const ControlCommand& co
 
     return cmd_output;
 }
+
+

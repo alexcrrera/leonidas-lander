@@ -29,8 +29,8 @@ namespace SafetyBounds {
     constexpr float max_horizontal_acceleration_ms2 = 7.0f;
 
 
-    constexpr float max_yaw_velocity_degs = 30.0f;
-    constexpr float max_pitch_roll_velocity_degs = 20.0f;
+    constexpr float max_yaw_velocity_degs = 40.0f;
+    constexpr float max_pitch_roll_velocity_degs =30.0f;
 
 
     constexpr float max_yaw_acceleration_degs2 = 2500.0f;

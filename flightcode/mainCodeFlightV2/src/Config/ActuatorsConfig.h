@@ -21,6 +21,7 @@ struct ActuatorPWM_config {
     float valueMax; // associated to pulseMax
 
     float trim_deg; // trim in degrees, to adjust for mechanical misalignment of the actuator
+    float resolution = 0.1;
 };
 
 

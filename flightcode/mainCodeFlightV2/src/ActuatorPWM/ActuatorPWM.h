@@ -46,6 +46,8 @@ class ActuatorPWM {
         uint16_t pulseMin;
         uint16_t pulseMax;
 
+        float resolution;
+
         float valueMin; // associated to pulseMin
         float valueMax; // associated to pulseMax
 

@@ -46,20 +46,7 @@ namespace FlightRegimeConfig {
     // These are not safety limiters - see SafetyBounds.h
 
 
-    constexpr FlightRegimeData GROUND{
-        .name = "GROUND",
-        .isFlying = false,
-
-        .min_thrust_percentage = 0.0f,
-        .max_thrust_percentage = 0.0f,
-
-        .epsilon_group = {
-            .epsH = 1.0f,
-            .epsV = 1.0f,
-            .epsYaw = 999.0f,
-        }
-    };
-
+ 
 
     constexpr FlightRegimeData TAKEOFF{
         .name = "TAKEOFF",
@@ -72,7 +59,7 @@ namespace FlightRegimeConfig {
         .max_horizontal_acceleration_ms2 = 2.0f,
 
         .max_yaw_velocity_degs = 30.0f,
-        .max_pitch_roll_velocity_degs = 20.0f,
+        .max_pitch_roll_velocity_degs = 30.0f,
 
         .max_yaw_acceleration_degs2 = 2500.0f,
         .max_pitch_roll_acceleration_degs2 = 5000.0f,
@@ -92,8 +79,30 @@ namespace FlightRegimeConfig {
         }
     };
 
+       constexpr FlightRegimeData GROUND = TAKEOFF; // OVERRIDE FOR TESTING PURPOSES - GROUND AND TAKEOFF ARE THE SAME
+       /*
+       
+       {
+        .name = "GROUND",
+        .isFlying = false,
 
-    constexpr FlightRegimeData NAVIGATION{
+        .min_thrust_percentage = 0.0f,
+        .max_thrust_percentage = 0.0f,
+
+        .epsilon_group = {
+            .epsH = 1.0f,
+            .epsV = 1.0f,
+            .epsYaw = 999.0f,
+        }
+    };*/
+
+
+
+
+
+    constexpr FlightRegimeData NAVIGATION = TAKEOFF; // OVERRIDE FOR TESTING PURPOSES - NAVIGATION AND TAKEOFF ARE THE SAME
+    
+    /*{
         .name = "NAVIGATION",
         .isFlying = true,
 
@@ -123,6 +132,7 @@ namespace FlightRegimeConfig {
             .epsYaw = 999.0f,
         }
     };
+    */
 
 
     constexpr FlightRegimeData PRE_LANDING{

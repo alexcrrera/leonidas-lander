@@ -20,6 +20,7 @@ float MotorManager::tau_roll_to_beta_deg(float tau_roll) {
 }
 
 float MotorManager::tau_yaw_to_gamma_deg(float tau_yaw) {
+
     return tau_yaw /
            (SystemConfig::N_vanes_yaw *
             SystemConfig::dynamic_pressure *

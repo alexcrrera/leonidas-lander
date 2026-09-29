@@ -10,9 +10,9 @@ namespace SystemConfig {
    constexpr float lander_mass = 2.0; // 
       constexpr float internal_air_speed = 40.0; // m/s, internal air speed for testing purposes
     
-    constexpr float inertia_roll = 0.03961; // kg*m^2, moment of inertia around roll axis
+    constexpr float inertia_roll = 0.045; // kg*m^2, moment of inertia around roll axis
     constexpr float inertia_pitch = inertia_roll; //0.06645; // kg*m^2, moment of inertia around pitch axis
-    constexpr float inertia_yaw = 0.03466; // kg*m^2, moment
+    constexpr float inertia_yaw = 0.03; // kg*m^2, moment
 
     
    constexpr float rho_air = 1.225; // kg/m^3, density of air at sea level
@@ -22,8 +22,8 @@ namespace SystemConfig {
    constexpr float linear_CL_fn_AOA = 0.1; // linear lift coefficient per degree of angle of attack
 
     // Vane geometry
-    constexpr float vane_perimeter_CM= 20.0f;
-    constexpr float vane_width_CM = 4.5f; // m^2, area of a single vane
+    constexpr float vane_chord_CM= 5.0f;
+    constexpr float vane_extension_CM = 2.5f; // m^2, area of a single vane
 
    
 
@@ -37,7 +37,7 @@ namespace SystemConfig {
    constexpr float lever_arm_yaw = 0.04; // m, distance from the center of mass to the EDF thrust line
 
 
-   constexpr float vane_area_M2 = (vane_perimeter_CM/100.0f) * (vane_width_CM/100.0f); // m^2, area of a single vane
+   constexpr float vane_area_M2 = (vane_chord_CM/100.0f) * (vane_extension_CM/100.0f); // m^2, area of a single vane
 
    static_assert(lander_mass > 0.0f, "lander_mass must be > 0");
    static_assert(rho_air > 0.0f, "rho_air must be > 0");

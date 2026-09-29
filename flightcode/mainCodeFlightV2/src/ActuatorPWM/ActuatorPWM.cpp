@@ -47,6 +47,8 @@ void ActuatorPWM::attach(ActuatorPWM_config config)
 
     trim_deg = config.trim_deg;
 
+    resolution = config.resolution;
+
     servo.attach(
         pin,
         pulseMin,
@@ -131,6 +133,10 @@ void ActuatorPWM::write(float value)
         valueMin,
         valueMax
     );
+
+
+    // use resolution to round the commanded value to the nearest increment
+    commandedValue = round(commandedValue / resolution) * resolution;
 
     float pulseWidth =
         pulseMin +

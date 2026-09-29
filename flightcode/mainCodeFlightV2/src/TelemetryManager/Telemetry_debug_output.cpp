@@ -22,9 +22,17 @@ String TelemetryManager::get_debug_payload()
     TelemetryUtilities::addDebugTitle(payload, "TAU DEBUG");
     payload += flightManager->getController().controllerCmdToString();
 
+    // attitude debug text
+   // TelemetryUtilities::addDebugGroup(payload, "ATTITUDE DEBUG");
+    auto& state = lander.getState();
+    TelemetryUtilities::addDebugGroup(payload, state.attitude, "ATTITUDE");
+
+    // show deg/s velocities
+    auto angularVelocityDeg = state.angularVelocity;
+    TelemetryUtilities::addDebugGroup(payload, angularVelocityDeg, "ANGULAR VELOCITY");
     // flight regime data
     // getFlightRegimeDataAsString
-    auto current_regime = flightManager->getStateMachine().getCurrentFlightRegimeData();
+   // auto current_regime = flightManager->getStateMachine().getCurrentFlightRegimeData();
    // TelemetryUtilities::addDebugGroup(payload, "FLIGHT REGIME");
     //payload += TelemetryUtilities::getFlightRegimeDataAsString(current_regime);
     

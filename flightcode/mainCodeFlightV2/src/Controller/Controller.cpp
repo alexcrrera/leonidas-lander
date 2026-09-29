@@ -129,7 +129,6 @@ float desiredDownVelocity = PID_position.axis_z.update(
     desiredThrust = constrain(desiredThrust, ActuatorsConfig::THRUST_EDF_min, ActuatorsConfig::THRUST_EDF_max);
     
 
-
     ControlCommand output{
         .tau_yaw = yawTorque,
         .tau_pitch = pitchTorque,

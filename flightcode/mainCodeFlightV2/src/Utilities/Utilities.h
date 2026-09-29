@@ -81,6 +81,7 @@ namespace Utilities{
     
     float EWA(float alpha, float u, float measurement);
 
+    float degToRad(float deg);
     bool isWithinEps_1D(float eps, float u, float u_ref);
     bool isWithinEps_2D(float eps, float x, float y, float x_ref, float u_ref_2);
     bool isWithinEps_3D(float epsH, float epsV, float x, float y, float z, float x_ref, float y_ref, float z_ref);

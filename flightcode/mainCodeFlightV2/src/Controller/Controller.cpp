@@ -6,6 +6,7 @@
 #include "Controller.h"
 #include "../FlightManager/FlightManager.h"
 #include "../Config/SystemConfig.h"
+#include "../Utilities/Utilities.h"
 
 
 Controller::Controller()
@@ -15,6 +16,8 @@ Controller::Controller()
         PID(ControllerPID::PID_gains_position_East, ControllerPID::position_NED_update_frequency),
         PID(ControllerPID::PID_gains_position_Down, ControllerPID::position_NED_update_frequency)
     },
+
+    
 
     PID_velocity{
         PID(ControllerPID::PID_gains_velocity_North, ControllerPID::velocity_NED_update_frequency),
@@ -117,9 +120,10 @@ float desiredDownVelocity = PID_position.axis_z.update(
     setBodyRatesSetpoint({desiredRollRate, desiredPitchRate, desiredYawRate});
 
     // Body Rates -> Torques
-    float rollTorque = PID_body_rates.axis_x.update(currentAngularVelocity.Roll_SI);
-    float pitchTorque = PID_body_rates.axis_y.update(currentAngularVelocity.Pitch_SI);
-    float yawTorque = PID_body_rates.axis_z.update(currentAngularVelocity.Yaw_SI);
+    // conversion using inertia:
+    float rollTorque = Utilities::degToRad(PID_body_rates.axis_x.update(currentAngularVelocity.Roll_SI)) * SystemConfig::inertia_roll;
+    float pitchTorque = Utilities::degToRad(PID_body_rates.axis_y.update(currentAngularVelocity.Pitch_SI)) * SystemConfig::inertia_pitch;
+    float yawTorque = Utilities::degToRad(PID_body_rates.axis_z.update(currentAngularVelocity.Yaw_SI)) * SystemConfig::inertia_yaw;
 
     float desiredThrust = desiredDownAccelerationToThrust(desiredDownAcceleration);
     desiredThrust = constrain(desiredThrust, ActuatorsConfig::THRUST_EDF_min, ActuatorsConfig::THRUST_EDF_max);

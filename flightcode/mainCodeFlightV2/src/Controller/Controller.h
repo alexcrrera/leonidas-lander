@@ -32,6 +32,14 @@ class Controller{
         void setAttitudeSetpoint(const Rotation_Euler_coordinates& attitude_target);
         void setBodyRatesSetpoint(const Rotation_Euler_coordinates& body_rates_target);
         
+        String controllerCmdToString(){
+            String output = "Controller Command:\n";
+            output += "tau_yaw: " + String(ctrl_cmd.tau_yaw) + "\n";
+            output += "tau_pitch: " + String(ctrl_cmd.tau_pitch) + "\n";
+            output += "tau_roll: " + String(ctrl_cmd.tau_roll) + "\n";
+            output += "thrust_N: " + String(ctrl_cmd.thrust_N) + "\n";
+            return output;
+        }
 
         void setControlCmd(const ControlCommand& cmd){ctrl_cmd = cmd;} // set control command directly
       

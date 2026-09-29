@@ -1,7 +1,9 @@
 #include "Utilities.h"
 #include <cmath>
 
-
+float Utilities::degToRad(float deg){
+    return(deg*M_PI/180.0f);
+}
 
 bool Utilities::isSimpleBouded(float u, float u_max)
 {

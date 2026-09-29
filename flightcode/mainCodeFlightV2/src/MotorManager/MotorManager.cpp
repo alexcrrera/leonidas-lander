@@ -84,33 +84,27 @@ void MotorManager::actuate_vanes(){
 
 
 
-ActuatorsCommand MotorManager::controlCmdToActuatorsCmd(const ControlCommand& command){
 
-        float yaw_cmd =    Utilities::clamping(command.tau_yaw,ActuatorsConfig::TVC_YAW_AUTHORITY_BUDGET_deg );
-        float pitch_cmd =  Utilities::clamping(command.tau_pitch,ActuatorsConfig::TVC_PITCH_ROLL_AUTHORITY_BUDGET_deg );
-        float roll_cmd =   Utilities::clamping(command.tau_roll,ActuatorsConfig::TVC_PITCH_ROLL_AUTHORITY_BUDGET_deg );
-        float thrust_percentage = 100.0* command.thrust_N/ActuatorsConfig::THRUST_EDF_max;
-            thrust_percentage = constrain(thrust_percentage, ActuatorsConfig::ESC_thrust_min_percentage,ActuatorsConfig::ESC_thrust_max_percentage);
-        
+ActuatorsCommand MotorManager::controlCmdToActuatorsCmd(const ControlCommand& command) {
 
+    float alpha_deg = constrain(tau_pitch_to_alpha_deg(command.tau_pitch),-ActuatorsConfig::TVC_PITCH_ROLL_AUTHORITY_BUDGET_deg,ActuatorsConfig::TVC_PITCH_ROLL_AUTHORITY_BUDGET_deg);
 
+    float beta_deg = constrain(tau_roll_to_beta_deg(command.tau_roll),-ActuatorsConfig::TVC_PITCH_ROLL_AUTHORITY_BUDGET_deg,ActuatorsConfig::TVC_PITCH_ROLL_AUTHORITY_BUDGET_deg);
 
+    float gamma_deg = constrain(tau_yaw_to_gamma_deg(command.tau_yaw),-ActuatorsConfig::TVC_YAW_AUTHORITY_BUDGET_deg,ActuatorsConfig::TVC_YAW_AUTHORITY_BUDGET_deg);
 
-        float alpha_deg = constrain(tau_pitch_to_alpha_deg(pitch_cmd), -ActuatorsConfig::TVC_PITCH_ROLL_AUTHORITY_BUDGET_deg, ActuatorsConfig::TVC_PITCH_ROLL_AUTHORITY_BUDGET_deg);    
-        float beta_deg = constrain(tau_roll_to_beta_deg(roll_cmd), -ActuatorsConfig::TVC_PITCH_ROLL_AUTHORITY_BUDGET_deg, ActuatorsConfig::TVC_PITCH_ROLL_AUTHORITY_BUDGET_deg );
-        float gamma_deg = constrain(tau_yaw_to_gamma_deg(yaw_cmd), -ActuatorsConfig::TVC_YAW_AUTHORITY_BUDGET_deg, ActuatorsConfig::TVC_YAW_AUTHORITY_BUDGET_deg);
-        gamma_deg = 0.0; // temporarily disable yaw control for testing, since it is not working properly yet
-        ActuatorsCommand cmd_output = {
-            // check mapping of alpha, beta, gamma to vane angles
-            .vaneX1_deg = round(alpha_deg - gamma_deg),
-            .vaneX2_deg = round(alpha_deg + gamma_deg), // probelm
-            .vaneY1_deg = round(beta_deg - gamma_deg),
-            .vaneY2_deg = round(beta_deg + gamma_deg), // probelm
-            .thrust_percentage = thrust_percentage
-        };
-        
+    gamma_deg = 0.0f; // temporarily disable yaw control
 
-        return(cmd_output);
+    float thrust_percentage = 100.0f * command.thrust_N / ActuatorsConfig::THRUST_EDF_max;
+    thrust_percentage = constrain(thrust_percentage, ActuatorsConfig::ESC_thrust_min_percentage, ActuatorsConfig::ESC_thrust_max_percentage);
 
+    ActuatorsCommand cmd_output{
+        .vaneX1_deg = (alpha_deg - gamma_deg),
+        .vaneX2_deg = (alpha_deg + gamma_deg),
+        .vaneY1_deg = (beta_deg - gamma_deg),
+        .vaneY2_deg = (beta_deg + gamma_deg),
+        .thrust_percentage = thrust_percentage
+    };
 
-    }
+    return cmd_output;
+}

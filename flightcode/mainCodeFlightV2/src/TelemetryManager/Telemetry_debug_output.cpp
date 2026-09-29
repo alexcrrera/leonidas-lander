@@ -19,21 +19,24 @@ String TelemetryManager::get_debug_payload()
     TelemetryUtilities::addDebugGroup(payload, "FLIGHT MANAGER DEBUG");
     payload += flightManager->debug_text;
 
+    TelemetryUtilities::addDebugTitle(payload, "TAU DEBUG");
+    payload += flightManager->getController().controllerCmdToString();
+
     // flight regime data
     // getFlightRegimeDataAsString
     auto current_regime = flightManager->getStateMachine().getCurrentFlightRegimeData();
-    TelemetryUtilities::addDebugGroup(payload, "FLIGHT REGIME");
-    payload += TelemetryUtilities::getFlightRegimeDataAsString(current_regime);
+   // TelemetryUtilities::addDebugGroup(payload, "FLIGHT REGIME");
+    //payload += TelemetryUtilities::getFlightRegimeDataAsString(current_regime);
     
 
     // Mission debug text
-    TelemetryUtilities::addDebugGroup(payload, "MISSION DEBUG");
-    payload += flightManager->getMission().getMissionDataAsString();
-
+    //::addDebugGroup(payload, "MISSION DEBUG");
+    //payload += flightManager->getMission().getMissionDataAsString();
+//
 
     // FlightGuard debug text
-    TelemetryUtilities::addDebugGroup(payload, "FLIGHT GUARD STATUS");
-    TelemetryUtilities::addDebugGroup(payload, flightManager->getFlightGuard().getFlightGuardStatus());
+//TelemetryUtilities::addDebugGroup(payload, "FLIGHT GUARD STATUS");
+   // TelemetryUtilities::addDebugGroup(payload, flightManager->getFlightGuard().getFlightGuardStatus());
 
     // // target data:
     // TelemetryUtilities::addDebugGroup(payload, "MISSION TARGET");

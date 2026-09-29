@@ -9,8 +9,10 @@ namespace SystemConfig {
 
    constexpr float lander_mass = 2.0; // 
       constexpr float internal_air_speed = 40.0; // m/s, internal air speed for testing purposes
-   
-
+    
+    constexpr float inertia_roll = 0.03961; // kg*m^2, moment of inertia around roll axis
+    constexpr float inertia_pitch = inertia_roll; //0.06645; // kg*m^2, moment of inertia around pitch axis
+    constexpr float inertia_yaw = 0.03466; // kg*m^2, moment
 
     
    constexpr float rho_air = 1.225; // kg/m^3, density of air at sea level

@@ -124,7 +124,7 @@ The airframe is almost entirely **3D printed using PLA and lightweight PLA Aero*
 </p>
 
 <p align="center">
-  <i>Full CAD assembly and section view showing the internal packaging of the vehicle.</i>
+  <i> CAD assembly and section view showing the internal packaging of the vehicle.</i>
 </p>
 
 The mechanical architecture has been iteratively optimized around three main requirements:

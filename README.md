@@ -112,7 +112,7 @@ Leonidas is built around a custom avionics and control architecture integrating 
   <i>Leonidas avionics and onboard electronics.</i>
 </p>
 
-## Mechanical Design & CAD
+### Mechanical Design & CAD
 
 The Leonidas airframe has been **designed entirely from scratch**, with every structural component developed specifically around the requirements of the EDF propulsion system, thrust-vectoring mechanism, avionics, sensors, and landing structure.
 

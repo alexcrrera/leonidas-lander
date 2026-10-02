@@ -9,7 +9,9 @@ The vehicle uses a **90 mm electric ducted fan (EDF)** for propulsion and **four
 <p align="center">
   <img src="notes/side.jpeg" width="75%" />
 </p>
-
+<p align="center">
+  <i>Updated structure - latest image as of 02/10/2026</i>
+</p>
 ---
 
 ## Flight Testing

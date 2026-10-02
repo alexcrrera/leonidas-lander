@@ -12,7 +12,7 @@ The vehicle uses a **90 mm electric ducted fan (EDF)** for propulsion and **four
 <p align="center">
   <i>Updated structure - latest image as of 02/10/2026</i>
 </p>
----
+
 
 ## Flight Testing
 
@@ -29,7 +29,6 @@ The test below was performed indoors without horizontal position feedback. The v
 <p align="center">
   <i>Indoor flight test without horizontal position feedback — click the image to watch the flight test.</i>
 </p>
----
 
 ## System Architecture
 

@@ -1,5 +1,4 @@
-# Leonidas Lander
-
+# LEONIDAS LANDER - TRL 4-5
 **Autonomous Guidance, Navigation & Control platform for an experimental single-EDF VTOL vehicle.**
 
 Leonidas is an experimental single-EDF VTOL platform developed to design, implement, and flight-test a complete autonomous Guidance, Navigation & Control stack on custom hardware.

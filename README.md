@@ -100,19 +100,9 @@ The simulation environment is also used to evaluate actuator limits, servo resol
 
 ---
 
-## Hardware
 
-Leonidas is built around a custom avionics and control architecture integrating the flight computer, inertial navigation, altitude sensing, optical flow, telemetry, propulsion, and thrust-vectoring actuators.
 
-<p align="center">
-  <img src="notes/Avionics.jpeg" width="75%" />
-</p>
-
-<p align="center">
-  <i>Leonidas avionics and onboard electronics.</i>
-</p>
-
-### Mechanical Design & CAD
+## Mechanical Design & CAD
 
 The Leonidas airframe has been **designed entirely from scratch**, with every structural component developed specifically around the requirements of the EDF propulsion system, thrust-vectoring mechanism, avionics, sensors, and landing structure.
 
@@ -136,6 +126,20 @@ The mechanical architecture has been iteratively optimized around three main req
 This approach is particularly important for an experimental flight platform undergoing frequent design iterations and flight testing. Components can move rapidly through **CAD, manufacturing, assembly, testing, and redesign** while preserving the overall vehicle architecture.
 
 The resulting structure combines **very low mass with high stiffness, modularity, and repairability**, allowing the airframe to evolve alongside the avionics and flight-control system.
+
+---
+
+## Hardware
+
+Leonidas is built around a custom avionics and control architecture integrating the flight computer, inertial navigation, altitude sensing, optical flow, telemetry, propulsion, and thrust-vectoring actuators.
+
+<p align="center">
+  <img src="notes/Avionics.jpeg" width="75%" />
+</p>
+
+<p align="center">
+  <i>Leonidas avionics and onboard electronics.</i>
+</p>
 
 
 ### Flight Computer

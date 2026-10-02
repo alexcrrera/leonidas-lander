@@ -112,6 +112,32 @@ Leonidas is built around a custom avionics and control architecture integrating 
   <i>Leonidas avionics and onboard electronics.</i>
 </p>
 
+## Mechanical Design & CAD
+
+The Leonidas airframe has been **designed entirely from scratch**, with every structural component developed specifically around the requirements of the EDF propulsion system, thrust-vectoring mechanism, avionics, sensors, and landing structure.
+
+The airframe is almost entirely **3D printed using PLA and lightweight PLA Aero**, enabling complex, highly integrated geometries while keeping structural mass to a minimum.
+
+<p align="center">
+  <img src="notes/CAD%20normal.png" width="48%" />
+  <img src="notes/CAD%20SPLIT%20VIEW.png" width="48%" />
+</p>
+
+<p align="center">
+  <i>Full CAD assembly and section view showing the internal packaging of the vehicle.</i>
+</p>
+
+The mechanical architecture has been iteratively optimized around three main requirements:
+
+- **Low mass** — thin-walled components, lightweight PLA Aero parts, and mass-conscious geometry minimize structural weight while maintaining the stiffness required for controlled flight.
+- **Modularity** — propulsion, avionics, sensors, landing gear, and thrust-vectoring assemblies are organized as separate modules that can be removed, modified, or upgraded independently.
+- **Repairability** — individual structural components can be rapidly reprinted and replaced following damage or design changes without requiring replacement of the complete airframe.
+
+This approach is particularly important for an experimental flight platform undergoing frequent design iterations and flight testing. Components can move rapidly through **CAD, manufacturing, assembly, testing, and redesign** while preserving the overall vehicle architecture.
+
+The resulting structure combines **very low mass with high stiffness, modularity, and repairability**, allowing the airframe to evolve alongside the avionics and flight-control system.
+
+
 ### Flight Computer
 
 The onboard software runs on a **Teensy 4.1**, responsible for:

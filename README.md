@@ -24,40 +24,6 @@ The code adheres to a fully functional architecture (no classes), high-rate cont
 and reliability-focused sensor pipelines. It also includes the .json file needed for Serial Studio (used for the GUI).
 
 ------------------------------------------------------------
-FEATURES OVERVIEW
-------------------------------------------------------------
-
-• Full GNC stack (Guidance, Navigation, Control)
-• VectorNav IMU processing
-• RTK-capable GNSS pipeline
-• LiDAR-based altitude compensation using vehicle orientation
-• EDF & servo control system
-• Telemetry uplink/downlink
-• PID attitude + position controllers
-• SD-card logging (Teensy 4.1 internal SD)
-• Fully decomposed into small functional modules
-
-![alt text](https://github.com/alexcrrera/leonidas-lander/blob/main/System%20overview.png)
-
-------------------------------------------------------------
-REPOSITORY STRUCTURE
-------------------------------------------------------------
-
-/Leonidas
-    mainBody.ino               → main loop + scheduling
-    setupConfiguration.ino     → initialization of sensors and parameters
-    vectornavUtilities.ino     → IMU parsing, orientation, gyro/accel handling
-    lidarUtilities.ino         → LiDAR reading, tilt correction
-    telemetryUtilities.ino     → telemetry packets and link management
-    auxiliaryUtilities.ino     → helper functions
-    pidCalculations.ino        → PID controllers (angles + rates)
-    solutionsCalculations.ino  → sensor fusion and state estimation
-    motorsUtilities.ino        → EDF, servos, motors, safety systems
-    auxComputing.ino           → non-critical computations
-    RTK.ino                    → GNSS handling, fix detection, accuracy checks
-    mainCodeFlightV1.ino       → legacy reference code
-
-------------------------------------------------------------
  SYSTEM ARCHITECTURE
 ------------------------------------------------------------
 ![alt text](https://github.com/alexcrrera/leonidas-lander/blob/main/notes/DIAGRAM.png)

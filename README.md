@@ -58,16 +58,12 @@ REPOSITORY STRUCTURE
     mainCodeFlightV1.ino       → legacy reference code
 
 ------------------------------------------------------------
-HIGH LEVEL SYSTEM ARCHITECTURE
+ SYSTEM ARCHITECTURE
 ------------------------------------------------------------
+![alt text](https://github.com/alexcrrera/leonidas-lander/blob/main/notes/DIAGRAM.png)
 
-VectorNav IMU  →  Orientation & Rates
-                    │
-LiDAR (altitude) → Sensor Fusion → Position (GNSS)
-                    │
-                  PID Controllers
-                    │
-              EDF & Servo Outputs
+
+
 
 ------------------------------------------------------------
 NAVIGATION SUBSYSTEMS

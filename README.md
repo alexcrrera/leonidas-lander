@@ -9,10 +9,12 @@ The vehicle uses a **90 mm electric ducted fan (EDF)** for propulsion and **four
 <p align="center">
   <img src="notes/side.jpeg" width="75%" />
 </p>
+
 <p align="center">
-  <i>Updated structure - latest image as of 02/10/2026</i>
+  <i>Updated structure — latest image as of 02/10/2026.</i>
 </p>
 
+---
 
 ## Flight Testing
 
@@ -29,6 +31,8 @@ The test below was performed indoors without horizontal position feedback. The v
 <p align="center">
   <i>Indoor flight test without horizontal position feedback — click the image to watch the flight test.</i>
 </p>
+
+---
 
 ## System Architecture
 
@@ -48,6 +52,52 @@ The control stack is divided into four main loops:
 | Body Rate | 200 Hz | Thrust-vectoring commands |
 
 Running the inner control loops at higher frequencies allows the fast rotational dynamics of the vehicle to be controlled independently from slower navigation and mission-level commands.
+
+---
+
+## Simulation & Controller Development
+
+The flight-control architecture is developed and validated in **MATLAB/Simulink** before being transferred to the embedded flight controller.
+
+Separate simulation models are used to validate the main control cascades, tune controller parameters, analyse transient response, and account for actuator and vehicle limitations before experimental flight testing.
+
+### Altitude Control
+
+The vertical control cascade converts an altitude target into vertical velocity and acceleration demands, ultimately producing the EDF thrust command required to track the desired altitude.
+
+<p align="center">
+  <img src="notes/Altitude%20Cascade.png" width="90%" />
+</p>
+
+<p align="center">
+  <i>Altitude-control cascade implemented in MATLAB/Simulink.</i>
+</p>
+
+### Horizontal Position Control
+
+Horizontal motion is controlled through the full position-to-attitude cascade. Position errors generate velocity targets, which are converted into roll and pitch commands before passing through the attitude and body-rate controllers.
+
+<p align="center">
+  <img src="notes/Horizontal%20Position%20Cascade.png" width="90%" />
+</p>
+
+<p align="center">
+  <i>Horizontal position-control cascade.</i>
+</p>
+
+### Yaw Control
+
+Yaw is controlled through a dedicated attitude and body-rate cascade. The yaw target is converted into an angular-rate demand before being translated into thrust-vectoring vane commands.
+
+<p align="center">
+  <img src="notes/Yaw%20Cascade.png" width="90%" />
+</p>
+
+<p align="center">
+  <i>Yaw target-control cascade.</i>
+</p>
+
+The simulation environment is also used to evaluate actuator limits, servo resolution, thrust-vectoring effectiveness, disturbance rejection, and controller behaviour before changes are deployed to the vehicle.
 
 ---
 
@@ -218,24 +268,6 @@ Telemetry includes:
 </p>
 
 The ground station is used during testing to monitor the vehicle and analyse controller behaviour in real time.
-
----
-
-## Simulation & Controller Development
-
-The flight-control architecture is developed and validated in **MATLAB/Simulink** before being transferred to the embedded controller.
-
-Simulation models are used to study:
-
-- Vertical dynamics and altitude control
-- Attitude and body-rate response
-- Thrust-vectoring effectiveness
-- Actuator limitations
-- Servo resolution
-- Controller tuning
-- Disturbance rejection
-
-This provides a direct path from controller design and simulation to embedded implementation and experimental flight testing.
 
 ---
 
